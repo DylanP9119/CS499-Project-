@@ -773,7 +773,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 452613448c352e741bbf2ec1a1da414b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ship: {fileID: 1298449291}
+  Sphere: {fileID: 1298449291}
 --- !u!114 &1860018662
 MonoBehaviour:
   m_ObjectHideFlags: 0
