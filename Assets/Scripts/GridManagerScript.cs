@@ -7,7 +7,7 @@ public class GridManagerScript : MonoBehaviour
     // Declare width, height, and dictionary for grid layout
     private int gridWidth = 400;
     private int gridHeight = 100;
-    private Dictionary<Vector2Int, GridCell> grid = new Dictionary<Vector2Int, GridCell>();
+    private Dictionary<Vector2Int, TileSelector> grid = new Dictionary<Vector2Int, TileSelector>();
 
     //On start...
     void Start() { 
