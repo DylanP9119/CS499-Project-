@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class ShipMovement : MonoBehaviour
 {
-    public Vector2Int currentGridPosition; 
-    public Vector2Int destinationGridPosition; 
-    public Vector2Int gridSize = new Vector2Int(400, 100); 
+    public Vector2Int currentGridPosition;
+    public Vector2Int destinationGridPosition;
+    public Vector2Int gridSize = new Vector2Int(400, 100);
     public float gridCellSize = 1f; // Size of each grid cell
     public float movementDelay = 0.1f; // Time delay between movements
 
