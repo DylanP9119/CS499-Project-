@@ -15,6 +15,8 @@ public class ShipMovement : MonoBehaviour
     private string filePath;
     private bool isMoving = false; // Flag to determine if the ship should move
 
+    private GameObject capturedCargo = null; // Stores the Cargo this Pirate captured
+
     void Start()
     {
         // Spawn the ship at a random (X, Y) position
@@ -59,6 +61,10 @@ public class ShipMovement : MonoBehaviour
     {
         isMoving = true;
         Debug.Log("Movement started!");
+    }   
+    public void SetCapturedCargo(GameObject cargo)
+    {
+        capturedCargo = cargo;
     }
 
     public void MoveShipTowardsDestination()
@@ -74,14 +80,32 @@ public class ShipMovement : MonoBehaviour
 
             // Log the current position and add it to the travel path
             travelPath.Add(currentGridPosition);
-            Debug.Log($"Ship moved to: {currentGridPosition}");
+            Debug.Log($"[{gameObject.name}] Moved to: {currentGridPosition}");
+
+            // **Move Captured Cargo Along with the Pirate**
+            if (capturedCargo != null)
+            {
+                ShipMovement cargoMovement = capturedCargo.GetComponent<ShipMovement>();
+                if (cargoMovement != null)
+                {
+                    cargoMovement.currentGridPosition = currentGridPosition;
+                    capturedCargo.transform.position = transform.position;
+
+                    // Log cargo movement
+                    Debug.Log($"[{capturedCargo.name}] Captured Cargo moved with Pirate to: {currentGridPosition}");
+                }
+                else
+                {
+                    Debug.LogWarning($"[{gameObject.name}] has a captured cargo, but it has no ShipMovement component!");
+                }
+            }
         }
         else
         {
             // Stop movement and save the path when the destination is reached
             isMoving = false;
             SaveTravelPathToFile();
-            Debug.Log($"Destination reached at: {destinationGridPosition}");
+            Debug.Log($"[{gameObject.name}] Destination reached at: {destinationGridPosition}");
         }
     }
 
@@ -94,7 +118,7 @@ public class ShipMovement : MonoBehaviour
         return new Vector2Int(stepX, stepY);
     }
 
-    private Vector3 GridToWorld(Vector2Int gridPosition)
+    public Vector3 GridToWorld(Vector2Int gridPosition)
     {
         // Convert grid coordinates to Unity world position
         return new Vector3(gridPosition.x * gridCellSize, 0, gridPosition.y * gridCellSize);
