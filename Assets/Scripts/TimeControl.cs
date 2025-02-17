@@ -33,7 +33,8 @@ public class TimeControl : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            CycleSpeedLevel();
+            movementPaused = !movementPaused;
+            ToggleMovement(movementPaused);
         }
     }
 

@@ -15,7 +15,7 @@ public class ShipMovement : MonoBehaviour
 
     void Start()
     {
-        timeControl = FindObjectOfType<TimeControl>();
+        timeControl = FindFirstObjectByType<TimeControl>();
         // Spawn the ship at a random (X, Y) position
         int startX = Random.Range(0, gridSize.x); // Random column (X)
         int startY = Random.Range(0, gridSize.y); // Random row (Y)
