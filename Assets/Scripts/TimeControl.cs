@@ -38,11 +38,11 @@ public class TimeControl : MonoBehaviour
         if (moveTimer >= speedLevels[currentSpeedIndex])
         {
             moveTimer = 0f;
-            chance = Random.Range(0,100);                            
+            chance = Random.Range(0.0f,100.0f);                            
             if(chance <= spawnChance)
             {
-            chance = Random.Range(0,100);
-            if(chance >= 0.0)
+            chance = Random.Range(0.0f,100.0f);
+            if(chance <= 25.0f)
                 {
                      // CHANGE LATER      ALSO STOPPED RECORDING IF NOT MOVING / REACHED DESTITNATION                              
                 }
