@@ -102,7 +102,7 @@ public class ShipInteractions : MonoBehaviour
 
             if (pirateMovement != null)
             {
-                // **Step 3: Unlink the Cargo from the Pirate**
+                // Step 3: Unlink the Cargo from the Pirate
                 pirateMovement.SetCapturedCargo(null);
             }
 
