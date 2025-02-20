@@ -34,8 +34,8 @@ public class ShipMovement : MonoBehaviour
         destinationGridPosition = new Vector2Int(destinationX, startY);
 
         // Log the start and destination positions (for debugging) 
-        Debug.Log($"Ship Start Position: {currentGridPosition}");
-        Debug.Log($"Ship Destination Position: {destinationGridPosition}");
+    //    Debug.Log($"Ship Start Position: {currentGridPosition}");
+      //  Debug.Log($"Ship Destination Position: {destinationGridPosition}");
 
         // Convert the initial grid position to Unity world position
         transform.position = GridToWorld(currentGridPosition);
@@ -45,7 +45,7 @@ public class ShipMovement : MonoBehaviour
 
         // Set file path to save the travel path
         filePath = Path.Combine(Application.persistentDataPath, "ShipTravelPath.txt");
-        Debug.Log($"Path will be saved to: {filePath}");
+ //       Debug.Log($"Path will be saved to: {filePath}");
     }
 
     void Update()
@@ -100,6 +100,7 @@ public class ShipMovement : MonoBehaviour
                     Debug.LogWarning($"[{gameObject.name}] has a captured cargo, but it has no ShipMovement component!");
                 }
             }
+    //        Debug.Log($"Ship moved to: {currentGridPosition}");
         }
         else
         {
@@ -107,6 +108,7 @@ public class ShipMovement : MonoBehaviour
             isMoving = false;
             SaveTravelPathToFile();
             Debug.Log($"[{gameObject.name}] Destination reached at: {destinationGridPosition}");
+     //       Debug.Log($"Destination reached at: {destinationGridPosition}");
         }
     }
 
