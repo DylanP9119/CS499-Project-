@@ -19,8 +19,7 @@ public class TimeControl : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            movementPaused = !movementPaused;
-            ToggleMovement(movementPaused);
+            CycleSpeedLevel();
         }
     }
 
@@ -46,5 +45,10 @@ public class TimeControl : MonoBehaviour
     public void ToggleMovement(bool pause)
     {
         movementPaused = pause;
+    }
+
+    public float GetCurrentInterval()
+    {
+        return speedLevels[currentSpeedIndex];
     }
 }
