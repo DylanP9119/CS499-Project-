@@ -4,18 +4,19 @@ using UnityEngine;
 
 public class ShipMovement : MonoBehaviour
 {
-
     public Vector2Int currentGridPosition;
     public Vector2Int destinationGridPosition;
     public Vector2Int gridSize = new Vector2Int(400, 100);
     public float gridCellSize = 1f; // Size of each grid cell
+    public float movementDelay = 0.1f; // Time delay between movements
+
+    private float movementTimer;
     private List<Vector2Int> travelPath = new List<Vector2Int>(); // To store the path for replay
     private string filePath;
-    private TimeControl timeControl;
+    private bool isMoving = false; // Flag to determine if the ship should move
 
     void Start()
     {
-        timeControl = FindFirstObjectByType<TimeControl>();
         // Spawn the ship at a random (X, Y) position
         int startX = Random.Range(0, gridSize.x); // Random column (X)
         int startY = Random.Range(0, gridSize.y); // Random row (Y)
@@ -26,8 +27,8 @@ public class ShipMovement : MonoBehaviour
         destinationGridPosition = new Vector2Int(destinationX, startY);
 
         // Log the start and destination positions (for debugging) 
-    //    Debug.Log($"Ship Start Position: {currentGridPosition}");
-      //  Debug.Log($"Ship Destination Position: {destinationGridPosition}");
+        Debug.Log($"Ship Start Position: {currentGridPosition}");
+        Debug.Log($"Ship Destination Position: {destinationGridPosition}");
 
         // Convert the initial grid position to Unity world position
         transform.position = GridToWorld(currentGridPosition);
@@ -37,15 +38,27 @@ public class ShipMovement : MonoBehaviour
 
         // Set file path to save the travel path
         filePath = Path.Combine(Application.persistentDataPath, "ShipTravelPath.txt");
- //       Debug.Log($"Path will be saved to: {filePath}");
+        Debug.Log($"Path will be saved to: {filePath}");
     }
 
     void Update()
     {
-        if(timeControl.ShouldMove())
+        // If movement is active, move the ship step-by-step
+        if (isMoving)
         {
-            MoveShipTowardsDestination();
+            movementTimer += Time.deltaTime;
+            if (movementTimer >= movementDelay)
+            {
+                movementTimer = 0f;
+                MoveShipTowardsDestination();
+            }
         }
+    }
+
+    public void StartMovement()
+    {
+        isMoving = true;
+        Debug.Log("Movement started!");
     }
 
     public void MoveShipTowardsDestination()
@@ -61,13 +74,14 @@ public class ShipMovement : MonoBehaviour
 
             // Log the current position and add it to the travel path
             travelPath.Add(currentGridPosition);
-    //        Debug.Log($"Ship moved to: {currentGridPosition}");
+            Debug.Log($"Ship moved to: {currentGridPosition}");
         }
         else
         {
             // Stop movement and save the path when the destination is reached
+            isMoving = false;
             SaveTravelPathToFile();
-     //       Debug.Log($"Destination reached at: {destinationGridPosition}");
+            Debug.Log($"Destination reached at: {destinationGridPosition}");
         }
     }
 
