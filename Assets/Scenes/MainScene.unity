@@ -173,7 +173,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 18849721}
-  - component: {fileID: 18849720}
+  - component: {fileID: 18849722}
+  - component: {fileID: 18849723}
   m_Layer: 0
   m_Name: ShipController
   m_TagString: Untagged
@@ -181,19 +182,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &18849720
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 18849719}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0e03ef221a445349a8c3c09807aa2e6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Sphere: {fileID: 6350901707386338069, guid: 854bc2ee95defd64a9a641df4c5130da, type: 3}
 --- !u!4 &18849721
 Transform:
   m_ObjectHideFlags: 0
@@ -209,6 +197,40 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &18849722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 18849719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0e03ef221a445349a8c3c09807aa2e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ship: {fileID: 6350901707386338069, guid: 854bc2ee95defd64a9a641df4c5130da, type: 3}
+  spawnChance: 1
+  cargoPrefab: {fileID: 6350901707386338069, guid: 745bb196cf1538f4cb13dd2e0a0e65d2, type: 3}
+  patrolPrefab: {fileID: 6350901707386338069, guid: 71b0bfb5f45bd9f448f415af474239d1, type: 3}
+  piratePrefab: {fileID: 6350901707386338069, guid: 854bc2ee95defd64a9a641df4c5130da, type: 3}
+--- !u!114 &18849723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 18849719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cc5d3756a1bb304eae59aaeb616a4c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speedLevels:
+  - 1
+  - 0.5
+  - 0.1
+  - 0.05
 --- !u!114 &409669698 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
