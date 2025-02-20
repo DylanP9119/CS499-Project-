@@ -3,14 +3,17 @@ using UnityEngine;
 public class ShipController : MonoBehaviour
 {
     public GameObject ship;
-    private TimeControl isPaused;
-  //  ShipMovement movementScript = ship.GetComponent<ShipMovement>();
-    public float spawnChance = 1.0f;
+
+    public float spawnChance;
     private float chance = 0.0f;
     float moveTimer = 0.0f;
+
     public GameObject cargoPrefab;
     public GameObject patrolPrefab;
     public GameObject piratePrefab;
+
+    private TimeControl isPaused;
+
     
     void Start()
     {
@@ -60,23 +63,3 @@ public class ShipController : MonoBehaviour
         return new Vector3(x, y, 0);
     }
 }
-
-  //  public void TriggerShipMovement()
-   // {
-
-
-
-
- /*      // Access the ShipMovement script on the ship GameObject
-        ShipMovement movementScript = ship.GetComponent<ShipMovement>();
-        if (movementScript != null)
-        {
-            movementScript.MoveShipTowardsDestination(); // Trigger movement
-            Debug.Log("Ship movement triggered");
-        }
-        else
-        {
-            Debug.LogWarning("ShipMovement script not found on the assigned ship GameObject.");
-        }
- */
-    
