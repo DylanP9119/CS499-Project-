@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.Cinemachine;
+using Cinemachine;
 
 public class CameraSystem : MonoBehaviour
 {
-    [SerializeField] private CinemachineCamera CinemachineCamera;
+    [SerializeField] private CinemachineVirtualCamera cinemachineVirtualCamera;
     [SerializeField] private float fovMax = 50;
     [SerializeField] private float fovMin = 10;
 
@@ -87,7 +87,7 @@ public class CameraSystem : MonoBehaviour
         targetFieldOfView = Mathf.Clamp(targetFieldOfView, fovMin, fovMax);
 
         float zoomSpeed = 5f;
-        CinemachineCamera.Lens.OrthographicSize =
-            Mathf.Lerp(CinemachineCamera.Lens.OrthographicSize, targetFieldOfView, Time.deltaTime * zoomSpeed);
+        cinemachineVirtualCamera.m_Lens.OrthographicSize =
+            Mathf.Lerp(cinemachineVirtualCamera.m_Lens.OrthographicSize, targetFieldOfView, Time.deltaTime * zoomSpeed);
     }
 }
