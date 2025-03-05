@@ -47,9 +47,9 @@ public class CameraSystem : MonoBehaviour
         {
             Vector2 mouseMovementDelta = (Vector2)Input.mousePosition - lastMousePos;
 
-            float dragPanSpeed = 1f;
-            inputDir.x = mouseMovementDelta.x * dragPanSpeed;
-            inputDir.y = mouseMovementDelta.y * dragPanSpeed;
+            float dragPanSpeed = 0.25f;
+            inputDir.x = -mouseMovementDelta.x * dragPanSpeed;
+            inputDir.y = -mouseMovementDelta.y * dragPanSpeed;
 
             lastMousePos = Input.mousePosition;
         }
