@@ -128,7 +128,6 @@ MonoBehaviour:
   - 0.5
   - 0.1
   - 0.05
-  spawnChance: 0
 --- !u!114 &474384191116306497
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,7 +155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6430482f3898964ab22e036411605b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentGridPosition: {x: 0, y: 0}
-  destinationGridPosition: {x: 5, y: 0}
+  currentGridPosition: {x: 10, y: 10}
+  destinationGridPosition: {x: 2, y: 6}
   gridSize: {x: 10, y: 10}
   gridCellSize: 1
