@@ -58,8 +58,8 @@ public class ShipController : MonoBehaviour
     Vector3 GetSpawnPosition()
     {
         // Change for Grid Size
-        float x = Random.Range(-10f, 10f);
-        float y = Random.Range(-10f, 10f);
+        float x = Random.Range(-30f, 30f);
+        float y = Random.Range(-30f, 30f);
         return new Vector3(x, y, 0);
     }
 }
