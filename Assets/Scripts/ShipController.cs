@@ -37,49 +37,79 @@ public class ShipController : MonoBehaviour
 
     void SpawnShip()
     {
+        HashSet<Vector2Int> occupiedPositions = new HashSet<Vector2Int>(); // Track used spawn positions
+
         // Cargo Spawn
         if (Random.value < cargoSpawnChance)
         {
-            Vector3 spawnPos = GetSpawnPosition("Cargo");
-            Instantiate(cargoPrefab, spawnPos, GetSpawnRotation("Cargo"));
-            Debug.Log($"Cargo Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
+            Vector3 spawnPos = GetUniqueSpawnPosition("Cargo", occupiedPositions);
+            if (spawnPos != Vector3.zero) // Ensures valid position found
+            {
+                Instantiate(cargoPrefab, spawnPos, GetSpawnRotation("Cargo"));
+                Debug.Log($"Cargo Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
+            }
         }
 
         // Patrol Spawn
         if (Random.value < patrolSpawnChance)
         {
-            Vector3 spawnPos = GetSpawnPosition("Patrol");
-            Instantiate(patrolPrefab, spawnPos, GetSpawnRotation("Patrol"));
-            Debug.Log($"Patrol Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
+            Vector3 spawnPos = GetUniqueSpawnPosition("Patrol", occupiedPositions);
+            if (spawnPos != Vector3.zero)
+            {
+                Instantiate(patrolPrefab, spawnPos, GetSpawnRotation("Patrol"));
+                Debug.Log($"Patrol Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
+            }
         }
 
         // Pirate Spawn
         if (Random.value < pirateSpawnChance)
         {
-            Vector3 spawnPos = GetSpawnPosition("Pirate");
-            Instantiate(piratePrefab, spawnPos, GetSpawnRotation("Pirate"));
-            Debug.Log($"Pirate Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
+            Vector3 spawnPos = GetUniqueSpawnPosition("Pirate", occupiedPositions);
+            if (spawnPos != Vector3.zero)
+            {
+                Instantiate(piratePrefab, spawnPos, GetSpawnRotation("Pirate"));
+                Debug.Log($"Pirate Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
+            }
         }
     }
-    
-    Vector3 GetSpawnPosition(string shipType)
-    { 
-        if (shipType == "Cargo")
+
+    Vector3 GetUniqueSpawnPosition(string shipType, HashSet<Vector2Int> occupiedPositions)
+    {
+        float roll = Random.value;
+        Vector2Int spawnPos;
+        int maxAttempts = 10; // Avoid infinite loops
+
+        for (int i = 0; i < maxAttempts; i++)
         {
-            int spawnY = Mathf.FloorToInt(gridSize.y * Random.value); // Row select
-            return new Vector3(0, spawnY, 0); // Left Side (west)
+            if (shipType == "Cargo")
+            {
+                int spawnY = Mathf.FloorToInt(gridSize.y * roll);
+                spawnPos = new Vector2Int(0, spawnY);
+            }
+            else if (shipType == "Patrol")
+            {
+                int spawnY = Mathf.FloorToInt(gridSize.y * roll);
+                spawnPos = new Vector2Int(gridSize.x - 1, spawnY);
+            }
+            else if (shipType == "Pirate")
+            {
+                int spawnX = Mathf.FloorToInt(gridSize.x * roll);
+                spawnPos = new Vector2Int(spawnX, 0);
+            }
+            else
+            {
+                return Vector3.zero;
+            }
+
+            if (!occupiedPositions.Contains(spawnPos))
+            {
+                occupiedPositions.Add(spawnPos); // Mark as occupied
+                return new Vector3(spawnPos.x, spawnPos.y, 0);
+            }
         }
-        else if (shipType == "Patrol")
-        {
-            int spawnY = Mathf.FloorToInt(gridSize.y * Random.value); // Row select
-            return new Vector3(gridSize.x - 1, spawnY, 0); // Right Side (east)
-        } 
-        else if (shipType == "Pirate")
-        {
-            int spawnX = Mathf.FloorToInt(gridSize.x * Random.value); // Row select
-            return new Vector3(spawnX, 0, 0); // Bottom Part (South)
-        }
-        return Vector3.zero;
+
+        Debug.LogWarning($"No valid spawn position found for {shipType}");
+        return Vector3.zero; // Return invalid position if no spot found
     }
 
     // Making ships face the right orientation
@@ -97,6 +127,5 @@ public class ShipController : MonoBehaviour
 }
 
 
-//Next steps: UI panel for user inputs
-// Input field? Ask jacob what UI feature we are going to use
-// 
+// make check to see if ship in square during spawn. ex. cargo (0,0) pirate (0,0) 
+// make one of each ship possibly spawn in. So only 3 ships(any type) max can possibly be spawned. 

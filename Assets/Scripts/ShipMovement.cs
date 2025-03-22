@@ -57,6 +57,8 @@ public class ShipMovement : MonoBehaviour
         // Move one step closer to the destination
         if (currentGridPosition != destinationGridPosition)
         {
+
+            Debug.Log($"[{gameObject.name}] left tile {currentGridPosition}. It is now free."); // tells when a ship leaves a spot(for testing with tile occupation)
             Vector2Int direction = GetStepDirection();
             currentGridPosition += direction;
 
