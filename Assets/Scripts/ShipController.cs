@@ -86,15 +86,15 @@ public class ShipController : MonoBehaviour
                 int spawnY = Mathf.FloorToInt(gridSize.y * roll);
                 spawnPos = new Vector2Int(0, spawnY);
             }
-            else if (shipType == "Patrol")
-            {
-                int spawnY = Mathf.FloorToInt(gridSize.y * roll);
-                spawnPos = new Vector2Int(gridSize.x - 1, spawnY);
-            }
             else if (shipType == "Pirate")
             {
                 int spawnX = Mathf.FloorToInt(gridSize.x * roll);
                 spawnPos = new Vector2Int(spawnX, 0);
+            }
+            else if (shipType == "Patrol")
+            {
+                int spawnY = Mathf.FloorToInt(gridSize.y * roll);
+                spawnPos = new Vector2Int(gridSize.x - 1, spawnY);
             }
             else
             {
