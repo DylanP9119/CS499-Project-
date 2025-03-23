@@ -1,22 +1,55 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Replay;
 
-namespace ReplayExmpleScripts
+namespace ReplayExampleScripts
 {
     public class InstantReplayActivation : MonoBehaviour
     {
         public ReplayManager replay;
-
-        // Update is called once per frame
+        
         void Update()
         {
-            //Enter replay mode
-            if (Input.GetKeyDown(KeyCode.R) && !replay.ReplayMode())
-                replay.EnterReplayMode();
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                replay.SaveReplay("ShipsReplay");
+            }
 
+            if (Input.GetKeyDown(KeyCode.R) && !replay.ReplayMode())
+            {
+                replay.EnterReplayMode();
+            }
+
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                StartCoroutine(LoadAndEnterReplay());
+            }
+        }
+
+        IEnumerator LoadAndEnterReplay()
+        {
+            foreach (ShipMovement ship in FindObjectsOfType<ShipMovement>())
+            {
+                Destroy(ship.gameObject);
+            }
+
+            replay.LoadReplay("ShipsReplay");
+            yield return new WaitForEndOfFrame();
+            
+            if (!replay.ReplayMode())
+            {
+                replay.EnterReplayMode();
+            }
+
+
+        }
+
+        void Start()
+        {
+            if (replay == null)
+            {
+                replay = FindObjectOfType<ReplayManager>();
+            }
         }
     }
 }
-

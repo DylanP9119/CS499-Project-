@@ -3,12 +3,192 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using ReplayData;
-using Recorder;
+using System.IO;
+using Recorder; 
+using System.Reflection; 
 
 namespace Replay
 {
     public class ReplayManager : MonoBehaviour
+    {       
+        private Camera mainCamera;
+        private Camera replayCameraComponent;
+    [System.Serializable]
+        public class ReplayDataWrapper
+        {
+            public List<RecordData> records;
+        }
+    [System.Serializable]
+    public class RecordData
     {
+        public string gameObjectPath;
+        public bool isInstantiated;
+        public int firstFrameIndex;
+        public int deletedFrame;
+        public List<FrameData> frames;
+        public string shipType;
+    }
+
+    [System.Serializable]
+    public class FrameData
+    {
+        public Vector3 position;
+        public Quaternion rotation;
+        public Vector3 scale;
+        public Vector3 rbVelocity;
+        public Vector3 rbAngularVelocity;
+    }
+ 
+ 
+
+
+    // Helper method to get GameObject path
+    private string GetGameObjectPath(GameObject go)
+    {
+        if (go == null) return "";
+        string path = "/" + go.name;
+        Transform parent = go.transform.parent;
+        while (parent != null)
+        {
+            path = "/" + parent.name + path;
+            parent = parent.parent;
+        }
+            return path;
+        }
+
+        // Helper method to find GameObject by path
+        private GameObject FindGameObjectByPath(string path)
+        {
+            string[] parts = path.Split('/');
+            if (parts.Length < 2) return null; // Empty or invalid path
+
+            Transform current = null;
+            for (int i = 1; i < parts.Length; i++)
+            {
+                string part = parts[i];
+                if (current == null)
+                {
+                    current = GameObject.Find(part)?.transform;
+                }
+                else
+                {
+                    current = current.Find(part);
+                }
+                if (current == null) break;
+            }
+            return current?.gameObject;
+        }
+
+        public void SaveReplay(string fileName)
+        {
+            List<RecordData> recordDataList = new List<RecordData>();
+
+            foreach (Record record in records)
+            {
+                RecordData rd = new RecordData();
+                rd.gameObjectPath = GetGameObjectPath(record.GetGameObject());
+                rd.isInstantiated = record.IsInstantiated();
+                rd.firstFrameIndex = record.GetFirstFrameIndex();
+                rd.deletedFrame = record.GetRecordDeletedFrame();
+
+                // Get all frames from the record
+                List<Frame> frames = new List<Frame>();
+                for (int i = 0; i < record.GetLength(); i++)
+                {
+                    frames.Add(record.GetFrameAtIndex(i));
+                }
+
+                rd.frames = new List<FrameData>();
+                foreach (Frame frame in frames)
+                {
+                    FrameData fd = new FrameData();
+                    fd.position = frame.GetPosition();
+                    fd.rotation = frame.GetRotation();
+                    fd.scale = frame.GetScale();
+                    fd.rbVelocity = frame.GetRBVelocity();
+                    fd.rbAngularVelocity = frame.GetRBAngularVelocity();
+
+                    rd.frames.Add(fd);
+                }
+                recordDataList.Add(rd);
+            }
+
+            ReplayDataWrapper wrapper = new ReplayDataWrapper();
+            wrapper.records = recordDataList;
+
+            string json = JsonUtility.ToJson(wrapper, true);
+            string filePath = Path.Combine(Application.persistentDataPath, fileName + ".json");
+            File.WriteAllText(filePath, json);
+            Debug.Log("Replay saved to: " + filePath);
+        }
+            private Camera mainCameraReference;
+
+public void PrepareReplayScene()
+{
+    DontDestroyOnLoad(mainCamera.gameObject);
+    // Rest of existing PrepareReplayScene code
+    foreach (Record record in FindObjectsOfType<Record>())
+    {
+        if (record != null && record.gameObject != null)
+        {
+            Destroy(record.gameObject);
+        }
+    }
+    records.Clear();
+    DeletedPool.Clear();
+}
+
+public void LoadReplay(string fileName)
+{
+    PrepareReplayScene();
+    
+    string path = Path.Combine(Application.persistentDataPath, fileName + ".json");
+    if (!File.Exists(path)) return;
+
+    string json = File.ReadAllText(path);
+    ReplayDataWrapper wrapper = JsonUtility.FromJson<ReplayDataWrapper>(json);
+
+    foreach (RecordData rd in wrapper.records)
+    {
+        GameObject prefab = GetPrefabByType(rd.shipType);
+        if (prefab != null)
+        {
+            // Instantiate at recorded position from first frame
+            Vector3 spawnPos = rd.frames.Count > 0 ? rd.frames[0].position : Vector3.zero;
+            Quaternion spawnRot = rd.frames.Count > 0 ? rd.frames[0].rotation : Quaternion.identity;
+            
+            GameObject ship = Instantiate(prefab, spawnPos, spawnRot);
+            Record record = ship.GetComponent<Record>();
+            record.Initialize();
+
+            // Restore all frames
+            List<Frame> frames = new List<Frame>();
+            foreach (FrameData fd in rd.frames)
+            {
+                Frame frame = new Frame(fd.position, fd.rotation, fd.scale);
+                frame.SetRBVelocities(fd.rbVelocity, fd.rbAngularVelocity);
+                frames.Add(frame);
+            }
+            
+            typeof(Record).GetField("frames", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(record, frames);
+
+            records.Add(record);
+        }
+    }
+}
+
+private GameObject GetPrefabByType(string shipType)
+{
+    return shipType switch
+    {
+        "Cargo" => FindObjectOfType<ShipController>().cargoPrefab,
+        "Patrol" => FindObjectOfType<ShipController>().patrolPrefab,
+        "Pirate" => FindObjectOfType<ShipController>().piratePrefab,
+        _ => null
+    };
+}
+    
         public enum ReplayState { PAUSE, PLAYING, TRAVEL_BACK }
         //States
         ReplayState state = ReplayState.PAUSE;
@@ -49,8 +229,6 @@ namespace Replay
         //gameplay camera recorded
         private Camera current;
         //created replay camera to move freely
-        private GameObject replayCam;
-        //array of active cameras in the scene
         private Camera[] cameras;
         private int cameraIndex = 0;
 
@@ -63,7 +241,7 @@ namespace Replay
             //if the frameRate is increased to 144 f.e., the replay would last a maximum of 69 seconds.
             //This is due to how the unity's internal animator recorder works, as it can only record up to 10000 frames, no more.
             //At 60fps the replay can reach up to 166 seconds.
-            Application.targetFrameRate = 60;
+            Application.targetFrameRate = 5;
         }
 
         private void Start()
@@ -83,6 +261,15 @@ namespace Replay
             }
 
         }
+        // Add to ReplayManager class
+        private void HandleDeletedObjects(Record rec, int frameIndex)
+{
+    GameObject deletedGO = rec.GetGameObject(); // Now using valid method
+    if (deletedGO.activeInHierarchy && frameIndex >= rec.GetRecordDeletedFrame())
+    {
+        deletedGO.SetActive(false);
+    }
+}
 
         //Update is called once per frame
         void Update()
@@ -144,31 +331,6 @@ namespace Replay
                                     if (animator.playbackTime + time <= animator.recorderStopTime)
                                         animator.playbackTime += time;
                                 }
-
-                                //audios
-                                AudioSource source = records[i].GetAudioSource();
-                                if (source != null)
-                                {
-                                    if (records[i].GetFrameAtIndex(auxIndex) != null)
-                                    {
-                                        if (records[i].GetFrameAtIndex(auxIndex).GetAudioData().Playing() && source.isPlaying == false)
-                                            source.Play();
-
-                                        if (source.isPlaying)
-                                            SetAudioProperties(source, records[i].GetFrameAtIndex(auxIndex).GetAudioData());
-                                    }
-                                }
-
-                                //particles
-                                ParticleSystem particle = records[i].GetParticle();
-                                if (particle != null)
-                                {
-                                    if (records[i].GetFrameAtIndex(auxIndex).ParticleTime() != 0f && particle.isPlaying == false)
-                                        particle.Play();
-
-                                    if (records[i].GetFrameAtIndex(auxIndex).ParticleTime() == 0 && particle.isPlaying)
-                                        particle.Stop();
-                                }
                             }
                         }
 
@@ -201,12 +363,7 @@ namespace Replay
                     else
                         PauseResume();
 
-                    //Reposition ReplayCamera if the gameplay camera 
-                    if (Camera.main == current)
-                    {
-                        replayCam.transform.position = current.transform.position;
-                        replayCam.transform.rotation = current.transform.rotation;
-                    }
+
                 }
                 //TRAVEL BACK IN TIME FUNCTIONALITY
                 else if (state == ReplayState.TRAVEL_BACK)
@@ -258,76 +415,29 @@ namespace Replay
         //-------------- FUNCTIONS TO ACTIVATE AND DEACTIVATE GAMEOBJECTS (FOR INSTANTIATION AND DELETION) ----------------//
 
         //This function is responsible for activating and deactivating instantiated GO, dependenig on the current time of the replay 
-        void HandleInstantiatedObjects(Record rec, int index)
+void HandleInstantiatedObjects(Record rec, int index)
+{
+    GameObject go = rec.GetGameObject();
+    if (go == null) return;
+
+    // Always apply transforms regardless of active state
+    int auxIndex = index - rec.GetFirstFrameIndex();
+    if (auxIndex >= 0 && auxIndex < rec.GetLength())
+    {
+        Frame frame = rec.GetFrameAtIndex(auxIndex);
+        if (frame != null)
         {
-            //get hierarchy highest parent, as it will be the instantiated GO
-            GameObject go = rec.GetGameObject().transform.root.gameObject;
-
-            //it has not been instantiated yet
-            if (index < 0)
-            {
-                if (go.activeInHierarchy == true)
-                    go.SetActive(false);
-            }
-            else
-            {
-                //instantiate 
-                if (go.activeInHierarchy == false)
-                {
-                    //if it hasn't been deleted during recording
-                    if (rec.GetRecordDeletedFrame() == -1)
-                    {
-                        go.SetActive(true);
-
-                        Animator animator = rec.GetAnimator();
-                        if (animator != null)
-                        {
-                            //start animator replayMode
-                            animator.StartPlayback();
-                            animator.playbackTime = animator.recorderStartTime;
-                        }
-                    }
-                    else
-                    {
-                        //if it hasn't already been deleted, but it will
-                        if (frameIndex < rec.GetRecordDeletedFrame())
-                        {
-                            go.SetActive(true);
-
-                            Animator animator = rec.GetAnimator();
-                            if (animator != null)
-                            {
-                                //start animator replayMode
-                                animator.StartPlayback();
-                                animator.playbackTime = animator.recorderStartTime;
-                            }
-                        }
-                    }
-
-                }
-            }
+            go.transform.position = frame.GetPosition();
+            go.transform.rotation = frame.GetRotation();
+            go.transform.localScale = frame.GetScale();
         }
+    }
 
-        //Function to activate and deactivate GameObjects that were deleted during the recording phase to simulate the deletion of them
-        void HandleDeletedObjects(Record rec, int index)
-        {
-            //it has not been deleted
-            if (rec.GetRecordDeletedFrame() == -1)
-                return;
-
-            if (rec.GetDeletedGO().activeInHierarchy == true)
-            {
-                if (index >= rec.GetRecordDeletedFrame())
-                    rec.GetDeletedGO().SetActive(false);
-            }
-            else
-            {
-                if (rec.IsInstantiated() == false && index < rec.GetRecordDeletedFrame())
-                    rec.GetDeletedGO().SetActive(true);
-            }
+    // Update activation state after setting transforms
+    go.SetActive(IsRecordActiveInReplay(rec, index));
+}
 
 
-        }
 
         void CheckDeletedObjects(Record rec)
         {
@@ -498,32 +608,23 @@ namespace Replay
             go.transform.localScale = Vector3.Lerp(actual.GetScale(), next.GetScale(), value);
         }
 
-        //set audio source parameters from audio data
-        void SetAudioProperties(AudioSource source, AudioData data)
+
+
+        public void InstantiateReplayCamera()
         {
-            source.pitch = data.GetPitch();
-            source.volume = data.GetVolume();
-            source.panStereo = data.GetPanStereo();
-            source.spatialBlend = data.GetSpatialBlend();
-            source.reverbZoneMix = data.GetReverbZoneMix();
+            // Create new camera object
+            GameObject replayCam = new GameObject("ReplayCamera");
+            
+            // Add and configure camera component
+            replayCameraComponent = replayCam.AddComponent<Camera>();
+            replayCameraComponent.CopyFrom(mainCamera);
+            replayCameraComponent.depth = mainCamera.depth + 1;
+
         }
 
-        //Instantiate temporary camera for replay
-        void InstantiateReplayCamera()
-        {
-            current = Camera.main;
-            replayCam = new GameObject("ReplayCamera");
-            replayCam.AddComponent<Camera>();
-            replayCam.AddComponent<ReplayCam.ReplayCamera>();
 
-            cameras = Camera.allCameras;
-        }
 
-        //Delete instantiated replay camera
-        void DeleteReplayCam()
-        {
-            Destroy(replayCam);
-        }
+
 
         //Slider event: has been clicked
         public void SliderClick()
@@ -559,42 +660,6 @@ namespace Replay
 
                         animator.playbackTime = time;
                     }
-
-                    //Audios
-                    AudioSource source = records[i].GetAudioSource();
-                    if (source != null)
-                    {
-                        if (records[i].GetFrameAtIndex(auxIndex) != null)
-                        {
-                            if (records[i].GetFrameAtIndex(auxIndex).GetAudioData().Playing())
-                                source.Play();
-
-                            if (source.isPlaying)
-                                SetAudioProperties(source, records[i].GetFrameAtIndex(auxIndex).GetAudioData());
-                        }
-
-                    }
-
-                    //Particles
-                    ParticleSystem part = records[i].GetParticle();
-                    if (part != null)
-                    {
-                        if (part.isPlaying)
-                        {
-                            part.Stop();
-                            part.Clear();
-                        }
-
-                        if (records[i].GetFrameAtIndex(auxIndex) != null)
-                        {
-                            if (records[i].GetFrameAtIndex(auxIndex).ParticleTime() != 0f)
-                            {
-                                part.Simulate(records[i].GetFrameAtIndex(auxIndex).ParticleTime());
-                                part.Play();
-                            }
-                        }
-
-                    }
                 }
             }
 
@@ -607,11 +672,16 @@ namespace Replay
 
         // Start replay mode
         public void EnterReplayMode()
-        {
-            isReplayMode = true;
+        {    
+             isReplayMode = true;
 
-            //temporary replay camera instantiation
-            InstantiateReplayCamera();
+            if (records.Count == 0)
+         {
+        Debug.LogWarning("No replay data to display!");
+        return;
+    }
+
+                   //   InstantiateReplayCamera();
             //initial frameIndex 
             frameIndex = 0;
 
@@ -648,23 +718,6 @@ namespace Replay
                         //start animator replayMode
                         animator.StartPlayback();
                         animator.playbackTime = animator.recorderStartTime;
-                    }
-
-                    //particles
-                    ParticleSystem part = records[i].GetParticle();
-                    if (part != null)
-                    {
-                        if (part.isPlaying)
-                        {
-                            part.Stop();
-                            part.Clear();
-                        }
-
-                        if (records[i].GetFrameAtIndex(auxIndex).ParticleTime() != 0f)
-                        {
-                            part.Simulate(records[i].GetFrameAtIndex(auxIndex).ParticleTime());
-                            part.Play();
-                        }
                     }
                 }
 
@@ -717,32 +770,12 @@ namespace Replay
                     animator.StopPlayback();
                     records[i].SetStartRecording(false);
                 }
-
-                //reset particles
-                ParticleSystem part = records[i].GetParticle();
-                if (part != null)
-                {
-                    if (part.isPlaying)
-                    {
-                        part.Stop();
-                        part.Clear();
-                    }
-
-                    if (records[i].GetFrameAtIndex(records[i].GetLength() - 1).ParticleTime() != 0f)
-                    {
-                        part.Simulate(records[i].GetFrameAtIndex(records[i].GetLength() - 1).ParticleTime());
-                        part.Play();
-                    }
-                }
                 records[i].ClearFrameList();
             }
 
-            DeleteReplayCam();
             //Disable UI
             UIvisibility(false);
 
-            //enable gameplay camera
-            current.enabled = true;
 
             isReplayMode = false;
 
@@ -773,23 +806,6 @@ namespace Replay
                     if (animator != null)
                     {
                         animator.playbackTime = animator.recorderStartTime;
-                    }
-
-                    //particles
-                    ParticleSystem part = records[i].GetParticle();
-                    if (part != null)
-                    {
-                        if (part.isPlaying)
-                        {
-                            part.Stop();
-                            part.Clear();
-                        }
-
-                        if (records[i].GetFrameAtIndex(auxIndex).ParticleTime() != 0f)
-                        {
-                            part.Simulate(records[i].GetFrameAtIndex(auxIndex).ParticleTime());
-                            part.Play();
-                        }
                     }
                 }
             }
@@ -864,18 +880,6 @@ namespace Replay
 
                             animator.playbackTime += time;
                         }
-
-                        //particles
-                        ParticleSystem part = records[i].GetParticle();
-                        if (part != null)
-                        {
-                            if (records[i].GetFrameAtIndex(auxIndex).ParticleTime() != 0f)
-                            {
-                                part.Simulate(records[i].GetFrameAtIndex(auxIndex).ParticleTime());
-                                part.Play();
-                            }
-
-                        }
                     }
                 }
             }
@@ -935,19 +939,6 @@ namespace Replay
                                 time = (animator.recorderStopTime - animator.recorderStartTime) / records[i].GetAnimFramesRecorded();
 
                             animator.playbackTime -= time;
-                        }
-
-
-                        //particles
-                        ParticleSystem part = records[i].GetParticle();
-                        if (part != null)
-                        {
-
-                            if (records[i].GetFrameAtIndex(auxIndex).ParticleTime() != 0f)
-                            {
-                                part.Simulate(records[i].GetFrameAtIndex(auxIndex).ParticleTime());
-                                part.Play();
-                            }
                         }
                     }
                 }
@@ -1142,21 +1133,6 @@ namespace Replay
 
                             animator.playbackTime -= time;
                         }
-
-
-                        //particles
-                        ParticleSystem part = records[i].GetParticle();
-                        if (part != null)
-                        {
-                            if (records[i].GetFrameAtIndex(auxIndex) != null)
-                            {
-                                if (records[i].GetFrameAtIndex(auxIndex).ParticleTime() != 0f && part.isPlaying == false)
-                                    part.Play();
-
-                                if (records[i].GetFrameAtIndex(auxIndex).ParticleTime() == 0 && part.isPlaying)
-                                    part.Stop();
-                            }
-                        }
                     }
                 }
 
@@ -1226,5 +1202,5 @@ namespace Replay
         }
 
     }
-}
 
+}

@@ -32,11 +32,7 @@ namespace Recorder
         private Animator animator;
         private bool startedRecording = false;
         private int animFramesRecorded = 0;
-
-        //AudioSource recording
-        private AudioSource audioSource;
-        private bool audioPlay = false;
-        private bool audioStarted = false;
+        public string shipType; // Track ship type
 
         //Particle system recording
         private ParticleSystem particle;
@@ -51,6 +47,22 @@ namespace Recorder
         //deleted go 
         private GameObject deletedGO;
 
+public void Initialize()
+{
+    rigidBody = GetComponent<Rigidbody>();
+    animator = GetComponent<Animator>();
+    particle = GetComponent<ParticleSystem>();
+    
+    // Reset to first frame position
+    if (frames.Count > 0)
+    {
+        transform.position = frames[0].GetPosition();
+        transform.rotation = frames[0].GetRotation();
+        transform.localScale = frames[0].GetScale();
+    }
+}
+
+
         void Start()
         {
             //make sure replay is not NULL
@@ -60,7 +72,6 @@ namespace Recorder
             //Get components
             rigidBody = GetComponent<Rigidbody>();
             animator = GetComponent<Animator>();
-            audioSource = GetComponent<AudioSource>();
             particle = GetComponent<ParticleSystem>();
 
             if (replay != null)
@@ -86,10 +97,7 @@ namespace Recorder
 
             //record rigidBody velocities
             RecordRigidBody(frame);
-
-            //record audio data
-            RecordAudio(frame);
-
+     
             //record particle data
             RecordParticle(frame);
 
@@ -98,7 +106,7 @@ namespace Recorder
         }
 
         //Add frame, if list has maxLength remove first element
-        void AddFrame(Frame frame)
+        public void AddFrame(Frame frame)
         {
             if (GetLength() >= replay.GetMaxLength())
             {
@@ -125,40 +133,15 @@ namespace Recorder
             }
         }
 
-        //Record Audio
-        void RecordAudio(Frame frame)
-        {
-            if (audioSource != null)
-            {
-                if (audioSource.isPlaying && audioStarted == false)
-                {
-                    audioStarted = true;
-                    audioPlay = true;
-                }
-                else if (audioStarted && audioPlay)
-                {
-                    audioPlay = false;
-                }
-                else if (audioSource.isPlaying == false && audioStarted)
-                {
-                    audioStarted = false;
-                }
+// Modify RecordParticle method
+void RecordParticle(Frame frame)
+{
+    if (particle != null)
+    {
+        frame.SetParticleTime(particle.time);
+    }
+}
 
-                frame.SetAudioData(new AudioData(audioPlay, audioSource.pitch, audioSource.volume, audioSource.panStereo, audioSource.spatialBlend, audioSource.reverbZoneMix));
-            }
-        }
-
-        //Record Particle
-        void RecordParticle(Frame frame)
-        {
-            if (particle != null)
-            {
-                if (particle.isEmitting)
-                    frame.SetParticleData(particle.time);
-                else
-                    frame.SetParticleData(0f);
-            }
-        }
 
         //Prepare to record again
         public void ClearFrameList()
@@ -257,7 +240,6 @@ namespace Recorder
         public Rigidbody GetRigidbody() { return rigidBody; }
         public Animator GetAnimator() { return animator; }
         public int GetAnimFramesRecorded() { return animFramesRecorded; }
-        public AudioSource GetAudioSource() { return audioSource; }
         public ParticleSystem GetParticle() { return particle; }
     }
 }
