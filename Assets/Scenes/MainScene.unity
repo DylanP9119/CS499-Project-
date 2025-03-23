@@ -209,11 +209,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0e03ef221a445349a8c3c09807aa2e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ship: {fileID: 6350901707386338069, guid: 854bc2ee95defd64a9a641df4c5130da, type: 3}
-  spawnChance: 1
   cargoPrefab: {fileID: 6350901707386338069, guid: 745bb196cf1538f4cb13dd2e0a0e65d2, type: 3}
   patrolPrefab: {fileID: 6350901707386338069, guid: 71b0bfb5f45bd9f448f415af474239d1, type: 3}
   piratePrefab: {fileID: 6350901707386338069, guid: 854bc2ee95defd64a9a641df4c5130da, type: 3}
+  cargoSpawnChance: 0.5
+  patrolSpawnChance: 0.25
+  pirateSpawnChance: 0.4
 --- !u!114 &18849723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -313,7 +314,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 60.000004
-    OrthographicSize: 15
+    OrthographicSize: 115
     NearClipPlane: 0.1
     FarClipPlane: 5000
     Dutch: 0
@@ -339,8 +340,8 @@ Transform:
   m_GameObject: {fileID: 510840360}
   serializedVersion: 2
   m_LocalRotation: {x: -8.906049e-10, y: 0.0000000073947577, z: 1.3510693e-16, w: 1}
-  m_LocalPosition: {x: 5.7, y: -0.6, z: -10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 200, y: 110, z: -10}
+  m_LocalScale: {x: 1, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1497210775}
@@ -359,7 +360,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cinemachineVirtualCamera: {fileID: 510840361}
-  fovMax: 15
+  fovMax: 115
   fovMin: 3
 --- !u!1 &601315170
 GameObject:
@@ -469,7 +470,7 @@ Camera:
   far clip plane: 5000
   field of view: 60.000004
   orthographic: 1
-  orthographic size: 15
+  orthographic size: 115
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -494,7 +495,7 @@ Transform:
   m_GameObject: {fileID: 601315170}
   serializedVersion: 2
   m_LocalRotation: {x: -8.906049e-10, y: 0.0000000073947577, z: 6.5858077e-18, w: 1}
-  m_LocalPosition: {x: 5.7, y: -0.6, z: -10}
+  m_LocalPosition: {x: 200, y: 110, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
