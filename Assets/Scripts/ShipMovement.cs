@@ -7,7 +7,7 @@ public class ShipMovement : MonoBehaviour
 
     public Vector2Int currentGridPosition;
     public Vector2Int destinationGridPosition;
-    public Vector2Int gridSize = new Vector2Int(400, 100);
+    public static Vector2Int gridSize = new Vector2Int(400, 100);
     public float gridCellSize = 1f; // Size of each grid cell
     private List<Vector2Int> travelPath = new List<Vector2Int>(); // To store the path for replay
     private string filePath;
@@ -57,6 +57,8 @@ public class ShipMovement : MonoBehaviour
         // Move one step closer to the destination
         if (currentGridPosition != destinationGridPosition)
         {
+
+            Debug.Log($"[{gameObject.name}] left tile {currentGridPosition}. It is now free."); // tells when a ship leaves a spot(for testing with tile occupation)
             Vector2Int direction = GetStepDirection();
             currentGridPosition += direction;
 
