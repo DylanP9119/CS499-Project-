@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class ShipInteractions : MonoBehaviour
 {
     public static ShipInteractions Instance;
+    public bool isNight = false;
 
     void Awake()
     {
@@ -35,7 +36,11 @@ public class ShipInteractions : MonoBehaviour
                 {
                     HandleDefeat(ship);
                 }
-                else if (ship.CompareTag("Pirate") && otherShip.CompareTag("Cargo") && IsWithinRange(shipGridPos, otherGridPos, 3))
+                else if (ship.CompareTag("Pirate") && otherShip.CompareTag("Cargo") && isNight == false && IsWithinRange(shipGridPos, otherGridPos, 3))
+                {
+                    HandleCapture(ship, otherShip);
+                }
+                else if (ship.CompareTag("Pirate") && otherShip.CompareTag("Cargo") && isNight == true && IsWithinRange(shipGridPos, otherGridPos, 2))
                 {
                     HandleCapture(ship, otherShip);
                 }
