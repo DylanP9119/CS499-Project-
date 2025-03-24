@@ -13,9 +13,11 @@ GameObject:
   - component: {fileID: 1471062540746897347}
   - component: {fileID: 1872301572966215893}
   - component: {fileID: -3922090865848560786}
+  - component: {fileID: -9032437966441476955}
+  - component: {fileID: 3706639651150067502}
   m_Layer: 0
   m_Name: Cargo
-  m_TagString: Untagged
+  m_TagString: Cargo
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -126,3 +128,33 @@ MonoBehaviour:
   gridSize: {x: 400, y: 100}
   gridCellSize: 1
   movementDelay: 0.1
+--- !u!114 &-9032437966441476955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2945873473625126443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cc5d3756a1bb304eae59aaeb616a4c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speedLevels:
+  - 1
+  - 0.5
+  - 0.1
+  - 0.05
+--- !u!114 &3706639651150067502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2945873473625126443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70ea96e0d658dd348a49960ea33ec98e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isNight: 0

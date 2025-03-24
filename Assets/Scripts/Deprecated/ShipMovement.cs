@@ -12,7 +12,7 @@ public class ShipMovement : MonoBehaviour
     private List<Vector2Int> travelPath = new List<Vector2Int>(); // To store the path for replay
     private string filePath;
     private TimeControl timeControl;
-    private bool isMoving = false; // Flag to determine if the ship should move
+    //private bool isMoving = false; // Flag to determine if the ship should move
 
     private GameObject capturedCargo = null; // Stores the Cargo this Pirate captured
 
@@ -30,8 +30,8 @@ public class ShipMovement : MonoBehaviour
         destinationGridPosition = new Vector2Int(destinationX, startY);
 
         // Log the start and destination positions (for debugging) 
-    //    Debug.Log($"Ship Start Position: {currentGridPosition}");
-      //  Debug.Log($"Ship Destination Position: {destinationGridPosition}");
+        //    Debug.Log($"Ship Start Position: {currentGridPosition}");
+        //  Debug.Log($"Ship Destination Position: {destinationGridPosition}");
 
         // Convert the initial grid position to Unity world position
         transform.position = GridToWorld(currentGridPosition);
@@ -41,12 +41,12 @@ public class ShipMovement : MonoBehaviour
 
         // Set file path to save the travel path
         filePath = Path.Combine(Application.persistentDataPath, "ShipTravelPath.txt");
- //       Debug.Log($"Path will be saved to: {filePath}");
+        //       Debug.Log($"Path will be saved to: {filePath}");
     }
 
     void Update()
     {
-        if(timeControl.ShouldMove())
+        if (timeControl.ShouldMove())
         {
             MoveShipTowardsDestination();
         }
@@ -90,7 +90,7 @@ public class ShipMovement : MonoBehaviour
         else
         {
             // Stop movement and save the path when the destination is reached
-            isMoving = false;
+            //isMoving = false;
             SaveTravelPathToFile();
             Debug.Log($"[{gameObject.name}] Destination reached at: {destinationGridPosition}");
         }

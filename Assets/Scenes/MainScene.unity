@@ -175,6 +175,8 @@ GameObject:
   - component: {fileID: 18849721}
   - component: {fileID: 18849722}
   - component: {fileID: 18849723}
+  - component: {fileID: 18849725}
+  - component: {fileID: 18849724}
   m_Layer: 0
   m_Name: ShipController
   m_TagString: Untagged
@@ -212,9 +214,13 @@ MonoBehaviour:
   cargoPrefab: {fileID: 6350901707386338069, guid: 745bb196cf1538f4cb13dd2e0a0e65d2, type: 3}
   patrolPrefab: {fileID: 6350901707386338069, guid: 71b0bfb5f45bd9f448f415af474239d1, type: 3}
   piratePrefab: {fileID: 6350901707386338069, guid: 854bc2ee95defd64a9a641df4c5130da, type: 3}
+  isNight: 0
   cargoSpawnChance: 0.5
   patrolSpawnChance: 0.25
   pirateSpawnChance: 0.4
+  cargoNightChance: 0.5
+  patrolNightChance: 0.25
+  pirateNightChance: 0.4
 --- !u!114 &18849723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -232,6 +238,34 @@ MonoBehaviour:
   - 0.5
   - 0.1
   - 0.05
+--- !u!114 &18849724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 18849719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70ea96e0d658dd348a49960ea33ec98e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isNight: 0
+--- !u!114 &18849725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 18849719}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56e63a7fdc673014cbb52ca3538706d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentGridPosition: {x: 0, y: 0}
+  destinationGridPosition: {x: 0, y: 0}
+  gridCellSize: 1
 --- !u!1 &239930791
 GameObject:
   m_ObjectHideFlags: 0
@@ -314,7 +348,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 60.000004
-    OrthographicSize: 115
+    OrthographicSize: 47.99999
     NearClipPlane: 0.1
     FarClipPlane: 5000
     Dutch: 0
@@ -470,7 +504,7 @@ Camera:
   far clip plane: 5000
   field of view: 60.000004
   orthographic: 1
-  orthographic size: 115
+  orthographic size: 47.99999
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2

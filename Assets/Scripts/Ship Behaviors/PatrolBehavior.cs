@@ -9,14 +9,15 @@ public class PatrolBehavior : MonoBehaviour
     public Vector2Int gridSize = new Vector2Int(400, 100);
     public float gridCellSize = 1f; // Size of each grid cell
     public float movementDelay = 0.1f; // Time delay between movements
-
+    private TimeControl timeControl;
     private float movementTimer;
     private List<Vector2Int> travelPath = new List<Vector2Int>(); // To store the path for replay
     private string filePath;
-    private bool isMoving = false; // Flag to determine if the ship should move
+    //private bool isMoving = false; // Flag to determine if the ship should move
 
     void Start()
     {
+        timeControl = FindFirstObjectByType<TimeControl>();
         // Spawn the ship at a random (X, Y) position
         int startX = gridSize.x; // Random column (X)
         int startY = Random.Range(0, gridSize.y); // Random row (Y)
@@ -44,7 +45,7 @@ public class PatrolBehavior : MonoBehaviour
     void Update()
     {
         // If movement is active, move the ship step-by-step
-        if (isMoving)
+        if (timeControl.ShouldMove())
         {
             movementTimer += Time.deltaTime;
             if (movementTimer >= movementDelay)
@@ -57,7 +58,7 @@ public class PatrolBehavior : MonoBehaviour
 
     public void StartMovement()
     {
-        isMoving = true;
+        //isMoving = true;
         Debug.Log("Movement started!");
     }
 
@@ -79,7 +80,7 @@ public class PatrolBehavior : MonoBehaviour
         else
         {
             // Stop movement and save the path when the destination is reached
-            isMoving = false;
+            //isMoving = false;
             SaveTravelPathToFile();
             Debug.Log($"Destination reached at: {destinationGridPosition}");
         }
