@@ -14,7 +14,7 @@ public class PirateBehavior : MonoBehaviour
     private List<Vector2Int> travelPath = new List<Vector2Int>(); // To store the path for replay
     private string filePath;
     //private bool isMoving = false; // Flag to determine if the ship should move
-    private bool hasCargo = false; // Determines whether a cargo ship has been captured for reverse direction
+    public bool hasCargo = false; // Determines whether a cargo ship has been captured for reverse direction
 
     void Start()
     {
@@ -29,8 +29,8 @@ public class PirateBehavior : MonoBehaviour
         destinationGridPosition = new Vector2Int(startX, destinationY);
 
         // Log the start and destination positions (for debugging) 
-        Debug.Log($"Ship Start Position: {currentGridPosition}");
-        Debug.Log($"Ship Destination Position: {destinationGridPosition}");
+        //Debug.Log($"Ship Start Position: {currentGridPosition}");
+        //Debug.Log($"Ship Destination Position: {destinationGridPosition}");
 
         // Convert the initial grid position to Unity world position
         transform.position = GridToWorld(currentGridPosition);
@@ -40,11 +40,14 @@ public class PirateBehavior : MonoBehaviour
 
         // Set file path to save the travel path
         filePath = Path.Combine(Application.persistentDataPath, "ShipTravelPath.txt");
-        Debug.Log($"Path will be saved to: {filePath}");
+        //Debug.Log($"Path will be saved to: {filePath}");
     }
 
     void Update()
     {
+        // If this pirate has captured cargo, don't move on its own — let ShipInteractions handle it
+        if (hasCargo) return;
+
         // If movement is active, move the ship step-by-step
         if (timeControl.ShouldMove())
         {
@@ -63,6 +66,10 @@ public class PirateBehavior : MonoBehaviour
         Debug.Log("Movement started!");
     }*/
 
+    void OnDestroy()
+    {
+        Debug.Log($"[Destroyed] {name} has been destroyed.");
+    }
     public void MoveShipTowardsDestination()
     {
         // Move one step closer to the destination
@@ -76,13 +83,13 @@ public class PirateBehavior : MonoBehaviour
 
             // Log the current position and add it to the travel path
             travelPath.Add(currentGridPosition);
-            Debug.Log($"Ship moved to: {currentGridPosition}");
+            //Debug.Log($"Ship moved to: {currentGridPosition}");
         }
         {
             // Stop movement and save the path when the destination is reached
             //isMoving = false;
             SaveTravelPathToFile();
-            Debug.Log($"Destination reached at: {destinationGridPosition}");
+            //Debug.Log($"Destination reached at: {destinationGridPosition}");
         }
     }
 
@@ -123,6 +130,6 @@ public class PirateBehavior : MonoBehaviour
 
         // Write to a file
         File.WriteAllLines(filePath, pathStrings);
-        Debug.Log($"Travel path saved to: {filePath}");
+        //Debug.Log($"Travel path saved to: {filePath}");
     }
 }

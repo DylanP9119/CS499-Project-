@@ -4,6 +4,7 @@ using UnityEngine;
 using Recorder;
 using ReplayData;
 using Replay;
+//using System;
 
 public class ShipController : MonoBehaviour
 {
@@ -25,8 +26,12 @@ public class ShipController : MonoBehaviour
     float moveTimer = 0.0f;
     private TimeControl isPaused;
 
+    private int cargoCounter = 1;
+    private int pirateCounter = 1;
+
     //private Vector2Int gridsize = new Vector2Int(400,100);
-    Vector2Int gridSize = ShipMovement.gridSize; // Access gridSize from ShipMovement, size of grid should not be made in ship movement. 
+    Vector2Int gridSize = new Vector2Int(400, 100); // i dont think vector2int should affect gridsize./ scared to change  
+    //Vector2Int gridSize = ShipMovement.gridSize; REMOVED SHIPMOVEMENT
     private List<GameObject> allShips = new List<GameObject>();
     public List<GameObject> GetAllShips() => allShips;
 
@@ -36,6 +41,16 @@ public class ShipController : MonoBehaviour
         isPaused = FindFirstObjectByType<TimeControl>();
         if (replay == null)
             replay = GameObject.Find("ReplayManager").GetComponent<ReplayManager>();
+
+        // Force controlled spawns for interaction testing
+        Vector3 evadingCargoPos = new Vector3(50, 0, 50);
+        Vector3 nearbyPiratePos = evadingCargoPos + new Vector3(-2, 0, 1); // Within evasion range
+
+        GameObject evadingCargo = Instantiate(cargoPrefab, evadingCargoPos, Quaternion.identity);
+        GameObject pirateNearby = Instantiate(piratePrefab, nearbyPiratePos, Quaternion.identity);
+
+        allShips.Add(evadingCargo);
+        allShips.Add(pirateNearby);
     }
     void Update()
     {
@@ -59,7 +74,7 @@ public class ShipController : MonoBehaviour
 
     void SpawnShip() // This function will need to be updated for weighted probabilities. Check in with Jacob.
     {
-        HashSet<Vector2Int> occupiedPositions = new HashSet<Vector2Int>(); // Track used spawn positions
+        HashSet<Vector3> occupiedPositions = new HashSet<Vector3>(); // Track used spawn positions
 
         // Cargo Day Spawn
         if (isNight == false && Random.value < cargoSpawnChance)
@@ -68,8 +83,9 @@ public class ShipController : MonoBehaviour
             if (spawnPos != Vector3.zero) // Ensures valid position found
             {
                 GameObject cargo = Instantiate(cargoPrefab, spawnPos, GetSpawnRotation("Cargo"));
+                cargo.name = $"Cargo({cargoCounter++})";
                 allShips.Add(cargo);
-                Debug.Log($"Cargo Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
+                //Debug.Log($"Cargo Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
             }
         }
 
@@ -81,7 +97,7 @@ public class ShipController : MonoBehaviour
             {
                 GameObject patrol = Instantiate(patrolPrefab, spawnPos, GetSpawnRotation("Patrol"));
                 allShips.Add(patrol);
-                Debug.Log($"Patrol Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
+                //Debug.Log($"Patrol Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
             }
         }
 
@@ -92,8 +108,9 @@ public class ShipController : MonoBehaviour
             if (spawnPos != Vector3.zero)
             {
                 GameObject pirate = Instantiate(piratePrefab, spawnPos, GetSpawnRotation("Pirate"));
+                pirate.name = $"Pirate({pirateCounter++})";
                 allShips.Add(pirate);
-                Debug.Log($"Pirate Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
+                //Debug.Log($"Pirate Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
             }
         }
 
@@ -135,28 +152,28 @@ public class ShipController : MonoBehaviour
     }
 
 
-    Vector3 GetUniqueSpawnPosition(string shipType, HashSet<Vector2Int> occupiedPositions) // This function will need to be updated for weighted probabilities. Check in with Jacob.
+    Vector3 GetUniqueSpawnPosition(string shipType, HashSet<Vector3> occupiedPositions) // This function will need to be updated for weighted probabilities. Check in with Jacob.
     {
         float roll = Random.value;
-        Vector2Int spawnPos;
+        Vector3 spawnPos = Vector3.zero;
         int maxAttempts = 10; // Avoid infinite loops
 
         for (int i = 0; i < maxAttempts; i++)
         {
             if (shipType == "Cargo")
             {
-                int spawnY = Mathf.FloorToInt(gridSize.y * roll);
-                spawnPos = new Vector2Int(0, spawnY);
+                int spawnZ = Mathf.FloorToInt(gridSize.y * roll);
+                spawnPos = new Vector3(0, 0, spawnZ);
             }
             else if (shipType == "Pirate")
             {
                 int spawnX = Mathf.FloorToInt(gridSize.x * roll);
-                spawnPos = new Vector2Int(spawnX, 0);
+                spawnPos = new Vector3(spawnX, 0, 0);
             }
             else if (shipType == "Patrol")
             {
-                int spawnY = Mathf.FloorToInt(gridSize.y * roll);
-                spawnPos = new Vector2Int(gridSize.x - 1, spawnY);
+                int spawnZ = Mathf.FloorToInt(gridSize.y * roll);
+                spawnPos = new Vector3(gridSize.x - 1, 0, spawnZ);
             }
             else
             {
@@ -166,7 +183,7 @@ public class ShipController : MonoBehaviour
             if (!occupiedPositions.Contains(spawnPos))
             {
                 occupiedPositions.Add(spawnPos); // Mark as occupied
-                return new Vector3(spawnPos.x, spawnPos.y, 0);
+                return spawnPos;
             }
         }
 

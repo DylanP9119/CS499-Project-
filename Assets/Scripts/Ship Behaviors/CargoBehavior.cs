@@ -14,6 +14,7 @@ public class CargoBehavior : MonoBehaviour
     private List<Vector2Int> travelPath = new List<Vector2Int>(); // To store the path for replay
     private string filePath;
     //private bool isMoving = false; // Flag to determine if the ship should move
+    public bool isCaptured = false;
 
     void Start()
     {
@@ -28,8 +29,8 @@ public class CargoBehavior : MonoBehaviour
         destinationGridPosition = new Vector2Int(destinationX, startY);
 
         // Log the start and destination positions (for debugging) 
-        Debug.Log($"Ship Start Position: {currentGridPosition}");
-        Debug.Log($"Ship Destination Position: {destinationGridPosition}");
+        //Debug.Log($"Ship Start Position: {currentGridPosition}");
+        //Debug.Log($"Ship Destination Position: {destinationGridPosition}");
 
         // Convert the initial grid position to Unity world position
         transform.position = GridToWorld(currentGridPosition);
@@ -39,20 +40,20 @@ public class CargoBehavior : MonoBehaviour
 
         // Set file path to save the travel path
         filePath = Path.Combine(Application.persistentDataPath, "ShipTravelPath.txt");
-        Debug.Log($"Path will be saved to: {filePath}");
+        //Debug.Log($"Path will be saved to: {filePath}");
     }
 
     void Update()
     {
-        // If movement is active, move the ship step-by-step
-        if (timeControl.ShouldMove())
+        // Stop all logic if captured
+        if (isCaptured || !timeControl.ShouldMove())
+            return;
+
+        movementTimer += Time.deltaTime;
+        if (movementTimer >= movementDelay)
         {
-            movementTimer += Time.deltaTime;
-            if (movementTimer >= movementDelay)
-            {
-                movementTimer = 0f;
-                MoveShipTowardsDestination();
-            }
+            movementTimer = 0f;
+            MoveShipTowardsDestination();
         }
     }
 
@@ -75,15 +76,16 @@ public class CargoBehavior : MonoBehaviour
 
             // Log the current position and add it to the travel path
             travelPath.Add(currentGridPosition);
-            Debug.Log($"Ship moved to: {currentGridPosition}");
+            //Debug.Log($"Ship moved to: {currentGridPosition}");
         }
         else
         {
             // Stop movement and save the path when the destination is reached
             //isMoving = false;
             SaveTravelPathToFile();
-            Debug.Log($"Destination reached at: {destinationGridPosition}");
+            //Debug.Log($"Destination reached at: {destinationGridPosition}");
         }
+        Debug.LogError($"[Cargo Move] {name} updated to {transform.position}");
     }
 
     private Vector2Int GetStepDirection()
@@ -95,7 +97,7 @@ public class CargoBehavior : MonoBehaviour
         return new Vector2Int(stepX, stepY);
     }
 
-    private Vector3 GridToWorld(Vector2Int gridPosition)
+    public Vector3 GridToWorld(Vector2Int gridPosition)
     {
         // Convert grid coordinates to Unity world position
         return new Vector3(gridPosition.x * gridCellSize, 0, gridPosition.y * gridCellSize);
@@ -112,6 +114,6 @@ public class CargoBehavior : MonoBehaviour
 
         // Write to a file
         File.WriteAllLines(filePath, pathStrings);
-        Debug.Log($"Travel path saved to: {filePath}");
+        //Debug.Log($"Travel path saved to: {filePath}");
     }
 }

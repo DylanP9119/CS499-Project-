@@ -211,13 +211,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0e03ef221a445349a8c3c09807aa2e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cargoPrefab: {fileID: 6350901707386338069, guid: 745bb196cf1538f4cb13dd2e0a0e65d2, type: 3}
-  patrolPrefab: {fileID: 6350901707386338069, guid: 71b0bfb5f45bd9f448f415af474239d1, type: 3}
-  piratePrefab: {fileID: 6350901707386338069, guid: 854bc2ee95defd64a9a641df4c5130da, type: 3}
+  cargoPrefab: {fileID: 2945873473625126443, guid: f0c21dc3fa449a04896ff4a3cd287b14, type: 3}
+  patrolPrefab: {fileID: 2945873473625126443, guid: 828493d60c83e3d4daa2eec8c3e6170a, type: 3}
+  piratePrefab: {fileID: 2945873473625126443, guid: ca70039599911434cb90b21854d3c217, type: 3}
+  replay: {fileID: 0}
   isNight: 0
-  cargoSpawnChance: 0.5
-  patrolSpawnChance: 0.25
-  pirateSpawnChance: 0.4
+  cargoSpawnChance: 1
+  patrolSpawnChance: 1
+  pirateSpawnChance: 1
   cargoNightChance: 0.5
   patrolNightChance: 0.25
   pirateNightChance: 0.4
@@ -263,9 +264,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56e63a7fdc673014cbb52ca3538706d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentGridPosition: {x: 0, y: 0}
-  destinationGridPosition: {x: 0, y: 0}
-  gridCellSize: 1
 --- !u!1 &239930791
 GameObject:
   m_ObjectHideFlags: 0
@@ -373,14 +371,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 510840360}
   serializedVersion: 2
-  m_LocalRotation: {x: -8.906049e-10, y: 0.0000000073947577, z: 1.3510693e-16, w: 1}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 200, y: 110, z: -10}
   m_LocalScale: {x: 1, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1497210775}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!114 &510840363
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -528,7 +526,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 601315170}
   serializedVersion: 2
-  m_LocalRotation: {x: -8.906049e-10, y: 0.0000000073947577, z: 6.5858077e-18, w: 1}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 200, y: 110, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
