@@ -40,19 +40,30 @@ public class PatrolBehavior : MonoBehaviour
         // Set file path to save the travel path
         filePath = Path.Combine(Application.persistentDataPath, "ShipTravelPath.txt");
         //Debug.Log($"Path will be saved to: {filePath}");
+        //movementTimer = movementDelay;
     }
 
     void Update()
     {
-        // If movement is active, move the ship step-by-step
-        if (timeControl.ShouldMove())
+
+        if (currentGridPosition == destinationGridPosition)
         {
-            movementTimer += Time.deltaTime;
-            if (movementTimer >= movementDelay)
-            {
-                movementTimer = 0f;
-                MoveShipTowardsDestination();
-            }
+            Debug.LogWarning($"[Stuck Ship] {name} has nowhere to go! Grid: {currentGridPosition}");
+        }
+
+        if (!timeControl.ShouldMove())
+        {
+            //Debug.LogError($"[BLOCKED] {name} | ShouldMove() == false at Frame {Time.frameCount}");
+            return;
+        }
+
+        movementTimer += Time.deltaTime;
+
+        if (movementTimer >= movementDelay)
+        {
+            //Debug.LogError($"[MOVING] {name} at Frame {Time.frameCount}");
+            movementTimer = 0f;
+            MoveShipTowardsDestination();
         }
     }
 

@@ -41,7 +41,10 @@ public class TimeControl : MonoBehaviour
         return false;
     }
 
-
+    public void ResetMoveTimer()
+    {
+        moveTimer = 0f;
+    }
 
     public void ToggleMovement(bool pause)
     {

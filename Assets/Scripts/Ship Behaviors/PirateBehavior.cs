@@ -45,7 +45,7 @@ public class PirateBehavior : MonoBehaviour
 
     void Update()
     {
-        // If this pirate has captured cargo, don't move on its own — let ShipInteractions handle it
+        // If this pirate has captured cargo, don't move on its own - let ShipInteractions handle it
         if (hasCargo) return;
 
         // If movement is active, move the ship step-by-step

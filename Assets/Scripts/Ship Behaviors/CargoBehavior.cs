@@ -45,6 +45,13 @@ public class CargoBehavior : MonoBehaviour
 
     void Update()
     {
+
+        if (currentGridPosition == destinationGridPosition)
+        {
+            Debug.LogWarning($"[Stuck Ship] {name} has nowhere to go! Grid: {currentGridPosition}");
+        }
+
+
         // Stop all logic if captured
         if (isCaptured || !timeControl.ShouldMove())
             return;
@@ -85,7 +92,7 @@ public class CargoBehavior : MonoBehaviour
             SaveTravelPathToFile();
             //Debug.Log($"Destination reached at: {destinationGridPosition}");
         }
-        Debug.LogError($"[Cargo Move] {name} updated to {transform.position}");
+        //Debug.LogError($"[Cargo Move] {name} updated to {transform.position}");
     }
 
     private Vector2Int GetStepDirection()
