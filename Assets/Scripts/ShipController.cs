@@ -31,6 +31,8 @@ public class ShipController : MonoBehaviour
     private int pirateCounter = 1;
     private int patrolCounter = 1;
 
+    public float simulationSpeed = 1f;
+
     //private Vector2Int gridsize = new Vector2Int(400,100);
     Vector2Int gridSize = new Vector2Int(400, 100); // i dont think vector2int should affect gridsize./ scared to change  
     //Vector2Int gridSize = ShipMovement.gridSize; REMOVED SHIPMOVEMENT
@@ -53,13 +55,21 @@ public class ShipController : MonoBehaviour
                 return;
             }
             moveTimer += Time.deltaTime;
-            if (moveTimer >= 1)
-            {
-                SpawnShip(); 
-                moveTimer = 0;
-            }
 
-            ShipInteractions.Instance.CheckForInteractions(allShips);
+            if (moveTimer >= 1f)
+            {
+                SpawnShip();
+                foreach (GameObject ship in allShips)
+                {
+                    if (ship != null)
+                    {
+                        Debug.Log($"[ShipController] Step() called on: {ship.name}");
+                        ship.SendMessage("Step", SendMessageOptions.DontRequireReceiver);
+                    }
+                }
+                ShipInteractions.Instance.CheckForInteractions(allShips);
+                moveTimer = 0f;
+            }
         }
     }
 

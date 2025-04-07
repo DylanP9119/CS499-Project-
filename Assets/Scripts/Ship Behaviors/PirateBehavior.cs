@@ -39,25 +39,16 @@ public class PirateBehavior : MonoBehaviour
         travelPath.Add(currentGridPosition);
 
         // Set file path to save the travel path
-        filePath = Path.Combine(Application.persistentDataPath, "ShipTravelPath.txt");
+        //filePath = Path.Combine(Application.persistentDataPath, "ShipTravelPath.txt");
         //Debug.Log($"Path will be saved to: {filePath}");
     }
 
-    void Update()
+    public void Step()
     {
         // If this pirate has captured cargo, don't move on its own - let ShipInteractions handle it
         if (hasCargo) return;
 
-        // If movement is active, move the ship step-by-step
-        if (timeControl.ShouldMove())
-        {
-            movementTimer += Time.deltaTime;
-            if (movementTimer >= movementDelay)
-            {
-                movementTimer = 0f;
-                MoveShipTowardsDestination();
-            }
-        }
+        MoveShipTowardsDestination();
     }
 
     /*public void StartMovement()
@@ -88,7 +79,7 @@ public class PirateBehavior : MonoBehaviour
         {
             // Stop movement and save the path when the destination is reached
             //isMoving = false;
-            SaveTravelPathToFile();
+            //SaveTravelPathToFile();
             //Debug.Log($"Destination reached at: {destinationGridPosition}");
         }
     }
@@ -113,23 +104,23 @@ public class PirateBehavior : MonoBehaviour
         }
     }
 
-    private Vector3 GridToWorld(Vector2Int gridPosition)
+    public Vector3 GridToWorld(Vector2Int gridPosition)
     {
         // Convert grid coordinates to Unity world position
         return new Vector3(gridPosition.x * gridCellSize, 0, gridPosition.y * gridCellSize);
     }
 
-    public void SaveTravelPathToFile()
-    {
+    //public void SaveTravelPathToFile()
+    //{
         // Convert the path to a readable format
-        List<string> pathStrings = new List<string>();
-        foreach (Vector2Int pos in travelPath)
-        {
-            pathStrings.Add($"{pos.x},{pos.y}");
-        }
+     //   List<string> pathStrings = new List<string>();
+     //   foreach (Vector2Int pos in travelPath)
+    //    {
+     //       pathStrings.Add($"{pos.x},{pos.y}");
+     //   }
 
         // Write to a file
-        File.WriteAllLines(filePath, pathStrings);
+    //    File.WriteAllLines(filePath, pathStrings);
         //Debug.Log($"Travel path saved to: {filePath}");
-    }
+    //}
 }

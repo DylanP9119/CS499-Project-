@@ -39,29 +39,20 @@ public class CargoBehavior : MonoBehaviour
         travelPath.Add(currentGridPosition);
 
         // Set file path to save the travel path
-        filePath = Path.Combine(Application.persistentDataPath, "ShipTravelPath.txt");
+        //filePath = Path.Combine(Application.persistentDataPath, "ShipTravelPath.txt");
         //Debug.Log($"Path will be saved to: {filePath}");
     }
 
-    void Update()
+    public void Step()
     {
-
-        if (currentGridPosition == destinationGridPosition)
-        {
-            Debug.LogWarning($"[Stuck Ship] {name} has nowhere to go! Grid: {currentGridPosition}");
-        }
-
-
         // Stop all logic if captured
-        if (isCaptured || !timeControl.ShouldMove())
-            return;
-
-        movementTimer += Time.deltaTime;
-        if (movementTimer >= movementDelay)
+        if (isCaptured)
         {
-            movementTimer = 0f;
-            MoveShipTowardsDestination();
+            Debug.Log($"[BLOCKED] {name} is still captured. No movement.");
+            return;
         }
+        currentGridPosition += Vector2Int.right;
+        transform.position = GridToWorld(currentGridPosition);
     }
 
     /*public void StartMovement()
@@ -85,14 +76,6 @@ public class CargoBehavior : MonoBehaviour
             travelPath.Add(currentGridPosition);
             //Debug.Log($"Ship moved to: {currentGridPosition}");
         }
-        else
-        {
-            // Stop movement and save the path when the destination is reached
-            //isMoving = false;
-            SaveTravelPathToFile();
-            //Debug.Log($"Destination reached at: {destinationGridPosition}");
-        }
-        //Debug.LogError($"[Cargo Move] {name} updated to {transform.position}");
     }
 
     private Vector2Int GetStepDirection()
@@ -110,17 +93,17 @@ public class CargoBehavior : MonoBehaviour
         return new Vector3(gridPosition.x * gridCellSize, 0, gridPosition.y * gridCellSize);
     }
 
-    public void SaveTravelPathToFile()
-    {
-        // Convert the path to a readable format
-        List<string> pathStrings = new List<string>();
-        foreach (Vector2Int pos in travelPath)
-        {
-            pathStrings.Add($"{pos.x},{pos.y}");
-        }
+    //public void SaveTravelPathToFile()
+    //{
+    //    // Convert the path to a readable format
+    //    List<string> pathStrings = new List<string>();
+     //   foreach (Vector2Int pos in travelPath)
+     //   {
+     //       pathStrings.Add($"{pos.x},{pos.y}");
+     //   }
 
         // Write to a file
-        File.WriteAllLines(filePath, pathStrings);
+     //   File.WriteAllLines(filePath, pathStrings);
         //Debug.Log($"Travel path saved to: {filePath}");
-    }
+    //}
 }

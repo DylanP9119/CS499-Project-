@@ -222,6 +222,7 @@ MonoBehaviour:
   cargoNightChance: 0.5
   patrolNightChance: 0.25
   pirateNightChance: 0.4
+  simulationSpeed: 20
 --- !u!114 &18849723
 MonoBehaviour:
   m_ObjectHideFlags: 0
