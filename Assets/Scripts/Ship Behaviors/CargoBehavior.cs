@@ -11,10 +11,13 @@ public class CargoBehavior : MonoBehaviour
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     public float gridCellSize = 1f; // Size of each grid cell
     public float movementDelay = 0.1f; // Time delay between movements
 
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -26,6 +29,7 @@ public class CargoBehavior : MonoBehaviour
     private float movementTimer;
     private List<Vector2Int> travelPath = new List<Vector2Int>();
     private string filePath;
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
@@ -41,6 +45,8 @@ public class CargoBehavior : MonoBehaviour
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
     public bool isCaptured = false;
 
     void Start()
@@ -48,6 +54,7 @@ public class CargoBehavior : MonoBehaviour
         timeControl = FindObjectOfType<TimeControl>();
         int startX = 0;
         int startY = Random.Range(0, gridSize.y);
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 >>>>>>> Stashed changes
@@ -86,6 +93,14 @@ public class CargoBehavior : MonoBehaviour
         travelPath.Add(currentGridPosition);
         filePath = Path.Combine(Application.persistentDataPath, "ShipTravelPath.txt");
 >>>>>>> Stashed changes
+=======
+        currentGridPosition = new Vector2Int(startX, startY);
+        int destinationX = gridSize.x;
+        destinationGridPosition = new Vector2Int(destinationX, startY);
+        transform.position = GridToWorld(currentGridPosition);
+        travelPath.Add(currentGridPosition);
+        filePath = Path.Combine(Application.persistentDataPath, "ShipTravelPath.txt");
+>>>>>>> Stashed changes
     }
 
     void Update()
@@ -93,9 +108,12 @@ public class CargoBehavior : MonoBehaviour
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         // If movement is active, move the ship step-by-step
         if (isMoving)
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -118,11 +136,15 @@ public class CargoBehavior : MonoBehaviour
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     public void StartMovement()
     {
         isMoving = true;
         Debug.Log("Movement started!");
     }
+=======
+    public void Step() { }
+>>>>>>> Stashed changes
 =======
     public void Step() { }
 >>>>>>> Stashed changes
@@ -144,6 +166,7 @@ public class CargoBehavior : MonoBehaviour
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             Debug.Log($"Ship moved to: {currentGridPosition}");
         }
         else
@@ -152,6 +175,16 @@ public class CargoBehavior : MonoBehaviour
             isMoving = false;
             SaveTravelPathToFile();
             Debug.Log($"Destination reached at: {destinationGridPosition}");
+=======
+            if (ReplayManager.Instance != null)
+            {
+                ReplayManager.Instance.RecordMovementEvent(ShipId, "Cargo", transform.position, transform.rotation, timeControl.GlobalTime);
+            }
+        }
+        else
+        {
+            SaveTravelPathToFile();
+>>>>>>> Stashed changes
 =======
             if (ReplayManager.Instance != null)
             {
@@ -208,7 +241,10 @@ public class CargoBehavior : MonoBehaviour
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         Debug.Log($"Travel path saved to: {filePath}");
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======

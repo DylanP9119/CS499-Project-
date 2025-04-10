@@ -4,6 +4,7 @@ using UnityEngine.UI;
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 using ReplayData;
 using System.IO;
 using Recorder; 
@@ -409,6 +410,62 @@ public class ReplayManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.S))
         {
 >>>>>>> Stashed changes
+=======
+using System.IO;
+using System.Linq;
+
+public class ReplayManager : MonoBehaviour
+{
+    public static ReplayManager Instance { get; private set; }
+
+    public Slider timelineSlider;
+    public Button playPauseButton;
+    public Text timeDisplay;
+    public ShipController shipController;
+    public string replayFileName = "S:\replay.json";
+    public GameObject replayBoxUI;
+
+    // List of all replay events (spawn and movement).
+    private List<ReplayEvent> recordedEvents = new List<ReplayEvent>();
+    private List<ReplayEvent> currentSessionEvents = new List<ReplayEvent>();
+    private float replayTime;
+    private bool replayPaused;
+    private float maxRecordedTime;
+
+    public bool ReplayModeActive { get; private set; }
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
+    void Start()
+    {
+        timelineSlider.onValueChanged.AddListener(UpdateReplayTime);
+        playPauseButton.onClick.AddListener(TogglePlayPause);
+        UIvisibility(false);
+    }
+
+    void Update()
+    {
+        HandleReplayInput();
+        
+        if (ReplayModeActive && !replayPaused)
+        {
+            // Advance replay time using unscaled deltaTime
+            replayTime += Time.unscaledDeltaTime;
+            replayTime = Mathf.Clamp(replayTime, 0, maxRecordedTime);
+            timelineSlider.value = replayTime;
+            UpdateDisplay();
+            RebuildShipsAtCurrentTime();
+        }
+    }
+
+    void HandleReplayInput()
+    {
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+>>>>>>> Stashed changes
             SaveReplayToFile();
         }
         
@@ -435,6 +492,7 @@ public class ReplayManager : MonoBehaviour
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         // Add to ReplayManager class
         private void HandleDeletedObjects(Record rec, int frameIndex)
 {
@@ -444,6 +502,9 @@ public class ReplayManager : MonoBehaviour
         deletedGO.SetActive(false);
     }
 }
+=======
+    }
+>>>>>>> Stashed changes
 =======
     }
 >>>>>>> Stashed changes
@@ -557,6 +618,7 @@ public void RecordMovementEvent(int shipId, string shipType, Vector3 position, Q
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                     //update slider value
                     timeLine.value = frameIndex;
 
@@ -652,6 +714,8 @@ public void RecordMovementEvent(int shipId, string shipType, Vector3 position, Q
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
                     var ship = Instantiate(prefab, evt.position, evt.rotation);
                     shipController.allShips.Add(ship);
                     activeShips[evt.shipId] = ship;
@@ -662,6 +726,9 @@ public void RecordMovementEvent(int shipId, string shipType, Vector3 position, Q
                     Destroy(ship.GetComponent<PatrolBehavior>());
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -679,6 +746,7 @@ public void RecordMovementEvent(int shipId, string shipType, Vector3 position, Q
     }
 
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
@@ -1474,6 +1542,8 @@ void HandleInstantiatedObjects(Record rec, int index)
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 
 GameObject GetPrefabForType(string shipType)
 {
@@ -1485,6 +1555,7 @@ GameObject GetPrefabForType(string shipType)
         default: return null;
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     }
 
 <<<<<<< Updated upstream
@@ -1542,6 +1613,8 @@ public struct ReplayEvent
 =======
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
     }
 }
 
@@ -1595,6 +1668,9 @@ public struct ReplayEvent
     }
 }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
