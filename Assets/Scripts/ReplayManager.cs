@@ -1,14 +1,19 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+<<<<<<< Updated upstream
 using ReplayData;
 using System.IO;
 using Recorder; 
 using System.Reflection; 
+=======
+using System.IO;
+using System.Linq;
+>>>>>>> Stashed changes
 
-namespace Replay
+public class ReplayManager : MonoBehaviour
 {
+<<<<<<< Updated upstream
     public class ReplayManager : MonoBehaviour
     {       
         private Camera mainCamera;
@@ -192,12 +197,39 @@ private GameObject GetPrefabByType(string shipType)
         public enum ReplayState { PAUSE, PLAYING, TRAVEL_BACK }
         //States
         ReplayState state = ReplayState.PAUSE;
+=======
+    public static ReplayManager Instance { get; private set; }
 
-        //Main system variables
-        [HideInInspector]
-        public List<Record> records = new List<Record>();
-        private bool isReplayMode = false;
+    public Slider timelineSlider;
+    public Button playPauseButton;
+    public Text timeDisplay;
+    public ShipController shipController;
+    public string replayFileName = "S:\replay.json";
+    public GameObject replayBoxUI;
 
+    // List of all replay events (spawn and movement).
+    private List<ReplayEvent> recordedEvents = new List<ReplayEvent>();
+    private List<ReplayEvent> currentSessionEvents = new List<ReplayEvent>();
+    private float replayTime;
+    private bool replayPaused;
+    private float maxRecordedTime;
+
+    public bool ReplayModeActive { get; private set; }
+
+    void Awake()
+    {
+        Instance = this;
+    }
+>>>>>>> Stashed changes
+
+    void Start()
+    {
+        timelineSlider.onValueChanged.AddListener(UpdateReplayTime);
+        playPauseButton.onClick.AddListener(TogglePlayPause);
+        UIvisibility(false);
+    }
+
+<<<<<<< Updated upstream
         [Header("Maximum frames recorded")]
         [SerializeField] private int recordMaxLength = 3600; // 60fps * 60seconds = 3600 frames 
         private int maximumLength = 0;
@@ -242,25 +274,51 @@ private GameObject GetPrefabByType(string shipType)
             //This is due to how the unity's internal animator recorder works, as it can only record up to 10000 frames, no more.
             //At 60fps the replay can reach up to 166 seconds.
             Application.targetFrameRate = 5;
-        }
-
-        private void Start()
+=======
+    void Update()
+    {
+        HandleReplayInput();
+        
+        if (ReplayModeActive && !replayPaused)
         {
-            recordTimer = Application.targetFrameRate * recordInterval;
+            // Advance replay time using unscaled deltaTime
+            replayTime += Time.unscaledDeltaTime;
+            replayTime = Mathf.Clamp(replayTime, 0, maxRecordedTime);
+            timelineSlider.value = replayTime;
+            UpdateDisplay();
+            RebuildShipsAtCurrentTime();
+>>>>>>> Stashed changes
+        }
+    }
 
-            if (interpolation)
+    void HandleReplayInput()
+    {
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            SaveReplayToFile();
+        }
+        
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LoadReplayFromFile();
+            // Enter replay mode using all recorded events.
+            StartReplay(useCurrentSession: false);
+        }
+        
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            if (!ReplayModeActive) 
             {
-                maximumLength = (int)(10000f / (Application.targetFrameRate * recordInterval));
-                if (recordMaxLength > maximumLength)
-                    recordMaxLength = maximumLength;
+                currentSessionEvents = new List<ReplayEvent>(recordedEvents);
+                // Start replay from the current simulation time.
+                StartReplay(useCurrentSession: true);
             }
             else
             {
-                if (recordMaxLength > 10000)
-                    recordMaxLength = 10000;
+                StopReplay();
             }
-
         }
+<<<<<<< Updated upstream
         // Add to ReplayManager class
         private void HandleDeletedObjects(Record rec, int frameIndex)
 {
@@ -270,15 +328,111 @@ private GameObject GetPrefabByType(string shipType)
         deletedGO.SetActive(false);
     }
 }
+=======
+    }
+>>>>>>> Stashed changes
 
-        //Update is called once per frame
-        void Update()
+    // Called by ShipController when a ship is spawned.
+    public void RecordShipSpawn(ReplayEvent evt)
+    {
+        recordedEvents.Add(evt);
+        if (evt.timestamp > maxRecordedTime) 
+            maxRecordedTime = evt.timestamp;
+    }
+
+public void RecordMovementEvent(int shipId, string shipType, Vector3 position, Quaternion rotation, float timestamp)
+{
+    recordedEvents.Add(new ReplayEvent(shipId, shipType, position, rotation, timestamp, false));
+    if (timestamp > maxRecordedTime) 
+        maxRecordedTime = timestamp;
+}
+
+    public void StartReplay(bool useCurrentSession)
+    {
+        ReplayModeActive = true;
+        UIvisibility(true);
+        // Pause simulation movement.
+        shipController.timeControl.ToggleMovement(true);
+        shipController.ClearAllShips();
+
+        if (useCurrentSession)
         {
-            if (isReplayMode)
+            recordedEvents = new List<ReplayEvent>(currentSessionEvents);
+        }
+        
+        maxRecordedTime = GetMaxTimestamp();
+        // Initialize replayTime to the current simulation (global) time.
+        replayTime = shipController.timeControl.GlobalTime;
+        timelineSlider.maxValue = maxRecordedTime;
+        timelineSlider.value = replayTime;
+        UpdateDisplay();
+        RebuildShipsAtCurrentTime();
+    }
+
+    public void StopReplay()
+    {
+        ReplayModeActive = false;
+        UIvisibility(false);
+        // Resume simulation movement.
+        shipController.timeControl.ToggleMovement(false);
+        shipController.ClearAllShips();
+        recordedEvents = new List<ReplayEvent>(currentSessionEvents);
+    }
+
+    public void SaveReplayToFile()
+    {
+        ReplayData data = new ReplayData { events = recordedEvents };
+        string json = JsonUtility.ToJson(data, true);
+        string path = Path.Combine(Application.persistentDataPath, replayFileName);
+        File.WriteAllText(path, json);
+        Debug.Log($"Replay saved to: {path}");
+    }
+
+    public void LoadReplayFromFile()
+    {
+        string path = Path.Combine(Application.persistentDataPath, replayFileName);
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+            ReplayData data = JsonUtility.FromJson<ReplayData>(json);
+            recordedEvents = data.events;
+            maxRecordedTime = GetMaxTimestamp();
+            Debug.Log($"Replay loaded from: {path}");
+        }
+        else
+        {
+            Debug.LogError("No saved replay file found!");
+        }
+    }
+
+    void UpdateReplayTime(float time)
+    {
+        replayTime = time;
+        RebuildShipsAtCurrentTime();
+        UpdateDisplay();
+    }
+
+    void TogglePlayPause()
+    {
+        replayPaused = !replayPaused;
+    }
+
+    // Rebuilds the current scene by grouping events per ship (using ShipId)
+    // and instantiating a ship at the last recorded position for each ship that has an event with timestamp ≤ replayTime.
+   void RebuildShipsAtCurrentTime()
+    {
+        shipController.ClearAllShips();
+        var activeShips = new Dictionary<int, GameObject>();
+
+        foreach (var evt in recordedEvents.Where(e => e.timestamp <= replayTime))
+        {
+            if (evt.isSpawnEvent)
             {
-                // Replay playing 
-                if (state == ReplayState.PLAYING && usingSlider == false)
+                // Create new ship instance
+                var prefab = GetPrefabForType(evt.shipType);
+                if (prefab != null)
                 {
+<<<<<<< Updated upstream
                     //update slider value
                     timeLine.value = frameIndex;
 
@@ -369,51 +523,29 @@ private GameObject GetPrefabByType(string shipType)
                 else if (state == ReplayState.TRAVEL_BACK)
                 {
                     TravelBack();
+=======
+                    var ship = Instantiate(prefab, evt.position, evt.rotation);
+                    shipController.allShips.Add(ship);
+                    activeShips[evt.shipId] = ship;
+                    
+                    // Disable movement scripts immediately
+                    Destroy(ship.GetComponent<PirateBehavior>());
+                    Destroy(ship.GetComponent<CargoBehavior>());
+                    Destroy(ship.GetComponent<PatrolBehavior>());
+>>>>>>> Stashed changes
                 }
             }
-            else //game is recording
+            else if (activeShips.TryGetValue(evt.shipId, out var ship))
             {
-                //Here you can put a condition to record whenever you want
-                //Record records 
-                if (interpolation)
-                {
-                    recordTimer++;
-
-                    for (int i = 0; i < records.Count; i++)
-                    {
-                        //Check if the deletion of the record is already out of the replay
-                        CheckDeletedObjects(records[i]);
-                        //update instantiation and deletion frames
-                        records[i].UpdateFramesNum();
-                        //Update recorded frames of animators, to know how many animator frames were recorded
-                        records[i].IncreaseRecordedAnimatorFrames();
-
-                        if (recordTimer >= Application.targetFrameRate * recordInterval)
-                            records[i].RecordFrame();
-                    }
-
-                    if (recordTimer >= Application.targetFrameRate * recordInterval)
-                        recordTimer = 0;
-                }
-                else
-                {
-                    for (int i = 0; i < records.Count; i++)
-                    {
-                        records[i].RecordFrame();
-
-                        //Check if the deletion of the record is already out of the replay
-                        CheckDeletedObjects(records[i]);
-                        //update instantiation and deletion frames
-                        records[i].UpdateFramesNum();
-                        //Update recorded frames of animators, to know how many animator frames were recorded
-                        records[i].IncreaseRecordedAnimatorFrames();
-                    }
-                }
+                // Update existing ship position
+                ship.transform.position = evt.position;
+                ship.transform.rotation = evt.rotation;
             }
         }
+    }
 
-        //-------------- FUNCTIONS TO ACTIVATE AND DEACTIVATE GAMEOBJECTS (FOR INSTANTIATION AND DELETION) ----------------//
 
+<<<<<<< Updated upstream
         //This function is responsible for activating and deactivating instantiated GO, dependenig on the current time of the replay 
 void HandleInstantiatedObjects(Record rec, int index)
 {
@@ -1200,7 +1332,69 @@ void HandleInstantiatedObjects(Record rec, int index)
             travelBackTime = false;
             isReplayMode = false;
         }
+=======
+>>>>>>> Stashed changes
 
+GameObject GetPrefabForType(string shipType)
+{
+    switch (shipType)
+    {
+        case "Cargo": return shipController.cargoPrefab;
+        case "Patrol": return shipController.patrolPrefab;
+        case "Pirate": return shipController.piratePrefab;
+        default: return null;
     }
 
+<<<<<<< Updated upstream
+=======
+    void UpdateDisplay()
+    {
+        timeDisplay.text = $"Time: {replayTime:0.0}s";
+        timelineSlider.value = replayTime;
+    }
+
+    float GetMaxTimestamp()
+    {
+        float max = 0;
+        foreach (var evt in recordedEvents)
+        {
+            if (evt.timestamp > max)
+                max = evt.timestamp;
+        }
+        return max;
+    }
+
+    public void UIvisibility(bool visible)
+    {
+        replayBoxUI.SetActive(visible);
+    }
+
+    [System.Serializable]
+    class ReplayData
+    {
+        public List<ReplayEvent> events;
+    }
+
+[System.Serializable]
+public struct ReplayEvent
+{
+    public int shipId;
+    public string shipType;
+    public Vector3 position;
+    public Quaternion rotation;
+    public float timestamp;
+    public bool isSpawnEvent; // True if this event is the spawn event
+
+    // Constructor for spawn events.
+    public ReplayEvent(int id, string type, Vector3 pos, Quaternion rot, float time, bool isSpawn)
+    {
+        shipId = id;
+        shipType = type;
+        position = pos;
+        rotation = rot;
+        timestamp = time;
+        isSpawnEvent = isSpawn;
+    }
+}
+>>>>>>> Stashed changes
 }

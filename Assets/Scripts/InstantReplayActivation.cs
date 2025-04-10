@@ -1,11 +1,11 @@
 using System.Collections;
 using UnityEngine;
-using Replay;
 
 namespace ReplayExampleScripts
 {
     public class InstantReplayActivation : MonoBehaviour
     {
+<<<<<<< Updated upstream
         public ReplayManager replay;
         
         void Update()
@@ -41,6 +41,11 @@ namespace ReplayExampleScripts
                 replay.EnterReplayMode();
             }
 
+=======
+        // Update is called once per frame
+        void Update()
+        {
+>>>>>>> Stashed changes
 
         }
 
