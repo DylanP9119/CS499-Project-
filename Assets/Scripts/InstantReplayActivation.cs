@@ -6,6 +6,7 @@ namespace ReplayExampleScripts
     public class InstantReplayActivation : MonoBehaviour
     {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         public ReplayManager replay;
         
         void Update()
@@ -41,6 +42,11 @@ namespace ReplayExampleScripts
                 replay.EnterReplayMode();
             }
 
+=======
+        // Update is called once per frame
+        void Update()
+        {
+>>>>>>> Stashed changes
 =======
         // Update is called once per frame
         void Update()

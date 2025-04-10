@@ -9,6 +9,7 @@ public class PirateBehavior : MonoBehaviour
     public Vector2Int destinationGridPosition;
     public Vector2Int gridSize = new Vector2Int(400, 100);
     public float gridCellSize = 1f; // Size of each grid cell
+<<<<<<< Updated upstream
     public float movementDelay = 0.1f; // Time delay between movements
 
     private float movementTimer;
@@ -35,12 +36,37 @@ public class PirateBehavior : MonoBehaviour
         travelPath.Add(currentGridPosition);
         filePath = Path.Combine(Application.persistentDataPath, "ShipTravelPath.txt");
         Debug.Log($"Path will be saved to: {filePath}");
+=======
+    public float movementDelay = 0.1f; // Delay between movement steps
+    private TimeControl timeControl;
+    private float movementTimer;
+    private List<Vector2Int> travelPath = new List<Vector2Int>(); // For replay (if needed)
+    private string filePath;
+    public bool hasCargo = false; // When true, let ShipInteractions handle movement
+
+    void Start()
+    {
+        timeControl = FindObjectOfType<TimeControl>();
+        int startX = Random.Range(0, gridSize.x);
+        int startY = 0;
+        currentGridPosition = new Vector2Int(startX, startY);
+        int destinationY = gridSize.y;
+        destinationGridPosition = new Vector2Int(startX, destinationY);
+        transform.position = GridToWorld(currentGridPosition);
+        travelPath.Add(currentGridPosition);
+        filePath = Path.Combine(Application.persistentDataPath, "ShipTravelPath.txt");
+>>>>>>> Stashed changes
     }
 
     void Update()
     {
+<<<<<<< Updated upstream
         // If movement is active, move the ship step-by-step
         if (isMoving)
+=======
+        if (hasCargo) return;
+        if (timeControl.ShouldMove())
+>>>>>>> Stashed changes
         {
             movementTimer += Time.deltaTime;
             if (movementTimer >= movementDelay)
@@ -51,10 +77,17 @@ public class PirateBehavior : MonoBehaviour
         }
     }
 
+<<<<<<< Updated upstream
     public void StartMovement()
     {
         isMoving = true;
         Debug.Log("Movement started!");
+=======
+    // This method may also be called via SendMessage("Step")
+    public void Step()
+    {
+        // Optionally, you can call MoveShipTowardsDestination() here if desired.
+>>>>>>> Stashed changes
     }
 
     public void MoveShipTowardsDestination()
@@ -65,6 +98,7 @@ public class PirateBehavior : MonoBehaviour
             currentGridPosition += direction;
             transform.position = GridToWorld(currentGridPosition);
             travelPath.Add(currentGridPosition);
+<<<<<<< Updated upstream
             Debug.Log($"Ship moved to: {currentGridPosition}");
         }
         else
@@ -73,6 +107,17 @@ public class PirateBehavior : MonoBehaviour
             isMoving = false;
             SaveTravelPathToFile();
             Debug.Log($"Destination reached at: {destinationGridPosition}");
+=======
+            // Record this movement event with the current global time.
+            if (ReplayManager.Instance != null)
+            {
+                ReplayManager.Instance.RecordMovementEvent(ShipId, "Pirate", transform.position, transform.rotation, timeControl.GlobalTime);
+            }
+        }
+        else
+        {
+            SaveTravelPathToFile();
+>>>>>>> Stashed changes
         }
     }
 
@@ -97,6 +142,9 @@ public class PirateBehavior : MonoBehaviour
             pathStrings.Add($"{pos.x},{pos.y}");
         }
         File.WriteAllLines(filePath, pathStrings);
+<<<<<<< Updated upstream
         Debug.Log($"Travel path saved to: {filePath}");
+=======
+>>>>>>> Stashed changes
     }
 }

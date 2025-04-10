@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 using ReplayData;
 using System.IO;
 using Recorder; 
@@ -295,6 +296,62 @@ private GameObject GetPrefabByType(string shipType)
     {
         if (Input.GetKeyDown(KeyCode.S))
         {
+=======
+using System.IO;
+using System.Linq;
+
+public class ReplayManager : MonoBehaviour
+{
+    public static ReplayManager Instance { get; private set; }
+
+    public Slider timelineSlider;
+    public Button playPauseButton;
+    public Text timeDisplay;
+    public ShipController shipController;
+    public string replayFileName = "S:\replay.json";
+    public GameObject replayBoxUI;
+
+    // List of all replay events (spawn and movement).
+    private List<ReplayEvent> recordedEvents = new List<ReplayEvent>();
+    private List<ReplayEvent> currentSessionEvents = new List<ReplayEvent>();
+    private float replayTime;
+    private bool replayPaused;
+    private float maxRecordedTime;
+
+    public bool ReplayModeActive { get; private set; }
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
+    void Start()
+    {
+        timelineSlider.onValueChanged.AddListener(UpdateReplayTime);
+        playPauseButton.onClick.AddListener(TogglePlayPause);
+        UIvisibility(false);
+    }
+
+    void Update()
+    {
+        HandleReplayInput();
+        
+        if (ReplayModeActive && !replayPaused)
+        {
+            // Advance replay time using unscaled deltaTime
+            replayTime += Time.unscaledDeltaTime;
+            replayTime = Mathf.Clamp(replayTime, 0, maxRecordedTime);
+            timelineSlider.value = replayTime;
+            UpdateDisplay();
+            RebuildShipsAtCurrentTime();
+        }
+    }
+
+    void HandleReplayInput()
+    {
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+>>>>>>> Stashed changes
             SaveReplayToFile();
         }
         
@@ -319,6 +376,7 @@ private GameObject GetPrefabByType(string shipType)
             }
         }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         // Add to ReplayManager class
         private void HandleDeletedObjects(Record rec, int frameIndex)
 {
@@ -328,6 +386,9 @@ private GameObject GetPrefabByType(string shipType)
         deletedGO.SetActive(false);
     }
 }
+=======
+    }
+>>>>>>> Stashed changes
 =======
     }
 >>>>>>> Stashed changes
@@ -433,6 +494,7 @@ public void RecordMovementEvent(int shipId, string shipType, Vector3 position, Q
                 if (prefab != null)
                 {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                     //update slider value
                     timeLine.value = frameIndex;
 
@@ -524,6 +586,8 @@ public void RecordMovementEvent(int shipId, string shipType, Vector3 position, Q
                 {
                     TravelBack();
 =======
+=======
+>>>>>>> Stashed changes
                     var ship = Instantiate(prefab, evt.position, evt.rotation);
                     shipController.allShips.Add(ship);
                     activeShips[evt.shipId] = ship;
@@ -532,6 +596,9 @@ public void RecordMovementEvent(int shipId, string shipType, Vector3 position, Q
                     Destroy(ship.GetComponent<PirateBehavior>());
                     Destroy(ship.GetComponent<CargoBehavior>());
                     Destroy(ship.GetComponent<PatrolBehavior>());
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
                 }
             }
@@ -545,6 +612,7 @@ public void RecordMovementEvent(int shipId, string shipType, Vector3 position, Q
     }
 
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
         //This function is responsible for activating and deactivating instantiated GO, dependenig on the current time of the replay 
 void HandleInstantiatedObjects(Record rec, int index)
@@ -1334,6 +1402,8 @@ void HandleInstantiatedObjects(Record rec, int index)
         }
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 
 GameObject GetPrefabForType(string shipType)
 {
@@ -1343,10 +1413,65 @@ GameObject GetPrefabForType(string shipType)
         case "Patrol": return shipController.patrolPrefab;
         case "Pirate": return shipController.piratePrefab;
         default: return null;
+<<<<<<< Updated upstream
     }
 
 <<<<<<< Updated upstream
 =======
+    void UpdateDisplay()
+    {
+        timeDisplay.text = $"Time: {replayTime:0.0}s";
+        timelineSlider.value = replayTime;
+    }
+
+    float GetMaxTimestamp()
+    {
+        float max = 0;
+        foreach (var evt in recordedEvents)
+        {
+            if (evt.timestamp > max)
+                max = evt.timestamp;
+        }
+        return max;
+    }
+
+    public void UIvisibility(bool visible)
+    {
+        replayBoxUI.SetActive(visible);
+    }
+
+    [System.Serializable]
+    class ReplayData
+    {
+        public List<ReplayEvent> events;
+    }
+
+[System.Serializable]
+public struct ReplayEvent
+{
+    public int shipId;
+    public string shipType;
+    public Vector3 position;
+    public Quaternion rotation;
+    public float timestamp;
+    public bool isSpawnEvent; // True if this event is the spawn event
+
+    // Constructor for spawn events.
+    public ReplayEvent(int id, string type, Vector3 pos, Quaternion rot, float time, bool isSpawn)
+    {
+        shipId = id;
+        shipType = type;
+        position = pos;
+        rotation = rot;
+        timestamp = time;
+        isSpawnEvent = isSpawn;
+    }
+}
+>>>>>>> Stashed changes
+=======
+    }
+}
+
     void UpdateDisplay()
     {
         timeDisplay.text = $"Time: {replayTime:0.0}s";

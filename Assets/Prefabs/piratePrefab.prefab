@@ -117,7 +117,30 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream:Assets/Prefabs/piratePrefab.prefab
   m_GameObject: {fileID: 6350901707386338069}
+=======
+  m_GameObject: {fileID: 2945873473625126443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f0ae65e82f70f340acde079a2cd1256, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShipId: 0
+  currentGridPosition: {x: 0, y: 0}
+  destinationGridPosition: {x: 0, y: 0}
+  gridSize: {x: 400, y: 100}
+  gridCellSize: 1
+  movementDelay: 0.1
+  isCaptured: 0
+--- !u!114 &-9032437966441476955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2945873473625126443}
+>>>>>>> Stashed changes:Assets/Ship Prefabs/Cargo.prefab
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8cc5d3756a1bb304eae59aaeb616a4c1, type: 3}
