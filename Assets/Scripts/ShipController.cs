@@ -2,9 +2,12 @@ using System.Collections.Generic;
 using UnityEngine;
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 using Recorder; 
 using ReplayData;
 using Replay;
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -27,6 +30,7 @@ public class ShipController : MonoBehaviour
     public float pirateSpawnChance = 0.40f;
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
     float moveTimer = 0.0f;
     private TimeControl isPaused;
@@ -44,6 +48,12 @@ public class ShipController : MonoBehaviour
     public float pirateNightChance = 0.40f;
 
 >>>>>>> Stashed changes
+=======
+    public float cargoNightChance = 0.50f;
+    public float patrolNightChance = 0.25f;
+    public float pirateNightChance = 0.40f;
+
+>>>>>>> Stashed changes
     public TimeControl timeControl;
     private int cargoCounter = 1;
     private int patrolCounter = 1;
@@ -51,6 +61,9 @@ public class ShipController : MonoBehaviour
     private Vector2Int gridSize = new Vector2Int(400, 100);
     public List<GameObject> allShips = new List<GameObject>();
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -64,6 +77,9 @@ public class ShipController : MonoBehaviour
 =======
             replay = GameObject.Find("ReplayManager").GetComponent<ReplayManager>();
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -73,7 +89,12 @@ public class ShipController : MonoBehaviour
     {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         if(isPaused.ShouldMove())
+=======
+        // Only run normal simulation when not in replay mode.
+        if (timeControl.ShouldMove() && !replay.ReplayModeActive)
+>>>>>>> Stashed changes
 =======
         // Only run normal simulation when not in replay mode.
         if (timeControl.ShouldMove() && !replay.ReplayModeActive)
@@ -87,6 +108,7 @@ public class ShipController : MonoBehaviour
             // Tell each ship to perform its movement step.
             foreach (GameObject ship in allShips)
             {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
                 return;
@@ -104,6 +126,10 @@ public class ShipController : MonoBehaviour
                 if (ship != null && !replay.ReplayModeActive)
                     ship.SendMessage("Step", SendMessageOptions.DontRequireReceiver);
 >>>>>>> Stashed changes
+=======
+                if (ship != null && !replay.ReplayModeActive)
+                    ship.SendMessage("Step", SendMessageOptions.DontRequireReceiver);
+>>>>>>> Stashed changes
             }
             // (Optional) Check for interactions here.
             timeControl.ResetTimer();
@@ -112,6 +138,7 @@ public class ShipController : MonoBehaviour
 
     void SpawnShip()
     {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
         // Cargo Spawn
@@ -170,6 +197,18 @@ public class ShipController : MonoBehaviour
         }
         else
         {
+=======
+        HashSet<Vector3> occupiedPositions = new HashSet<Vector3>();
+
+        if (!isNight)
+        {
+            if (Random.value < cargoSpawnChance) SpawnShipType("Cargo", cargoPrefab, ref cargoCounter, occupiedPositions);
+            if (Random.value < patrolSpawnChance) SpawnShipType("Patrol", patrolPrefab, ref patrolCounter, occupiedPositions);
+            if (Random.value < pirateSpawnChance) SpawnShipType("Pirate", piratePrefab, ref pirateCounter, occupiedPositions);
+        }
+        else
+        {
+>>>>>>> Stashed changes
 =======
         HashSet<Vector3> occupiedPositions = new HashSet<Vector3>();
 
@@ -246,6 +285,9 @@ public class ShipController : MonoBehaviour
             }
         }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -256,12 +298,15 @@ public class ShipController : MonoBehaviour
     {
         return shipType switch
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         {
             "Cargo" => Quaternion.Euler(0, 90, 0),
             "Patrol" => Quaternion.Euler(0, -90, 0),
             _ => Quaternion.Euler(0, 0, 0),
         };
 =======
+=======
+>>>>>>> Stashed changes
         {
             "Cargo" => Quaternion.Euler(0, 90, 0),
             "Patrol" => Quaternion.Euler(0, -90, 0),
@@ -275,6 +320,7 @@ public class ShipController : MonoBehaviour
         {
             if (ship != null)
                 Destroy(ship);
+<<<<<<< Updated upstream
         }
         allShips.Clear();
 >>>>>>> Stashed changes
@@ -299,10 +345,15 @@ public class ShipController : MonoBehaviour
         {
             if (ship != null)
                 Destroy(ship);
+=======
+>>>>>>> Stashed changes
         }
         allShips.Clear();
     }
 }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
