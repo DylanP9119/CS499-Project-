@@ -1,12 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-        
-        if (ReplayModeActive && !replayPaused)
-        {
-            // Advance replay time using unscaled deltaTime
-            replayTime += Time.unscaledDeltaTime;
-            replayTime = Mathf.Clamp(replayTime, 0, maxRecordedTime);
 using System.IO;
 using System.Linq;
 
