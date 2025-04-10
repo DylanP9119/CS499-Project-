@@ -1,6 +1,10 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Materials.meta
 guid: d5cbc0be6b753a740b86e736659d679d
 folderAsset: yes
+========
+guid: 04ce24980bbed0d4490e3ef818215126
+>>>>>>>> Jacob:Assets/Scenes/creditsMenu.unity.meta
 DefaultImporter:
   externalObjects: {}
   userData: 
