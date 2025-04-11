@@ -14,6 +14,7 @@ public class PatrolBehavior : MonoBehaviour
     private List<Vector2Int> travelPath = new List<Vector2Int>(); // To store the path for replay
     private string filePath;
     //private bool isMoving = false; // Flag to determine if the ship should move
+    public bool justSpawned = true;
 
     void Start()
     {
@@ -45,6 +46,12 @@ public class PatrolBehavior : MonoBehaviour
 
     public void Step()
     {
+
+        if (justSpawned)
+        {
+            justSpawned = false;
+            return;
+        }
 
         if (currentGridPosition == destinationGridPosition)
         {

@@ -63,7 +63,7 @@ public class ShipController : MonoBehaviour
                 {
                     if (ship != null)
                     {
-                        Debug.Log($"[ShipController] Step() called on: {ship.name}");
+                        //Debug.Log($"[ShipController] Step() called on: {ship.name}");
                         ship.SendMessage("Step", SendMessageOptions.DontRequireReceiver);
                     }
                 }
@@ -85,6 +85,10 @@ public class ShipController : MonoBehaviour
             {
                 GameObject cargo = Instantiate(cargoPrefab, spawnPos, GetSpawnRotation("Cargo"));
                 cargo.name = $"Cargo({cargoCounter++})";
+                if (allShips.Contains(cargo))
+                {
+                    Debug.LogWarning($"[DUPLICATE] Cargo {cargo.name} already in allShips!");
+                }
                 allShips.Add(cargo);
                 //Debug.Log($"[SPAWN] {cargo.name} spawned at {spawnPos}");
 
