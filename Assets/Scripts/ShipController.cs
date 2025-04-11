@@ -44,6 +44,15 @@ public class ShipController : MonoBehaviour
         isPaused = FindFirstObjectByType<TimeControl>();
         if (replay == null)
             replay = GameObject.Find("ReplayManager").GetComponent<ReplayManager>();
+        if (UIControllerScript.Instance)
+        {
+            cargoSpawnChance = UIControllerScript.Instance.cargoDayPercent;
+            cargoNightChance = UIControllerScript.Instance.cargoNightPercent;
+            patrolSpawnChance = UIControllerScript.Instance.patrolDayPercent;
+            patrolNightChance = UIControllerScript.Instance.patrolNightPercent;
+            pirateSpawnChance = UIControllerScript.Instance.pirateDayPercent;
+            pirateNightChance = UIControllerScript.Instance.pirateNightPercent;
+        }
     }
 
     void Update()
