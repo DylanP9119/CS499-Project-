@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 1872301572966215893}
   - component: {fileID: 75834258265387584}
   - component: {fileID: 2376450614015173597}
-  - component: {fileID: 6794880445735236619}
   m_Layer: 0
   m_Name: Pirate
   m_TagString: Pirate
@@ -128,6 +127,8 @@ MonoBehaviour:
   gridSize: {x: 400, y: 100}
   gridCellSize: 1
   movementDelay: 0.1
+  hasCargo: 0
+  justSpawned: 1
 --- !u!114 &2376450614015173597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -145,16 +146,3 @@ MonoBehaviour:
   - 0.5
   - 0.1
   - 0.05
---- !u!114 &6794880445735236619
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2945873473625126443}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70ea96e0d658dd348a49960ea33ec98e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isNight: 0

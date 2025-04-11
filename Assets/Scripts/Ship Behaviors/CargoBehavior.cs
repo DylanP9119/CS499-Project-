@@ -15,6 +15,9 @@ public class CargoBehavior : MonoBehaviour
     private string filePath;
     //private bool isMoving = false; // Flag to determine if the ship should move
     public bool isCaptured = false;
+    public bool justSpawned = true;
+    public bool isEvadingThisStep = false;
+
 
     void Start()
     {
@@ -45,12 +48,22 @@ public class CargoBehavior : MonoBehaviour
 
     public void Step()
     {
+
+        if (justSpawned)
+        {
+            justSpawned = false;
+            return;
+        }
+
         // Stop all logic if captured
         if (isCaptured)
         {
             Debug.Log($"[BLOCKED] {name} is still captured. No movement.");
             return;
         }
+
+        isEvadingThisStep = false; // clear for next time step
+
         currentGridPosition += Vector2Int.right;
         transform.position = GridToWorld(currentGridPosition);
     }

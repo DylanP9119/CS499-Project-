@@ -15,6 +15,7 @@ public class PirateBehavior : MonoBehaviour
     private string filePath;
     //private bool isMoving = false; // Flag to determine if the ship should move
     public bool hasCargo = false; // Determines whether a cargo ship has been captured for reverse direction
+    public bool justSpawned = true;
 
     void Start()
     {
@@ -45,6 +46,13 @@ public class PirateBehavior : MonoBehaviour
 
     public void Step()
     {
+
+        if (justSpawned)
+        {
+            justSpawned = false;
+            return;
+        }
+
         // If this pirate has captured cargo, don't move on its own - let ShipInteractions handle it
         if (hasCargo) return;
 

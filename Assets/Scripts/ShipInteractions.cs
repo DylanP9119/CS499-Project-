@@ -11,11 +11,20 @@ public class ShipInteractions : MonoBehaviour
 
     void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Debug.LogWarning("[ShipInteractions] Duplicate detected, destroying extra instance.");
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
+        Debug.Log($"[ShipInteractions] Awake called on frame {Time.frameCount}");
     }
 
     public void CheckForInteractions(List<GameObject> allShips)
     {
+
         List<GameObject> piratesToRemove = new();
         List<GameObject> shipsToRemove = new();
 
@@ -52,9 +61,15 @@ public class ShipInteractions : MonoBehaviour
                         HandleRescue(ship, otherShip); // captured cargo rescued by patrol NO BUG
                     }
                 }
-                else if (ship.CompareTag("Cargo") && otherShip.CompareTag("Pirate") && IsWithinRange(shipPos, otherShip.transform.position, 4))
+                else if (ship.CompareTag("Cargo") && otherShip.CompareTag("Pirate"))
                 {
-                    HandleEvasion(ship, otherShip); //NO BUG 
+                    bool inOuterRange = IsWithinRange(shipPos, otherShip.transform.position, 4);
+                    bool inInnerRange = IsWithinRange(shipPos, otherShip.transform.position, 3);
+
+                    if (inOuterRange && !inInnerRange)
+                    {
+                        HandleEvasion(ship, otherShip);
+                    }
                 }
             }
         }
@@ -211,55 +226,105 @@ public class ShipInteractions : MonoBehaviour
 
     private void HandleRescue(GameObject capturedCargo, GameObject patrol)
     {
-        Debug.Log($"[RESCUE FUNC] Called with {capturedCargo?.name}, {patrol?.name}");
+        if (patrol == null) return;
 
-        if (capturedCargo == null || patrol == null) 
+        // Look through all captured cargo
+        List<GameObject> toRescue = new();
+
+        foreach (var pair in pirateToCapturedCargo)
         {
-            Debug.LogError("[RESCUE FUNC] Either cargo or patrol is null.");
-            return;
+            GameObject pirate = pair.Key;
+            GameObject cargoCandidate = pair.Value; // renamed here
+
+            if (cargoCandidate == null || pirate == null) continue;
+
+            Vector3 patrolPos = patrol.transform.position;
+            Vector3 cargoPos = cargoCandidate.transform.position;
+
+            if (IsWithinRange(patrolPos, cargoPos, 3)) // 3x3 rescue rule
+            {
+                toRescue.Add(cargoCandidate); // this is where it's added
+            }
         }
 
-        GameObject capturingPirate = FindPirateNear(capturedCargo);
-        if (capturingPirate != null)
+        // Actually rescue the captured cargos
+        foreach (GameObject cargoToRescue in toRescue)
         {
-            pirateToCapturedCargo.Remove(capturingPirate);
-            Destroy(capturingPirate);
-        }
+            GameObject capturingPirate = null;
 
-       CargoBehavior cargoBehavior = capturedCargo.GetComponent<CargoBehavior>();
-        if (cargoBehavior == null) //  cargoBehavior != null && cargoBehavior.isCaptured != false
-        {
-            //cargoBehavior.isCaptured = false;
-            Debug.LogError($"[RESCUE FUNC] {capturedCargo.name} has NO CargoBehavior component!");
-            return;
-        }
-        Debug.Log($"[RESCUE] {capturedCargo.name} before reset: isCaptured = {cargoBehavior.isCaptured}");
-        cargoBehavior.isCaptured = false;
-        Debug.Log($"[RESCUE] {capturedCargo.name} after reset: isCaptured = {cargoBehavior.isCaptured}");
+            foreach (var pair in pirateToCapturedCargo)
+            {
+                if (pair.Value == cargoToRescue) // this is where the cargo match is checked
+                {
+                    capturingPirate = pair.Key;
+                    break;
+                }
+            }
 
-        capturedCargo.tag = "Cargo"; // Optional safety
+            if (capturingPirate != null)
+            {
+                pirateToCapturedCargo.Remove(capturingPirate);
+                Destroy(capturingPirate);
+            }
+
+            var cargoBehavior = cargoToRescue.GetComponent<CargoBehavior>();
+            if (cargoBehavior != null)
+            {
+                cargoBehavior.isCaptured = false;
+                capturedCargo.tag = "Cargo";
+            }
+
+            Debug.Log($"[RESCUE] {capturedCargo.name} was rescued by {patrol.name} and will move next step.");
+        }
     }
 
     private void HandleEvasion(GameObject cargo, GameObject pirate)
     {
-        //if (cargo.CompareTag("Captured")) return;
+        Debug.Log($"[Evasion Dictionary Count] {cargoEvadedPirates.Count} cargos tracked so far");
 
+        CargoBehavior cargoBehavior = cargo.GetComponent<CargoBehavior>();
+        if (cargoBehavior == null) return;
+
+        Debug.Log($"[CHECK] HandleEvasion called for Cargo: {cargo.name} (ID: {cargo.GetInstanceID()}) | Pirate: {pirate.name} (ID: {pirate.GetInstanceID()})");
+        Debug.Log($"[CHECK] isEvadingThisStep: {cargoBehavior.isEvadingThisStep}");
+
+
+        // Prevent duplicate evasion triggers within the same step
+        if (cargoBehavior.isEvadingThisStep) return;
+
+        // Set up tracking if needed
         if (!cargoEvadedPirates.ContainsKey(cargo))
         {
+            Debug.Log($"[DEBUG] No evasion history for {cargo.name}, creating new entry.");
             cargoEvadedPirates[cargo] = new HashSet<GameObject>();
         }
 
-        if (cargoEvadedPirates[cargo].Contains(pirate)) return;
+        // Already evaded this pirate
+        if (cargoEvadedPirates[cargo].Contains(pirate))
+        {
+            Debug.LogWarning($"[BLOCK] {cargo.name} already evaded {pirate.name}. Skipping.");
+            return;
+        }
 
+        // Prevent duplicate evasion triggers within the same step
+        if (cargoBehavior.isEvadingThisStep)
+        {
+            Debug.LogWarning($"[BLOCK] {cargo.name} is already evading this step. Skipping.");
+            return;
+        }
+
+        // Debug
+        Debug.LogWarning($"[TRIGGER] {cargo.name} (ID: {cargo.GetInstanceID()}) evading {pirate.name} (ID: {pirate.GetInstanceID()})");
+
+        // Record the evasion
         cargoEvadedPirates[cargo].Add(pirate);
 
-        CargoBehavior cargoBehavior = cargo.GetComponent<CargoBehavior>();
-        if (cargoBehavior != null)
-        {
-            cargoBehavior.currentGridPosition += new Vector2Int(1, 1);
-            cargo.transform.position = cargoBehavior.GridToWorld(cargoBehavior.currentGridPosition);
-            Debug.Log($"{cargo.name} evaded {pirate.name}!");
-        }
+        // Perform the evasion
+        cargoBehavior.currentGridPosition += new Vector2Int(1, 1);
+        cargo.transform.position = cargoBehavior.GridToWorld(cargoBehavior.currentGridPosition);
+        cargoBehavior.isEvadingThisStep = true;
+
+        Debug.Log($"{cargo.name} evaded {pirate.name}!");
     }
 
     private GameObject FindPirateNear(GameObject capturedCargo)
