@@ -6250,12 +6250,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainMenu: mainMenu
-  startSim: simulationRun
+  startSim: MainScene
   nightCaptureButton: {fileID: 5849048168602493889, guid: 9739a0ac66c6318419b543987e8ea005, type: 3}
   buttonText: {fileID: 434989658}
   nightCaptureEnabled: 0
   beginButton: {fileID: 0}
   canStart: 0
+  cargoDayPercent: -1
+  cargoNightPercent: -1
+  pirateDayPercent: -1
+  pirateNightPercent: -1
+  patrolDayPercent: -1
+  patrolNightPercent: -1
 --- !u!4 &1135158724
 Transform:
   m_ObjectHideFlags: 0

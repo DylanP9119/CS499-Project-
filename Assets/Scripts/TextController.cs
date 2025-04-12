@@ -39,7 +39,7 @@ public class TextController : MonoBehaviour
     private int cargoFailedEvasionCount = 0;
 
     void Start() {
-        clockText.text = "Cargos entered: " + clockTime;
+        //clockText.text = "Cargos entered: " + clockTime;
 
         cargosEntered.text = "Cargos entered: " + cargoEnterCount;
         cargosExited.text = "Cargos exited: " + cargoExitCount;
@@ -61,7 +61,7 @@ public class TextController : MonoBehaviour
         //Clock update here
     }
 
-    void UpdateShipEnter(string shipType) {
+    public void UpdateShipEnter(string shipType) {
         if (shipType == "cargo") {
             cargoEnterCount++;
             cargosEntered.text = "Cargos entered: " + cargoEnterCount;
@@ -79,7 +79,7 @@ public class TextController : MonoBehaviour
         }
     }
 
-    void UpdateShipExit(string shipType) {
+    public void UpdateShipExit(string shipType) {
         if (shipType == "cargo") {
             cargoExitCount++;
             cargosExited.text = "Cargos exited: " + cargoExitCount;
@@ -97,7 +97,7 @@ public class TextController : MonoBehaviour
         }
     }
 
-    void UpdateEvasion(bool attemptedEvasion, bool successfulEvasion) {
+    public void UpdateEvasion(bool attemptedEvasion, bool successfulEvasion) {
         if (!attemptedEvasion) {
             Debug.Log("No evasion.");
         }
@@ -111,12 +111,12 @@ public class TextController : MonoBehaviour
         }
     }
 
-    void PirateDestroyed() {
+    public void PirateDestroyed() {
         pirateDestroyCount++;
         piratesDestroyed.text = "Pirates destroyed: " + pirateDestroyCount;
     }
 
-    void UpdateCaptures(bool isCaptured) {
+    public void UpdateCaptures(bool isCaptured) {
         if (isCaptured) {
             cargoCaptureCount++;
             cargosCaptured.text = "Cargos captured: " + cargoCaptureCount;
