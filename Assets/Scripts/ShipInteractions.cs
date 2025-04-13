@@ -15,13 +15,13 @@ public class ShipInteractions : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            Debug.LogWarning("[ShipInteractions] Duplicate detected, destroying extra instance.");
+            //Debug.LogWarning("[ShipInteractions] Duplicate detected, destroying extra instance.");
             Destroy(gameObject);
             return;
         }
 
         Instance = this;
-        Debug.Log($"[ShipInteractions] Awake called on frame {Time.frameCount}");
+        //Debug.Log($"[ShipInteractions] Awake called on frame {Time.frameCount}");
     }
 
     public void CheckForInteractions(List<GameObject> allShips)
@@ -34,10 +34,12 @@ public class ShipInteractions : MonoBehaviour
 
         foreach (GameObject ship in allShips)
         {
+            if (ship == null || !ship.activeInHierarchy) continue;
             Vector3 shipPos = ship.transform.position;
 
             foreach (GameObject otherShip in allShips)
             {
+                if (otherShip == null || !otherShip.activeInHierarchy) continue;
                 if (ship == otherShip) continue;
 
                 Vector3 otherPos = otherShip.transform.position;
@@ -59,8 +61,10 @@ public class ShipInteractions : MonoBehaviour
                     CargoBehavior cargoBehavior = otherShip.GetComponent<CargoBehavior>();
                     if (cargoBehavior != null && cargoBehavior.isCaptured && IsWithinRange(shipPos, otherPos, 3))
                     {
-                        Debug.Log($"[TRIGGER] {ship.name} triggered rescue of {otherShip.name}");
-                        HandleRescue(ship, otherShip); // captured cargo rescued by patrol NO BUG
+                        //Debug.Log($"[TRIGGER] {ship.name} triggered rescue of {otherShip.name}");
+                        //Debug.LogWarning($"[DEBUG] Checking interaction: {ship.name} ({ship.tag}) -> {otherShip.name} ({otherShip.tag})");
+
+                        HandleRescue(ship); // captured cargo rescued by patrol NO BUG
                     }
                 }
                 else if (ship.CompareTag("Cargo") && otherShip.CompareTag("Pirate"))
@@ -110,7 +114,7 @@ public class ShipInteractions : MonoBehaviour
                 capturedCargo.transform.position = pirateShip.transform.position;
             }
 
-            //Debug.Log($"[Captured Move] {capturedCargo.name} & {pirateShip.name} moved to {pirateShip.transform.position}");
+            Debug.Log($"[Captured Move] {capturedCargo.name} & {pirateShip.name} moved to {pirateShip.transform.position}");
 
             if (pirateShip.transform.position.z <= 0)
             {
@@ -146,7 +150,7 @@ public class ShipInteractions : MonoBehaviour
 
             if (ship.CompareTag("Cargo") && pos.x >= 399)
             {
-                Debug.Log($"[Exit] {ship.name} reached the right edge and was removed.");
+                //Debug.Log($"[Exit] {ship.name} reached the right edge and was removed.");
                 shipsToRemove.Add(ship);
                 textController.UpdateShipExit("cargo");
             }
@@ -158,7 +162,7 @@ public class ShipInteractions : MonoBehaviour
             }
             else if (ship.CompareTag("Pirate") && pos.z >= 99 && !pirateToCapturedCargo.ContainsKey(ship))
             {
-                Debug.Log($"[Exit] {ship.name} reached the top edge and was removed.");
+                //Debug.Log($"[Exit] {ship.name} reached the top edge and was removed.");
                 shipsToRemove.Add(ship);
                 textController.UpdateShipExit("pirate");
             }
@@ -177,7 +181,7 @@ public class ShipInteractions : MonoBehaviour
     {
         if (pirate == null || patrol == null) return;
     
-        Debug.Log($"[DEFEAT] {pirate.name} was defeated by {patrol.name}");
+        //Debug.Log($"[DEFEAT] {pirate.name} was defeated by {patrol.name}");
     
         if (pirateToCapturedCargo.TryGetValue(pirate, out GameObject cargo))
         {
@@ -191,34 +195,42 @@ public class ShipInteractions : MonoBehaviour
         }
         textController.PirateDestroyed();
         Destroy(pirate);
+        Debug.LogWarning($"[CLEANUP] {pirate.name} destroyed. Removing from pirateToCapturedCargo.");
+
     }
 
     // Pirate captures Cargo
     private void HandleCapture(GameObject pirate, GameObject cargo)
     {
-        Debug.Log($"{pirate.name} captured {cargo.name}");
-
+        // Make sure the cargo isn't already captured
         if (pirateToCapturedCargo.ContainsValue(cargo))
         {
-            Debug.LogWarning($"{cargo.name} is already captured by another pirate.");
+            Debug.LogWarning($"[CAPTURE BLOCKED] {cargo.name} is already captured. Skipping.");
             return;
         }
 
+        // Make sure the pirate isn't already escorting someone
         if (pirateToCapturedCargo.ContainsKey(pirate))
         {
-            Debug.LogWarning($"{pirate.name} is already escorting a cargo!");
+            Debug.LogWarning($"[CAPTURE BLOCKED] {pirate.name} is already escorting a cargo. Skipping.");
             return;
         }
 
-        //cargo.tag = "Captured";
-
+        // Double-check the cargo's internal state too (optional safety net)
         CargoBehavior cargoBehavior = cargo.GetComponent<CargoBehavior>();
+        if (cargoBehavior != null && cargoBehavior.isCaptured)
+        {
+            Debug.LogWarning($"[CAPTURE BLOCKED] {cargo.name} already has isCaptured = true. Skipping.");
+            return;
+        }
+
+        // All checks passed — capture is valid. Now we mark everything.
         if (cargoBehavior != null)
         {
             cargoBehavior.isCaptured = true;
         }
 
-        pirate.transform.position = cargo.transform.position;
+        pirateToCapturedCargo[pirate] = cargo;
 
         PirateBehavior pirateBehavior = pirate.GetComponent<PirateBehavior>();
         if (pirateBehavior != null)
@@ -226,11 +238,14 @@ public class ShipInteractions : MonoBehaviour
             pirateBehavior.hasCargo = true;
         }
 
+        pirate.transform.position = cargo.transform.position;
+
+        Debug.LogWarning($"[CAPTURE] {pirate.name} captured {cargo.name} (isCaptured: {cargoBehavior?.isCaptured})");
+
         textController.UpdateCaptures(true);
-        pirateToCapturedCargo[pirate] = cargo;
     }
 
-    private void HandleRescue(GameObject capturedCargo, GameObject patrol)
+    private void HandleRescue(GameObject patrol)
     {
         if (patrol == null) return;
 
@@ -270,17 +285,22 @@ public class ShipInteractions : MonoBehaviour
             if (capturingPirate != null)
             {
                 pirateToCapturedCargo.Remove(capturingPirate);
+                capturingPirate.SetActive(false);
                 Destroy(capturingPirate);
+                Debug.LogWarning($"[CLEANUP] {capturingPirate.name} destroyed. Removing from pirateToCapturedCargo.");
+
             }
 
             var cargoBehavior = cargoToRescue.GetComponent<CargoBehavior>();
             if (cargoBehavior != null)
             {
                 cargoBehavior.isCaptured = false;
-                capturedCargo.tag = "Cargo";
+                Debug.LogWarning($"[POST-RESCUE STATE] {cargoToRescue.name} — isCaptured: {cargoBehavior.isCaptured}");
+                //capturedCargo.tag = "Cargo";
+                cargoToRescue.tag = "Cargo";
             }
 
-            Debug.Log($"[RESCUE] {capturedCargo.name} was rescued by {patrol.name} and will move next step.");
+            Debug.LogWarning($"[RESCUE TRIGGERED] {cargoToRescue.name} rescued by {patrol.name}. isCaptured was true and is now reset.");
         }
 
         textController.UpdateCaptures(false);
@@ -288,13 +308,13 @@ public class ShipInteractions : MonoBehaviour
 
     private void HandleEvasion(GameObject cargo, GameObject pirate)
     {
-        Debug.Log($"[Evasion Dictionary Count] {cargoEvadedPirates.Count} cargos tracked so far");
+        //Debug.Log($"[Evasion Dictionary Count] {cargoEvadedPirates.Count} cargos tracked so far");
 
         CargoBehavior cargoBehavior = cargo.GetComponent<CargoBehavior>();
         if (cargoBehavior == null) return;
 
-        Debug.Log($"[CHECK] HandleEvasion called for Cargo: {cargo.name} (ID: {cargo.GetInstanceID()}) | Pirate: {pirate.name} (ID: {pirate.GetInstanceID()})");
-        Debug.Log($"[CHECK] isEvadingThisStep: {cargoBehavior.isEvadingThisStep}");
+        //Debug.Log($"[CHECK] HandleEvasion called for Cargo: {cargo.name} (ID: {cargo.GetInstanceID()}) | Pirate: {pirate.name} (ID: {pirate.GetInstanceID()})");
+        //Debug.Log($"[CHECK] isEvadingThisStep: {cargoBehavior.isEvadingThisStep}");
 
 
         // Prevent duplicate evasion triggers within the same step
@@ -303,14 +323,14 @@ public class ShipInteractions : MonoBehaviour
         // Set up tracking if needed
         if (!cargoEvadedPirates.ContainsKey(cargo))
         {
-            Debug.Log($"[DEBUG] No evasion history for {cargo.name}, creating new entry.");
+            //Debug.Log($"[DEBUG] No evasion history for {cargo.name}, creating new entry.");
             cargoEvadedPirates[cargo] = new HashSet<GameObject>();
         }
 
         // Already evaded this pirate
         if (cargoEvadedPirates[cargo].Contains(pirate))
         {
-            Debug.LogWarning($"[BLOCK] {cargo.name} already evaded {pirate.name}. Skipping.");
+            //Debug.LogWarning($"[BLOCK] {cargo.name} already evaded {pirate.name}. Skipping.");
             return;
         }
 
@@ -322,7 +342,7 @@ public class ShipInteractions : MonoBehaviour
         }
 
         // Debug
-        Debug.LogWarning($"[TRIGGER] {cargo.name} (ID: {cargo.GetInstanceID()}) evading {pirate.name} (ID: {pirate.GetInstanceID()})");
+        //Debug.LogWarning($"[TRIGGER] {cargo.name} (ID: {cargo.GetInstanceID()}) evading {pirate.name} (ID: {pirate.GetInstanceID()})");
 
         // Record the evasion
         cargoEvadedPirates[cargo].Add(pirate);

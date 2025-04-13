@@ -67,7 +67,7 @@ public class PirateBehavior : MonoBehaviour
 
     void OnDestroy()
     {
-        Debug.Log($"[Destroyed] {name} has been destroyed.");
+        //Debug.Log($"[Destroyed] {name} has been destroyed.");
     }
     public void MoveShipTowardsDestination()
     {

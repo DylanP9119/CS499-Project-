@@ -58,8 +58,12 @@ public class CargoBehavior : MonoBehaviour
         // Stop all logic if captured
         if (isCaptured)
         {
-            Debug.Log($"[BLOCKED] {name} is still captured. No movement.");
+            //Debug.LogWarning($"[STEP-BLOCKED] {name} is still captured after rescue.");
             return;
+        }
+        else
+        {
+            //Debug.Log($"[STEP] {name} is free and moving to {currentGridPosition + Vector2Int.right}");
         }
 
         isEvadingThisStep = false; // clear for next time step
