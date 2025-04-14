@@ -47,11 +47,11 @@ public class PirateBehavior : MonoBehaviour
     public void Step()
     {
 
-        if (justSpawned)
-        {
-            justSpawned = false;
-            return;
-        }
+       // if (justSpawned)
+       // {
+       //     justSpawned = false;
+       //     return;
+        //}
 
         // If this pirate has captured cargo, don't move on its own - let ShipInteractions handle it
         if (hasCargo) return;

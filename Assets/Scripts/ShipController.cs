@@ -85,61 +85,80 @@ public class ShipController : MonoBehaviour
 
     void SpawnShip() // This function will need to be updated for weighted probabilities. Check in with Jacob.
     {
+
         HashSet<Vector3> occupiedPositions = new HashSet<Vector3>(); // Track used spawn positions
 
+        foreach (GameObject ship in allShips)
+        {
+            if (ship != null)
+                occupiedPositions.Add(ship.transform.position);
+        }
+
         // Cargo Day Spawn
-        if (isNight == false && Random.value < cargoSpawnChance)
+        if (isNight == false && Random.value <= cargoSpawnChance)
         {
             Vector3 spawnPos = GetUniqueSpawnPosition("Cargo", occupiedPositions);
             if (spawnPos != Vector3.zero) // Ensures valid position found
             {
                 GameObject cargo = Instantiate(cargoPrefab, spawnPos, GetSpawnRotation("Cargo"));
                 cargo.name = $"Cargo({cargoCounter++})";
-                if (allShips.Contains(cargo))
-                {
-                    Debug.LogWarning($"[DUPLICATE] Cargo {cargo.name} already in allShips!");
-                }
+                textController.UpdateShipEnter("cargo");
                 allShips.Add(cargo);
 
-                textController.UpdateShipEnter("cargo");
+                //textController.UpdateShipEnter("cargo");
+
                 //Debug.Log($"[SPAWN] {cargo.name} spawned at {spawnPos}");
 
                 //Debug.Log($"Cargo Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
             }
+            else
+            {
+                Debug.LogWarning($"[SPAWN FAILED] Cargo could not find valid spawn position at frame {Time.frameCount}");
+            }
         }
 
         // Patrol Day Spawn
-        if (isNight == false && Random.value < patrolSpawnChance)
+        if (isNight == false && Random.value <= patrolSpawnChance)
         {
             Vector3 spawnPos = GetUniqueSpawnPosition("Patrol", occupiedPositions);
             if (spawnPos != Vector3.zero)
             {
                 GameObject patrol = Instantiate(patrolPrefab, spawnPos, GetSpawnRotation("Patrol"));
                 patrol.name = $"Patrol({patrolCounter++})";
+                textController.UpdateShipEnter("patrol");
                 allShips.Add(patrol);
 
-                textController.UpdateShipEnter("patrol");
+                //textController.UpdateShipEnter("patrol");
                 //Debug.Log($"Patrol Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
+            }
+            else
+            {
+                Debug.LogWarning($"[SPAWN FAILED] Patrol could not find valid spawn position at frame {Time.frameCount}");
             }
         }
 
         // Pirate Day Spawn
-        if (isNight == false && Random.value < pirateSpawnChance)
+        if (isNight == false && Random.value <= pirateSpawnChance)
         {
             Vector3 spawnPos = GetUniqueSpawnPosition("Pirate", occupiedPositions);
             if (spawnPos != Vector3.zero)
             {
                 GameObject pirate = Instantiate(piratePrefab, spawnPos, GetSpawnRotation("Pirate"));
                 pirate.name = $"Pirate({pirateCounter++})";
+                textController.UpdateShipEnter("pirate");
                 allShips.Add(pirate);
 
-                textController.UpdateShipEnter("pirate");
+                //textController.UpdateShipEnter("pirate");
                 //Debug.Log($"Pirate Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
+            }
+            else
+            {
+                Debug.LogWarning($"[SPAWN FAILED] pirate could not find valid spawn position at frame {Time.frameCount}");
             }
         }
 
         // Cargo Night Spawn
-        if (isNight == true && Random.value < cargoNightChance)
+        if (isNight == true && Random.value <= cargoNightChance)
         {
             Vector3 spawnPos = GetUniqueSpawnPosition("Cargo", occupiedPositions);
             if (spawnPos != Vector3.zero) // Ensures valid position found
@@ -153,7 +172,7 @@ public class ShipController : MonoBehaviour
         }
 
         // Patrol Night Spawn
-        if (isNight == true && Random.value < patrolNightChance)
+        if (isNight == true && Random.value <= patrolNightChance)
         {
             Vector3 spawnPos = GetUniqueSpawnPosition("Patrol", occupiedPositions);
             if (spawnPos != Vector3.zero)
@@ -167,7 +186,7 @@ public class ShipController : MonoBehaviour
         }
 
         // Pirate Night Spawn
-        if (isNight == true && Random.value < pirateNightChance)
+        if (isNight == true && Random.value <= pirateNightChance)
         {
             Vector3 spawnPos = GetUniqueSpawnPosition("Pirate", occupiedPositions);
             if (spawnPos != Vector3.zero)
@@ -179,13 +198,14 @@ public class ShipController : MonoBehaviour
                 textController.UpdateShipEnter("pirate");
             }
         }
+        Debug.Log($"[SYNC DEBUG] Step {Time.frameCount} — Cargo({cargoCounter}), Patrol({patrolCounter}), Pirate({pirateCounter})");
     }
 
     Vector3 GetUniqueSpawnPosition(string shipType, HashSet<Vector3> occupiedPositions) // This function will need to be updated for weighted probabilities. Check in with Jacob.
     {
         float roll = Random.value;
         Vector3 spawnPos = Vector3.zero;
-        int maxAttempts = 10; // Avoid infinite loops
+        int maxAttempts = 400; // Avoid infinite loops
 
         for (int i = 0; i < maxAttempts; i++)
         {
@@ -213,6 +233,10 @@ public class ShipController : MonoBehaviour
             {
                 occupiedPositions.Add(spawnPos); // Mark as occupied
                 return spawnPos;
+            }
+            else
+            {
+                Debug.Log($"[BLOCKED] {shipType} attempted spawn at {spawnPos} — already occupied this frame.");
             }
         }
 

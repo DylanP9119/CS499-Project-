@@ -47,11 +47,11 @@ public class PatrolBehavior : MonoBehaviour
     public void Step()
     {
 
-        if (justSpawned)
-        {
-            justSpawned = false;
-            return;
-        }
+       // if (justSpawned)
+       // {
+       //     justSpawned = false;
+       //     return;
+       // }
 
         if (currentGridPosition == destinationGridPosition)
         {
