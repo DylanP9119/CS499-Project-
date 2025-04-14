@@ -1,147 +1,234 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using System.Linq;
+using UnityEngine.UI;
+
+using static UnityEngine.Rendering.GPUSort;
+//using System;
 
 public class ShipController : MonoBehaviour
 {
     public GameObject cargoPrefab;
     public GameObject patrolPrefab;
     public GameObject piratePrefab;
-    public ReplayManager replay;
+    private float globalTime = 0f;
+    public Text timeDisplayRun;
+
     public bool isNight = false;
 
     public float cargoSpawnChance = 0.50f;
     public float patrolSpawnChance = 0.25f;
     public float pirateSpawnChance = 0.40f;
+
     public float cargoNightChance = 0.50f;
     public float patrolNightChance = 0.25f;
     public float pirateNightChance = 0.40f;
 
-    public TimeControl timeControl;
+    public float moveTimer = 0.0f;
+    private TimeControl isPaused;
+
     private int cargoCounter = 1;
-    private int patrolCounter = 1;
     private int pirateCounter = 1;
-    private Vector2Int gridSize = new Vector2Int(400, 100);
+    private int patrolCounter = 1;
+    public TimeControl timeControl;
+    public float simulationSpeed = 1f;
+
+    //private Vector2Int gridsize = new Vector2Int(400,100);
+    Vector2Int gridSize = new Vector2Int(400, 100); // i dont think vector2int should affect gridsize./ scared to change  
+    //Vector2Int gridSize = ShipMovement.gridSize; REMOVED SHIPMOVEMENT
     public List<GameObject> allShips = new List<GameObject>();
+    public List<GameObject> GetAllShips() => allShips;
 
     void Start()
     {
-        timeControl = FindObjectOfType<TimeControl>();
-        if (replay == null)
-            replay = GameObject.Find("ReplayManager").GetComponent<ReplayManager>();
+        isPaused = FindFirstObjectByType<TimeControl>();
+
+        if (UIControllerScript.Instance)
+        {
+            cargoSpawnChance = UIControllerScript.Instance.cargoDayPercent;
+            cargoNightChance = UIControllerScript.Instance.cargoNightPercent;
+            patrolSpawnChance = UIControllerScript.Instance.patrolDayPercent;
+            patrolNightChance = UIControllerScript.Instance.patrolNightPercent;
+            pirateSpawnChance = UIControllerScript.Instance.pirateDayPercent;
+            pirateNightChance = UIControllerScript.Instance.pirateNightPercent;
+        }
     }
 
     void Update()
     {
-        // Only run normal simulation when not in replay mode.
-        if (timeControl.ShouldMove() && !replay.ReplayModeActive)
+        if (isPaused.ShouldMove())
         {
-            SpawnShip();
-            // Tell each ship to perform its movement step.
-            foreach (GameObject ship in allShips)
+            float delta = Time.deltaTime;
+            globalTime += delta;
+            timeDisplayRun.text = $"Time: {globalTime:0.0}s";
+
+            moveTimer += Time.deltaTime;
+
+            if (moveTimer >= 1f)
             {
-                if (ship != null && !replay.ReplayModeActive)
-                    ship.SendMessage("Step", SendMessageOptions.DontRequireReceiver);
+                SpawnShip();
+                foreach (GameObject ship in allShips)
+                {
+                    if (ship != null)
+                    {
+                        //Debug.Log($"[ShipController] Step() called on: {ship.name}");
+                        ship.SendMessage("Step", SendMessageOptions.DontRequireReceiver);
+                    }
+                }
+                ShipInteractions.Instance.CheckForInteractions(allShips);
+                moveTimer = 0f;
             }
-            // (Optional) Check for interactions here.
-            timeControl.ResetTimer();
         }
     }
 
-    void SpawnShip()
+    void SpawnShip() // This function will need to be updated for weighted probabilities. Check in with Jacob.
     {
-        HashSet<Vector3> occupiedPositions = new HashSet<Vector3>();
+        HashSet<Vector3> occupiedPositions = new HashSet<Vector3>(); // Track used spawn positions
 
-        if (!isNight)
+        // Cargo Day Spawn
+        if (isNight == false && Random.value < cargoSpawnChance)
         {
-            if (Random.value < cargoSpawnChance) SpawnShipType("Cargo", cargoPrefab, ref cargoCounter, occupiedPositions);
-            if (Random.value < patrolSpawnChance) SpawnShipType("Patrol", patrolPrefab, ref patrolCounter, occupiedPositions);
-            if (Random.value < pirateSpawnChance) SpawnShipType("Pirate", piratePrefab, ref pirateCounter, occupiedPositions);
+            Vector3 spawnPos = GetUniqueSpawnPosition("Cargo", occupiedPositions);
+            if (spawnPos != Vector3.zero) // Ensures valid position found
+            {
+                GameObject cargo = Instantiate(cargoPrefab, spawnPos, GetSpawnRotation("Cargo"));
+                cargo.name = $"Cargo({cargoCounter++})";
+                if (allShips.Contains(cargo))
+                {
+                    Debug.LogWarning($"[DUPLICATE] Cargo {cargo.name} already in allShips!");
+                }
+                allShips.Add(cargo);
+                //Debug.Log($"[SPAWN] {cargo.name} spawned at {spawnPos}");
+
+                //Debug.Log($"Cargo Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
+            }
         }
-        else
+
+        // Patrol Day Spawn
+        if (isNight == false && Random.value < patrolSpawnChance)
         {
-            if (Random.value < cargoNightChance) SpawnShipType("Cargo", cargoPrefab, ref cargoCounter, occupiedPositions);
-            if (Random.value < patrolNightChance) SpawnShipType("Patrol", patrolPrefab, ref patrolCounter, occupiedPositions);
-            if (Random.value < pirateNightChance) SpawnShipType("Pirate", piratePrefab, ref pirateCounter, occupiedPositions);
+            Vector3 spawnPos = GetUniqueSpawnPosition("Patrol", occupiedPositions);
+            if (spawnPos != Vector3.zero)
+            {
+                GameObject patrol = Instantiate(patrolPrefab, spawnPos, GetSpawnRotation("Patrol"));
+                patrol.name = $"Patrol({patrolCounter++})";
+                allShips.Add(patrol);
+                //Debug.Log($"Patrol Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
+            }
+        }
+
+        // Pirate Day Spawn
+        if (isNight == false && Random.value < pirateSpawnChance)
+        {
+            Vector3 spawnPos = GetUniqueSpawnPosition("Pirate", occupiedPositions);
+            if (spawnPos != Vector3.zero)
+            {
+                GameObject pirate = Instantiate(piratePrefab, spawnPos, GetSpawnRotation("Pirate"));
+                pirate.name = $"Pirate({pirateCounter++})";
+                allShips.Add(pirate);
+                //Debug.Log($"Pirate Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
+            }
+        }
+
+        // Cargo Night Spawn
+        if (isNight == true && Random.value < cargoNightChance)
+        {
+            Vector3 spawnPos = GetUniqueSpawnPosition("Cargo", occupiedPositions);
+            if (spawnPos != Vector3.zero) // Ensures valid position found
+            {
+                GameObject cargo = Instantiate(cargoPrefab, spawnPos, GetSpawnRotation("Cargo"));
+                allShips.Add(cargo);
+                Debug.Log($"Cargo Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
+            }
+        }
+
+        // Patrol Night Spawn
+        if (isNight == true && Random.value < patrolNightChance)
+        {
+            Vector3 spawnPos = GetUniqueSpawnPosition("Patrol", occupiedPositions);
+            if (spawnPos != Vector3.zero)
+            {
+                GameObject patrol = Instantiate(patrolPrefab, spawnPos, GetSpawnRotation("Patrol"));
+                allShips.Add(patrol);
+                Debug.Log($"Patrol Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
+            }
+        }
+
+        // Pirate Night Spawn
+        if (isNight == true && Random.value < pirateNightChance)
+        {
+            Vector3 spawnPos = GetUniqueSpawnPosition("Pirate", occupiedPositions);
+            if (spawnPos != Vector3.zero)
+            {
+                GameObject pirate = Instantiate(piratePrefab, spawnPos, GetSpawnRotation("Pirate"));
+                allShips.Add(pirate);
+                Debug.Log($"Pirate Ship Spawned at ({spawnPos.x}, {spawnPos.y})");
+            }
         }
     }
 
-    void SpawnShipType(string shipType, GameObject prefab, ref int counter, HashSet<Vector3> occupiedPositions)
-    {
-        Vector3 spawnPos = GetUniqueSpawnPosition(shipType, occupiedPositions);
-        if (spawnPos != Vector3.zero)
-        {
-            Quaternion rotation = GetSpawnRotation(shipType);
-            GameObject ship = Instantiate(prefab, spawnPos, rotation);
-            int shipId = counter++;
-            ship.name = $"{shipType}({shipId})";
-            allShips.Add(ship);
-
-            // Set the ShipId property on the appropriate behavior script.
-            if (shipType == "Cargo")
-            {
-                var cargo = ship.GetComponent<CargoBehavior>();
-                if (cargo != null)
-                    cargo.ShipId = shipId;
-            }
-            else if (shipType == "Patrol")
-            {
-                var patrol = ship.GetComponent<PatrolBehavior>();
-                if (patrol != null)
-                    patrol.ShipId = shipId;
-            }
-            else if (shipType == "Pirate")
-            {
-                var pirate = ship.GetComponent<PirateBehavior>();
-                if (pirate != null)
-                    pirate.ShipId = shipId;
-            }
-
-            // Record the spawn event (flagged as a spawn event).
-            replay.RecordShipSpawn(new ReplayManager.ReplayEvent(shipId, shipType, spawnPos, rotation, timeControl.GlobalTime, true));
-        }
-    }
-
-    Vector3 GetUniqueSpawnPosition(string shipType, HashSet<Vector3> occupiedPositions)
+    Vector3 GetUniqueSpawnPosition(string shipType, HashSet<Vector3> occupiedPositions) // This function will need to be updated for weighted probabilities. Check in with Jacob.
     {
         float roll = Random.value;
         Vector3 spawnPos = Vector3.zero;
-        int maxAttempts = 10;
+        int maxAttempts = 10; // Avoid infinite loops
 
         for (int i = 0; i < maxAttempts; i++)
         {
             if (shipType == "Cargo")
-                spawnPos = new Vector3(0, 0, Mathf.FloorToInt(gridSize.y * roll));
+            {
+                int spawnZ = Mathf.FloorToInt(gridSize.y * roll);
+                spawnPos = new Vector3(0, 0, spawnZ);
+            }
             else if (shipType == "Pirate")
-                spawnPos = new Vector3(Mathf.FloorToInt(gridSize.x * roll), 0, 0);
+            {
+                int spawnX = Mathf.FloorToInt(gridSize.x * roll);
+                spawnPos = new Vector3(spawnX, 0, 0);
+            }
             else if (shipType == "Patrol")
-                spawnPos = new Vector3(gridSize.x - 1, 0, Mathf.FloorToInt(gridSize.y * roll));
+            {
+                int spawnZ = Mathf.FloorToInt(gridSize.y * roll);
+                spawnPos = new Vector3(gridSize.x - 1, 0, spawnZ);
+            }
+            else
+            {
+                return Vector3.zero;
+            }
 
             if (!occupiedPositions.Contains(spawnPos))
             {
-                occupiedPositions.Add(spawnPos);
+                occupiedPositions.Add(spawnPos); // Mark as occupied
                 return spawnPos;
             }
         }
-        return Vector3.zero;
+
+        Debug.LogWarning($"No valid spawn position found for {shipType}");
+        return Vector3.zero; // Return invalid position if no spot found
     }
 
+    // Making ships face the right orientation
     Quaternion GetSpawnRotation(string shipType)
     {
-        return shipType switch
-        {
-            "Cargo" => Quaternion.Euler(0, 90, 0),
-            "Patrol" => Quaternion.Euler(0, -90, 0),
-            _ => Quaternion.Euler(0, 0, 0),
-        };
-    }
+        if (shipType == "Cargo")
+            return Quaternion.Euler(0, 90, 0); //Face East
+        else if (shipType == "Patrol")
+            return Quaternion.Euler(0, -90, 0); // Face West 
+        else if (shipType == "Pirate")
+            return Quaternion.Euler(0, 0, 0); // Face North
 
+        return Quaternion.Euler(0, 0, 0); // Default
+    }
     public void ClearAllShips()
     {
         foreach (GameObject ship in allShips)
         {
-            if (ship != null)
-                Destroy(ship);
+            Destroy(ship);
         }
         allShips.Clear();
     }
 }
+
+//Next steps: UI panel for user inputs
+// Input field? Ask jacob what UI feature we are going to use
+// 

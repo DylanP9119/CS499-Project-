@@ -2,47 +2,51 @@ using UnityEngine;
 
 public class TimeControl : MonoBehaviour
 {    
-    // These thresholds may be used for tick-based triggers.
     public float[] speedLevels = { 1.0f, 0.5f, 0.1f, 0.05f };
     private int currentSpeedIndex = 0;
-    
-    // This timer resets after each tick (if needed for spawning)
     private float moveTimer = 0f;
-    // This global time increases continuously over the simulation.
-    private float globalTime = 0f;
     private bool movementPaused = false;
-
-    // Expose the short-term timer (if needed) and global simulation time.
-    public float CurrentTime => moveTimer;
-    public float GlobalTime => globalTime;
-    public bool IsPaused => movementPaused;
 
     void Update()
     {
-        if (!movementPaused)
+        HandleSpeedInput();
+        UpdateMoveTimer();
+    }
+
+    void HandleSpeedInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            float delta = Time.deltaTime;
-            moveTimer += delta;
-            globalTime += delta;
+            movementPaused = !movementPaused;
+            ToggleMovement(movementPaused);
         }
     }
 
-    // Returns true when it's time to trigger a tick based on speedLevels.
-    public bool ShouldMove()
+    void UpdateMoveTimer()
     {
-        return moveTimer >= speedLevels[currentSpeedIndex] && !movementPaused;
+        if (!movementPaused)
+        {
+            moveTimer += Time.deltaTime;
+        }
     }
 
-    // Toggle the simulation on or off.
+    public bool ShouldMove()
+    {
+        if (moveTimer >= speedLevels[currentSpeedIndex] && !movementPaused)
+        {
+            moveTimer = 0f;
+            return true;
+        }
+        return false;
+    }
+
     public void ToggleMovement(bool pause)
     {
         movementPaused = pause;
-        Debug.Log(pause ? "Game Paused" : "Game Resumed");
     }
 
-    // Reset the tick timer (globalTime is never reset).
-    public void ResetTimer()
+    public void SetSimulationSpeed(int speedIndex)
     {
-        moveTimer = 0f;
+        currentSpeedIndex = Mathf.Clamp(speedIndex, 0, speedLevels.Length - 1);
     }
 }
