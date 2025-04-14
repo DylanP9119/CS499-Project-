@@ -154,7 +154,7 @@ public class ShipInteractions : MonoBehaviour
                 shipsToRemove.Add(ship);
                 textController.UpdateShipExit("cargo");
             }
-            else if (ship.CompareTag("Patrol") && Mathf.RoundToInt(pos.x) <= 0)
+            else if (ship.CompareTag("Patrol") && pos.x <= -1f)
             {
                 Debug.Log($"[Exit] {ship.name} reached the left edge and was removed.");
                 shipsToRemove.Add(ship);
@@ -224,7 +224,7 @@ public class ShipInteractions : MonoBehaviour
             return;
         }
 
-        // All checks passed — capture is valid. Now we mark everything.
+        // All checks passed ï¿½ capture is valid. Now we mark everything.
         if (cargoBehavior != null)
         {
             cargoBehavior.isCaptured = true;
@@ -295,7 +295,7 @@ public class ShipInteractions : MonoBehaviour
             if (cargoBehavior != null)
             {
                 cargoBehavior.isCaptured = false;
-                //Debug.LogWarning($"[POST-RESCUE STATE] {cargoToRescue.name} — isCaptured: {cargoBehavior.isCaptured}");
+                //Debug.LogWarning($"[POST-RESCUE STATE] {cargoToRescue.name} ï¿½ isCaptured: {cargoBehavior.isCaptured}");
                 //capturedCargo.tag = "Cargo";
                 cargoToRescue.tag = "Cargo";
             }

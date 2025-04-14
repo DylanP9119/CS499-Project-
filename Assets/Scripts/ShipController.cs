@@ -5,6 +5,7 @@ using Recorder;
 using ReplayData;
 using Replay;
 using static UnityEngine.Rendering.GPUSort;
+using UnityEngine.UI;
 //using System;
 
 public class ShipController : MonoBehaviour
@@ -12,27 +13,26 @@ public class ShipController : MonoBehaviour
     public GameObject cargoPrefab;
     public GameObject patrolPrefab;
     public GameObject piratePrefab;
-    public ReplayManager replay;
     public TextController textController;
-
+    private float globalTime = 0f;
+    public Text timeDisplayRun;
     public bool isNight = false;
-
     public float cargoSpawnChance = 0.50f;
     public float patrolSpawnChance = 0.25f;
     public float pirateSpawnChance = 0.40f;
-
     public float cargoNightChance = 0.50f;
     public float patrolNightChance = 0.25f;
     public float pirateNightChance = 0.40f;
-
     float moveTimer = 0.0f;
     private TimeControl isPaused;
-
     private int cargoCounter = 1;
     private int pirateCounter = 1;
     private int patrolCounter = 1;
-
+    public TimeControl timeControl;
     public float simulationSpeed = 1f;
+    private float simMinutesPassed = 0f;  // simulated time
+    public float simulationLengthHours = 24f; // default, override from UI
+    public bool useDayNightCycle = true;
 
     //private Vector2Int gridsize = new Vector2Int(400,100);
     Vector2Int gridSize = new Vector2Int(400, 100); // i dont think vector2int should affect gridsize./ scared to change  
@@ -43,8 +43,6 @@ public class ShipController : MonoBehaviour
     void Start()
     {
         isPaused = FindFirstObjectByType<TimeControl>();
-        if (replay == null)
-            replay = GameObject.Find("ReplayManager").GetComponent<ReplayManager>();
         if (UIControllerScript.Instance)
         {
             cargoSpawnChance = UIControllerScript.Instance.cargoDayPercent / 100f;
@@ -59,27 +57,63 @@ public class ShipController : MonoBehaviour
     void Update()
     {
         if (isPaused.ShouldMove())
+    {
+        //float delta = Time.deltaTime;
+        //globalTime += delta;
+
+        moveTimer += Time.deltaTime;
+
+        if (moveTimer >= 1f)
         {
-            if (replay.ReplayMode())
+            // Simulated time: 1 real second = 5 simulated minutes
+            simMinutesPassed += 5f;
+            UpdateDayNightCycle();
+
+            if (simMinutesPassed >= simulationLengthHours * 60f)
             {
+                Debug.Log("[SIM END] Reached simulation limit.");
+                isPaused.ToggleMovement(true); // Pause the simulation
                 return;
             }
-            moveTimer += Time.deltaTime;
 
-            if (moveTimer >= 1f)
+            int totalMinutes = Mathf.FloorToInt(simMinutesPassed);
+            int day = (totalMinutes / 1440) + 1; // 1440 minutes = 1 day
+            int hour = (totalMinutes / 60) % 24;
+            int minute = totalMinutes % 60;
+
+            timeDisplayRun.text = $"Day {day} â€” {hour:D2}:{minute:D2}";
+
+            SpawnShip();
+            foreach (GameObject ship in allShips)
             {
-                SpawnShip();
-                foreach (GameObject ship in allShips)
+                if (ship != null)
                 {
-                    if (ship != null)
-                    {
-                        //Debug.Log($"[ShipController] Step() called on: {ship.name}");
-                        ship.SendMessage("Step", SendMessageOptions.DontRequireReceiver);
-                    }
+                    ship.SendMessage("Step", SendMessageOptions.DontRequireReceiver);
                 }
-                ShipInteractions.Instance.CheckForInteractions(allShips);
-                moveTimer = 0f;
             }
+            ShipInteractions.Instance.CheckForInteractions(allShips);
+            moveTimer = 0f;
+        }
+    }
+    }
+
+    void UpdateDayNightCycle()
+    {
+        if (!useDayNightCycle) // for easier toggle UI stuff
+        {
+            isNight = false;
+            ShipInteractions.Instance.isNight = false;
+            return;
+        }
+
+        int hour = Mathf.FloorToInt(simMinutesPassed / 60f) % 24;
+        bool newNight = (hour >= 12);
+
+        if (newNight != isNight)
+        {
+            isNight = newNight;
+            ShipInteractions.Instance.isNight = isNight;
+            Debug.Log($"[DAY/NIGHT] Transitioned to {(isNight ? "Night" : "Day")} at hour {hour}");
         }
     }
 
@@ -198,7 +232,7 @@ public class ShipController : MonoBehaviour
                 textController.UpdateShipEnter("pirate");
             }
         }
-        Debug.Log($"[SYNC DEBUG] Step {Time.frameCount} — Cargo({cargoCounter}), Patrol({patrolCounter}), Pirate({pirateCounter})");
+        Debug.Log($"[SYNC DEBUG] Step {Time.frameCount} ï¿½ Cargo({cargoCounter}), Patrol({patrolCounter}), Pirate({pirateCounter})");
     }
 
     Vector3 GetUniqueSpawnPosition(string shipType, HashSet<Vector3> occupiedPositions) // This function will need to be updated for weighted probabilities. Check in with Jacob.
@@ -236,7 +270,7 @@ public class ShipController : MonoBehaviour
             }
             else
             {
-                Debug.Log($"[BLOCKED] {shipType} attempted spawn at {spawnPos} — already occupied this frame.");
+                Debug.Log($"[BLOCKED] {shipType} attempted spawn at {spawnPos} ï¿½ already occupied this frame.");
             }
         }
 
