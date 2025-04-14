@@ -8354,6 +8354,14 @@ MonoBehaviour:
   nightCaptureEnabled: 0
   beginButton: {fileID: 0}
   canStart: 0
+  saveFileName: {fileID: 0}
+  fileNameString: 
+  cargoDayPercent: -1
+  cargoNightPercent: -1
+  pirateDayPercent: -1
+  pirateNightPercent: -1
+  patrolDayPercent: -1
+  patrolNightPercent: -1
 --- !u!4 &1706526596
 Transform:
   m_ObjectHideFlags: 0
@@ -10439,7 +10447,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: -0.0025024414, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
