@@ -53,25 +53,7 @@ public class UIControllerScript : MonoBehaviour
     // THINGS TO DO ON PROGRAM START
     public void Start()
     {
-        //Buttons
-        buttonText.text = "DISABLED";
-        nightCaptureEnabled = false;
-
-
-
-        //fill grid spaces with default values
-        for (int gridSpace = 1; gridSpace < cargoGridPercentsD.Length; gridSpace++)
-        {
-            cargoGridPercentsD[gridSpace] = 1;
-            patrolGridPercentsD[gridSpace] = 1;
-            cargoGridPercentsN[gridSpace] = 1;
-            patrolGridPercentsN[gridSpace] = 1;
-        }
-        for (int gridSpace = 1; gridSpace < pirateGridPercentsD.Length; gridSpace++)
-        {
-            pirateGridPercentsD[gridSpace] = 1;
-            pirateGridPercentsN[gridSpace] = 1;
-        }
+        
     }
 
     public void Awake()
@@ -95,6 +77,24 @@ public class UIControllerScript : MonoBehaviour
         dayCount = 0;
         hourCount = 24;
         minuteCount = 0;
+
+        //Buttons
+        buttonText.text = "DISABLED";
+        nightCaptureEnabled = false;
+
+        //fill grid spaces with default values
+        for (int gridSpace = 1; gridSpace < cargoGridPercentsD.Length; gridSpace++)
+        {
+            cargoGridPercentsD[gridSpace] = 1;
+            patrolGridPercentsD[gridSpace] = 1;
+            cargoGridPercentsN[gridSpace] = 1;
+            patrolGridPercentsN[gridSpace] = 1;
+        }
+        for (int gridSpace = 1; gridSpace < pirateGridPercentsD.Length; gridSpace++)
+        {
+            pirateGridPercentsD[gridSpace] = 1;
+            pirateGridPercentsN[gridSpace] = 1;
+        }
     }
 
     //back button
@@ -126,27 +126,27 @@ public class UIControllerScript : MonoBehaviour
 
         minuteCount = (hourCount * 60) + (dayCount * 24 * 60);
 
-        if (cargoDayPercent <= 1 || cargoDayPercent > 100) {
+        if (cargoDayPercent < 1 || cargoDayPercent > 100) {
             canStart = false;
             Debug.Log("test one");
         }
-        else if (cargoNightPercent <= 1 || cargoNightPercent > 100) {
+        else if (cargoNightPercent < 1 || cargoNightPercent > 100) {
             canStart = false;
             Debug.Log("test two");
         }
-        else if (pirateDayPercent <= 1 || pirateDayPercent > 100) {
+        else if (pirateDayPercent < 1 || pirateDayPercent > 100) {
             canStart = false;
             Debug.Log("test three");
         }
-        else if (pirateNightPercent <= 1 || pirateNightPercent > 100) {
+        else if (pirateNightPercent < 1 || pirateNightPercent > 100) {
             canStart = false;
             Debug.Log("test four");
         }
-        else if (patrolDayPercent <= 1 || patrolDayPercent > 100) {
+        else if (patrolDayPercent < 1 || patrolDayPercent > 100) {
             canStart = false;
             Debug.Log("test five");
         }
-        else if (patrolNightPercent <= 1 || patrolNightPercent > 100) {
+        else if (patrolNightPercent < 1 || patrolNightPercent > 100) {
             canStart = false;
             Debug.Log("test six");
         }

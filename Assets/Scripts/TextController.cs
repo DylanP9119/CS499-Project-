@@ -84,11 +84,11 @@ public class TextController : MonoBehaviour
             cargoExitCount++;
             cargosExited.text = "Cargos exited: " + cargoExitCount;
         }
-        else if (shipType == "pirate") {
+        else if (shipType == "patrol") {
             patrolExitCount++;
             patrolsExited.text = "Patrols exited: " + patrolExitCount;
         }
-        else if (shipType == "patrol") {
+        else if (shipType == "pirate") {
             pirateExitCount++;
             piratesExited.text = "Pirates exited: " + pirateExitCount;
         }
