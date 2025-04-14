@@ -47,12 +47,12 @@ public class ShipController : MonoBehaviour
             replay = GameObject.Find("ReplayManager").GetComponent<ReplayManager>();
         if (UIControllerScript.Instance)
         {
-            cargoSpawnChance = UIControllerScript.Instance.cargoDayPercent;
-            cargoNightChance = UIControllerScript.Instance.cargoNightPercent;
-            patrolSpawnChance = UIControllerScript.Instance.patrolDayPercent;
-            patrolNightChance = UIControllerScript.Instance.patrolNightPercent;
-            pirateSpawnChance = UIControllerScript.Instance.pirateDayPercent;
-            pirateNightChance = UIControllerScript.Instance.pirateNightPercent;
+            cargoSpawnChance = UIControllerScript.Instance.cargoDayPercent / 100f;
+            cargoNightChance = UIControllerScript.Instance.cargoNightPercent / 100f;
+            patrolSpawnChance = UIControllerScript.Instance.patrolDayPercent / 100f;
+            patrolNightChance = UIControllerScript.Instance.patrolNightPercent / 100f;
+            pirateSpawnChance = UIControllerScript.Instance.pirateDayPercent / 100f;
+            pirateNightChance = UIControllerScript.Instance.pirateNightPercent / 100f;
         }
     }
 
