@@ -119,51 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &15357931
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 15357933}
-  - component: {fileID: 15357932}
-  m_Layer: 0
-  m_Name: InstantReplayActivator
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &15357932
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 15357931}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7fcd4f922aac2e479123b22ba0a85ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  replay: {fileID: 409669698}
---- !u!4 &15357933
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 15357931}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &18849719
 GameObject:
   m_ObjectHideFlags: 0
@@ -175,7 +130,6 @@ GameObject:
   - component: {fileID: 18849721}
   - component: {fileID: 18849722}
   - component: {fileID: 18849723}
-  - component: {fileID: 18849725}
   - component: {fileID: 18849724}
   m_Layer: 0
   m_Name: ShipController
@@ -223,10 +177,9 @@ MonoBehaviour:
   cargoNightChance: 0.5
   patrolNightChance: 0.25
   pirateNightChance: 0.4
-  timeControl: {fileID: 0}
-  simulationSpeed: 20
   simulationLengthHours: 24
   useDayNightCycle: 1
+  allShips: []
 --- !u!114 &18849723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -239,6 +192,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cc5d3756a1bb304eae59aaeb616a4c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  forwardButton: {fileID: 0}
   speedLevels:
   - 1
   - 0.5
@@ -258,37 +212,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isNight: 0
   textController: {fileID: 806475742}
---- !u!1 &239930791
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 239930792}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &239930792
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 239930791}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.7, y: -0.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &277998592
 GameObject:
   m_ObjectHideFlags: 0
@@ -614,17 +537,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &409669698 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
-  m_PrefabInstance: {fileID: 2809413419252691340}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 499137414832de74fb3b53f41b1725b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &411817902
 GameObject:
   m_ObjectHideFlags: 0
@@ -982,6 +894,28 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 511711247}
   m_CullTransparentMesh: 1
+--- !u!114 &538965639 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2809413418428824860, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+  m_PrefabInstance: {fileID: 2809413419252691340}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &590388215 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2809413419109804147, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+  m_PrefabInstance: {fileID: 2809413419252691340}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &601315170
 GameObject:
   m_ObjectHideFlags: 0
@@ -995,7 +929,6 @@ GameObject:
   - component: {fileID: 601315172}
   - component: {fileID: 601315171}
   - component: {fileID: 601315175}
-  - component: {fileID: 601315176}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1155,21 +1088,6 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &601315176
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 601315170}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab7d38d1299d9684497a66e978ef8c27, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  replay: {fileID: 409669698}
-  replayManagerName: ReplayManager
-  scripts: []
 --- !u!1 &631996532
 GameObject:
   m_ObjectHideFlags: 0
@@ -1340,7 +1258,7 @@ MonoBehaviour:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 38
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 0
     m_MaxSize: 50
     m_Alignment: 0
@@ -1349,7 +1267,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Time here
+  m_Text: replay timer hide later :D
 --- !u!222 &646576068
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1523,18 +1441,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d94e53b63602edd45a92d964843a2aaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clockText: {fileID: 0}
-  cargosEntered: {fileID: 1342816756}
-  cargosExited: {fileID: 1763656560}
-  patrolsEntered: {fileID: 411817904}
-  patrolsExited: {fileID: 1680117662}
-  piratesEntered: {fileID: 1198508049}
-  piratesExited: {fileID: 1982921397}
-  piratesDestroyed: {fileID: 673881891}
-  cargosCaptured: {fileID: 278294491}
-  cargosRescued: {fileID: 1778057914}
-  cargosSucceededEvasion: {fileID: 1998928949}
-  cargosFailedEvasion: {fileID: 1009817246}
+  cargoEnteredText: {fileID: 1342816756}
+  cargoExitedText: {fileID: 1763656560}
+  patrolEnteredText: {fileID: 411817904}
+  patrolExitedText: {fileID: 1680117662}
+  pirateEnteredText: {fileID: 1198508049}
+  pirateExitedText: {fileID: 1982921397}
+  capturesText: {fileID: 278294491}
+  rescuesText: {fileID: 1778057914}
+  pirateDestroyedText: {fileID: 673881891}
+  successfulEvasionText: {fileID: 1998928949}
+  failedEvasionText: {fileID: 1009817246}
 --- !u!4 &806475743
 Transform:
   m_ObjectHideFlags: 0
@@ -1807,6 +1724,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1009817244}
   m_CullTransparentMesh: 1
+--- !u!114 &1075167247 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2809413419106048477, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+  m_PrefabInstance: {fileID: 2809413419252691340}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1198508047
 GameObject:
   m_ObjectHideFlags: 0
@@ -3159,13 +3087,37 @@ PrefabInstance:
       value: ReplayManager
       objectReference: {fileID: 0}
     - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+      propertyPath: timeDisplay
+      value: 
+      objectReference: {fileID: 646576067}
+    - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
       propertyPath: interpolation
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+      propertyPath: shipController
+      value: 
+      objectReference: {fileID: 18849722}
+    - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+      propertyPath: textController
+      value: 
+      objectReference: {fileID: 806475742}
+    - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+      propertyPath: playPauseButton
+      value: 
+      objectReference: {fileID: 538965639}
+    - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
       propertyPath: recordMaxLength
       value: 3600
       objectReference: {fileID: 0}
+    - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+      propertyPath: btnDecreaseSpeed
+      value: 
+      objectReference: {fileID: 1075167247}
+    - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+      propertyPath: btnIncreaseSpeed
+      value: 
+      objectReference: {fileID: 590388215}
     - target: {fileID: 2809413419116962255, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -3221,11 +3173,9 @@ SceneRoots:
   m_Roots:
   - {fileID: 979466815}
   - {fileID: 2809413419252691340}
-  - {fileID: 15357933}
   - {fileID: 601315174}
   - {fileID: 18849721}
   - {fileID: 510840362}
-  - {fileID: 239930792}
   - {fileID: 404413477}
   - {fileID: 1522616882}
   - {fileID: 806475743}
