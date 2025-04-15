@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 
 public class CargoBehavior : MonoBehaviour
@@ -7,120 +5,44 @@ public class CargoBehavior : MonoBehaviour
     public Vector2Int currentGridPosition;
     public Vector2Int destinationGridPosition;
     public Vector2Int gridSize = new Vector2Int(400, 100);
-    public float gridCellSize = 1f; // Size of each grid cell
-    public float movementDelay = 0.1f; // Time delay between movements
-    private TimeControl timeControl;
-    private float movementTimer;
-    private List<Vector2Int> travelPath = new List<Vector2Int>(); // To store the path for replay
-    private string filePath;
-    //private bool isMoving = false; // Flag to determine if the ship should move
+    public float gridCellSize = 1f;
+    public float movementDelay = 0.1f;
+    private float movementTimer = 0f;
     public bool isCaptured = false;
-    public bool justSpawned = true;
     public bool isEvadingThisStep = false;
-
 
     void Start()
     {
-        timeControl = FindFirstObjectByType<TimeControl>();
-        // Spawn the ship at a random (X, Y) position
-        int startX = 0; // Random column (X)
-        int startY = Random.Range(0, gridSize.y); // Random row (Y)
+        int startX = 0;
+        int startY = Random.Range(0, gridSize.y);
         currentGridPosition = new Vector2Int(startX, startY);
-
-        // Set the destination on the same Y, but random X
-        int destinationX = gridSize.x; // Right-hand side of grid
-        destinationGridPosition = new Vector2Int(destinationX, startY);
-
-        // Log the start and destination positions (for debugging) 
-        //Debug.Log($"Ship Start Position: {currentGridPosition}");
-        //Debug.Log($"Ship Destination Position: {destinationGridPosition}");
-
-        // Convert the initial grid position to Unity world position
+        destinationGridPosition = new Vector2Int(gridSize.x, startY);
         transform.position = GridToWorld(currentGridPosition);
-
-        // Add the starting position to the travel path
-        travelPath.Add(currentGridPosition);
-
-        // Set file path to save the travel path
-        //filePath = Path.Combine(Application.persistentDataPath, "ShipTravelPath.txt");
-        //Debug.Log($"Path will be saved to: {filePath}");
     }
 
     public void Step()
     {
-
-        if (justSpawned)
-        {
-            justSpawned = false;
+        movementTimer += Time.deltaTime;
+        if (movementTimer < movementDelay)
             return;
-        }
-
-        // Stop all logic if captured
+        movementTimer = 0f;
         if (isCaptured)
-        {
-            //Debug.LogWarning($"[STEP-BLOCKED] {name} is still captured after rescue.");
             return;
-        }
-        else
+        isEvadingThisStep = false;
+
+        // Default movement to the right; reverse in replay if negative speed.
+        int direction = 1;
+        if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive)
         {
-            //Debug.Log($"[STEP] {name} is free and moving to {currentGridPosition + Vector2Int.right}");
+            if (ReplayManager.Instance.replaySpeed < 0)
+                direction = -1;
         }
-
-        isEvadingThisStep = false; // clear for next time step
-
-        currentGridPosition += Vector2Int.right;
+        currentGridPosition += Vector2Int.right * direction;
         transform.position = GridToWorld(currentGridPosition);
-    }
-
-    /*public void StartMovement()
-    {
-        isMoving = true;
-        Debug.Log("Movement started!");
-    }*/
-
-    public void MoveShipTowardsDestination()
-    {
-        // Move one step closer to the destination
-        if (currentGridPosition != destinationGridPosition)
-        {
-            Vector2Int direction = GetStepDirection();
-            currentGridPosition += direction;
-
-            // Update the ship's position in Unity world space
-            transform.position = GridToWorld(currentGridPosition);
-
-            // Log the current position and add it to the travel path
-            travelPath.Add(currentGridPosition);
-            //Debug.Log($"Ship moved to: {currentGridPosition}");
-        }
-    }
-
-    private Vector2Int GetStepDirection()
-    {
-        // Calculate the direction to move closer to the destination
-        int stepX = 1;
-        int stepY = 0; // Y remains constant, only moving left to right, vice versa for simplicity
-
-        return new Vector2Int(stepX, stepY);
     }
 
     public Vector3 GridToWorld(Vector2Int gridPosition)
     {
-        // Convert grid coordinates to Unity world position
         return new Vector3(gridPosition.x * gridCellSize, 0, gridPosition.y * gridCellSize);
     }
-
-    //public void SaveTravelPathToFile()
-    //{
-    //    // Convert the path to a readable format
-    //    List<string> pathStrings = new List<string>();
-     //   foreach (Vector2Int pos in travelPath)
-     //   {
-     //       pathStrings.Add($"{pos.x},{pos.y}");
-     //   }
-
-        // Write to a file
-     //   File.WriteAllLines(filePath, pathStrings);
-        //Debug.Log($"Travel path saved to: {filePath}");
-    //}
 }

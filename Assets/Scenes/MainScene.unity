@@ -258,18 +258,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isNight: 0
   textController: {fileID: 806475742}
---- !u!114 &18849725
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 18849719}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 56e63a7fdc673014cbb52ca3538706d2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &239930791
 GameObject:
   m_ObjectHideFlags: 0

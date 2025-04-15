@@ -1,14 +1,24 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
+using System.IO;
+using System.Linq;
 
 public class TimeControl : MonoBehaviour
-{    
-    public float[] speedLevels = { 1.0f, 0.5f, 0.1f, 0.05f }; // Time between moves (1s, 0.5s, 0.1s, 0.05s) -> 1x, 2x, 10x, 20x
+{
+    public Button forwardButton;
+    public float[] speedLevels = { 1.0f, 0.5f, 0.1f, 0.05f }; // 1x, 2x, 10x, 20x for simulation
     private int currentSpeedIndex = 0;
     private float moveTimer = 0f;
     private bool movementPaused = false;
+    private float globalTime = 0f;
 
+    void Start()
+    {
+        if (forwardButton != null)
+            forwardButton.onClick.AddListener(CycleSpeedUp);
+    }
     void Update()
     {
         HandleSpeedInput();
@@ -23,13 +33,16 @@ public class TimeControl : MonoBehaviour
             ToggleMovement(movementPaused);
         }
     }
-
+    void CycleSpeedUp()
+    {
+        Debug.Log("Cycle speed button pressed in simulation mode.");
+        currentSpeedIndex = (currentSpeedIndex + 1) % speedLevels.Length;
+        Debug.Log($"Simulation speed set to {speedLevels[currentSpeedIndex]} seconds between moves.");
+    }
     void UpdateMoveTimer()
     {
         if (!movementPaused)
-        {
             moveTimer += Time.deltaTime;
-        }
     }
 
     public bool ShouldMove()
@@ -50,4 +63,5 @@ public class TimeControl : MonoBehaviour
     {
         movementPaused = pause;
     }
+
 }

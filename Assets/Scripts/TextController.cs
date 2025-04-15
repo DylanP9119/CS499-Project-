@@ -1,126 +1,105 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 public class TextController : MonoBehaviour
 {
-    public TMP_Text clockText;
+    public TMP_Text cargoEnteredText;
+    public TMP_Text cargoExitedText;
+    public TMP_Text patrolEnteredText;
+    public TMP_Text patrolExitedText;
+    public TMP_Text pirateEnteredText;
+    public TMP_Text pirateExitedText;
+    public TMP_Text capturesText;
+    public TMP_Text rescuesText;
+    public TMP_Text pirateDestroyedText;
+    public TMP_Text successfulEvasionText;
+    public TMP_Text failedEvasionText;
 
-    public TMP_Text cargosEntered;
-    public TMP_Text cargosExited;
+    private int cargoEntered = 0, cargoExited = 0;
+    private int patrolEntered = 0, patrolExited = 0;
+    private int pirateEntered = 0, pirateExited = 0;
+    private int captureCount = 0, rescueCount = 0;
+    private int piratesDestroyed = 0;
+    private int successfulEvasions = 0, failedEvasions = 0;
 
-    public TMP_Text patrolsEntered;
-    public TMP_Text patrolsExited;
-
-    public TMP_Text piratesEntered;
-    public TMP_Text piratesExited;
-    public TMP_Text piratesDestroyed;
-
-    public TMP_Text cargosCaptured;
-    public TMP_Text cargosRescued;
-    public TMP_Text cargosSucceededEvasion;
-    public TMP_Text cargosFailedEvasion;
-
-    private int clockTime = 0;
-
-    private int cargoEnterCount = 0;
-    private int cargoExitCount = 0;
-
-    private int patrolEnterCount = 0;
-    private int patrolExitCount = 0;
-
-    private int pirateEnterCount = 0;
-    private int pirateExitCount = 0;
-    private int pirateDestroyCount = 0;
-
-    private int cargoCaptureCount = 0;
-    private int cargoRescueCount = 0;
-    private int cargoSuccessfulEvasionCount = 0;
-    private int cargoFailedEvasionCount = 0;
-
-    void Start() {
-        //clockText.text = "Cargos entered: " + clockTime;
-
-        cargosEntered.text = "Cargos entered: " + cargoEnterCount;
-        cargosExited.text = "Cargos exited: " + cargoExitCount;
-        
-        patrolsEntered.text = "Patrols entered: " + patrolEnterCount;
-        patrolsExited.text = "Patrols exited: " + patrolExitCount;
-
-        piratesEntered.text = "Pirates entered: " + pirateEnterCount;
-        piratesExited.text = "Pirates exited: " + pirateExitCount;
-        piratesDestroyed.text = "Pirates destroyed: " + pirateDestroyCount;
-
-        cargosCaptured.text = "Cargos captured: " + cargoCaptureCount;
-        cargosRescued.text = "Cargos rescued: " + cargoRescueCount;
-        cargosSucceededEvasion.text = "Cargos escape succeeded: " + cargoSuccessfulEvasionCount;
-        cargosFailedEvasion.text = "Cargos escape failed : " + cargoFailedEvasionCount;
+    void Start()
+    {
+        ResetCounters();
     }
 
-    void ClockUpdate() {
-        //Clock update here
+    public void ResetCounters()
+    {
+        cargoEntered = cargoExited = patrolEntered = patrolExited = pirateEntered = pirateExited = 0;
+        captureCount = rescueCount = piratesDestroyed = successfulEvasions = failedEvasions = 0;
+        UpdateAllText();
     }
 
-    public void UpdateShipEnter(string shipType) {
-        if (shipType == "cargo") {
-            cargoEnterCount++;
-            cargosEntered.text = "Cargos entered: " + cargoEnterCount;
-        }
-        else if (shipType == "patrol") {
-            patrolEnterCount++;
-            patrolsEntered.text = "Patrols entered: " + patrolEnterCount;
-        }
-        else if (shipType == "pirate") {
-            pirateEnterCount++;
-            piratesEntered.text = "Pirates entered: " + pirateEnterCount;
-        }
-        else {
-            //fallback error
+    void UpdateAllText()
+    {
+        cargoEnteredText.text = $"Cargos Entered: {cargoEntered}";
+        cargoExitedText.text = $"Cargos Exited: {cargoExited}";
+        patrolEnteredText.text = $"Patrols Entered: {patrolEntered}";
+        patrolExitedText.text = $"Patrols Exited: {patrolExited}";
+        pirateEnteredText.text = $"Pirates Entered: {pirateEntered}";
+        pirateExitedText.text = $"Pirates Exited: {pirateExited}";
+        capturesText.text = $"Captures: {captureCount}";
+        rescuesText.text = $"Rescues: {rescueCount}";
+        pirateDestroyedText.text = $"Pirates Destroyed: {piratesDestroyed}";
+        successfulEvasionText.text = $"Successful Evasions: {successfulEvasions}";
+        failedEvasionText.text = $"Failed Evasions: {failedEvasions}";
+    }
+
+    public void UpdateShipEnter(string type)
+    {
+        switch (type.ToLower())
+        {
+            case "cargo": cargoEntered++; cargoEnteredText.text = $"Cargos Entered: {cargoEntered}"; break;
+            case "patrol": patrolEntered++; patrolEnteredText.text = $"Patrols Entered: {patrolEntered}"; break;
+            case "pirate": pirateEntered++; pirateEnteredText.text = $"Pirates Entered: {pirateEntered}"; break;
         }
     }
 
-    public void UpdateShipExit(string shipType) {
-        if (shipType == "cargo") {
-            cargoExitCount++;
-            cargosExited.text = "Cargos exited: " + cargoExitCount;
-        }
-        else if (shipType == "patrol") {
-            patrolExitCount++;
-            patrolsExited.text = "Patrols exited: " + patrolExitCount;
-        }
-        else if (shipType == "pirate") {
-            pirateExitCount++;
-            piratesExited.text = "Pirates exited: " + pirateExitCount;
-        }
-        else {
-            //fallback error
+    public void UpdateShipExit(string type)
+    {
+        switch (type.ToLower())
+        {
+            case "cargo": cargoExited++; cargoExitedText.text = $"Cargos Exited: {cargoExited}"; break;
+            case "patrol": patrolExited++; patrolExitedText.text = $"Patrols Exited: {patrolExited}"; break;
+            case "pirate": pirateExited++; pirateExitedText.text = $"Pirates Exited: {pirateExited}"; break;
         }
     }
 
-    public void UpdateEvasion(bool successfulEvasion) {
-        if (!successfulEvasion) {
-            cargoFailedEvasionCount++;
-            cargosFailedEvasion.text = "Cargos escape failed : " + cargoFailedEvasionCount;
+    public void UpdateCaptures(bool captured)
+    {
+        if (captured)
+        {
+            captureCount++;
+            capturesText.text = $"Captures: {captureCount}";
         }
-        else {
-            cargoSuccessfulEvasionCount++;
-            cargosSucceededEvasion.text = "Cargos escape succeeded: " + cargoSuccessfulEvasionCount;
+        else
+        {
+            rescueCount++;
+            rescuesText.text = $"Rescues: {rescueCount}";
         }
     }
 
-    public void PirateDestroyed() {
-        pirateDestroyCount++;
-        piratesDestroyed.text = "Pirates destroyed: " + pirateDestroyCount;
+    public void PirateDestroyed()
+    {
+        piratesDestroyed++;
+        pirateDestroyedText.text = $"Pirates Destroyed: {piratesDestroyed}";
     }
 
-    public void UpdateCaptures(bool isCaptured) {
-        if (isCaptured) {
-            cargoCaptureCount++;
-            cargosCaptured.text = "Cargos captured: " + cargoCaptureCount;
+    public void UpdateEvasion(bool success, bool finalUpdate)
+    {
+        if (success)
+        {
+            successfulEvasions++;
+            successfulEvasionText.text = $"Successful Evasions: {successfulEvasions}";
         }
-        else {
-            cargoRescueCount++;
-            cargosRescued.text = "Cargos rescued: " + cargoRescueCount;
+        else if (finalUpdate)
+        {
+            failedEvasions++;
+            failedEvasionText.text = $"Failed Evasions: {failedEvasions}";
         }
     }
 }
