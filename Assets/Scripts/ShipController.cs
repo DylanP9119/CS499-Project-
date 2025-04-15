@@ -33,6 +33,7 @@ public class ShipController : MonoBehaviour
     private float simMinutesPassed = 0f;  // simulated time
     public float simulationLengthHours = 24f; // default, override from UI
     public bool useDayNightCycle = true;
+    public static int TimeStepCounter = 0;
 
     //private Vector2Int gridsize = new Vector2Int(400,100);
     Vector2Int gridSize = new Vector2Int(400, 100); // i dont think vector2int should affect gridsize./ scared to change  
@@ -57,44 +58,43 @@ public class ShipController : MonoBehaviour
     void Update()
     {
         if (isPaused.ShouldMove())
-    {
-        //float delta = Time.deltaTime;
-        //globalTime += delta;
-
-        moveTimer += Time.deltaTime;
-
-        if (moveTimer >= 1f)
         {
-            // Simulated time: 1 real second = 5 simulated minutes
-            simMinutesPassed += 5f;
-            UpdateDayNightCycle();
+            moveTimer += Time.deltaTime;
 
-            if (simMinutesPassed >= simulationLengthHours * 60f)
+            if (moveTimer >= 1f)
             {
-                Debug.Log("[SIM END] Reached simulation limit.");
-                isPaused.ToggleMovement(true); // Pause the simulation
-                return;
-            }
+                TimeStepCounter++;
+                // Simulated time: 1 real second = 5 simulated minutes
+                simMinutesPassed += 5f;
+                UpdateDayNightCycle();
 
-            int totalMinutes = Mathf.FloorToInt(simMinutesPassed);
-            int day = (totalMinutes / 1440) + 1; // 1440 minutes = 1 day
-            int hour = (totalMinutes / 60) % 24;
-            int minute = totalMinutes % 60;
+                int totalMinutes = Mathf.FloorToInt(simMinutesPassed);
+                int day = (totalMinutes / 1440) + 1;
+                int hour = (totalMinutes / 60) % 24;
+                int minute = totalMinutes % 60;
 
-            timeDisplayRun.text = $"Day {day} — {hour:D2}:{minute:D2}";
+                // Show updated time *before* checking for simulation end
+                timeDisplayRun.text = $"Day {day} — {hour:D2}:{minute:D2}";
 
-            SpawnShip();
-            foreach (GameObject ship in allShips)
-            {
-                if (ship != null)
+                if (simMinutesPassed >= simulationLengthHours * 60f)
                 {
-                    ship.SendMessage("Step", SendMessageOptions.DontRequireReceiver);
+                    Debug.Log("[SIM END] Reached simulation limit.");
+                    isPaused.ToggleMovement(true); // Pause the simulation
+                    return;
                 }
+
+                SpawnShip();
+                foreach (GameObject ship in allShips)
+                {
+                    if (ship != null)
+                    {
+                        ship.SendMessage("Step", SendMessageOptions.DontRequireReceiver);
+                    }
+                }
+                ShipInteractions.Instance.CheckForInteractions(allShips);
+                moveTimer = 0f;
             }
-            ShipInteractions.Instance.CheckForInteractions(allShips);
-            moveTimer = 0f;
         }
-    }
     }
 
     void UpdateDayNightCycle()
@@ -232,30 +232,30 @@ public class ShipController : MonoBehaviour
                 textController.UpdateShipEnter("pirate");
             }
         }
-        Debug.Log($"[SYNC DEBUG] Step {Time.frameCount} � Cargo({cargoCounter}), Patrol({patrolCounter}), Pirate({pirateCounter})");
+        //Debug.Log($"[SYNC DEBUG] Step {Time.frameCount} � Cargo({cargoCounter}), Patrol({patrolCounter}), Pirate({pirateCounter})");
     }
 
     Vector3 GetUniqueSpawnPosition(string shipType, HashSet<Vector3> occupiedPositions) // This function will need to be updated for weighted probabilities. Check in with Jacob.
     {
-        float roll = Random.value;
+        //float roll = Random.value;
         Vector3 spawnPos = Vector3.zero;
-        int maxAttempts = 400; // Avoid infinite loops
+        int maxAttempts = 9999; // Avoid infinite loops
 
         for (int i = 0; i < maxAttempts; i++)
         {
             if (shipType == "Cargo")
             {
-                int spawnZ = Mathf.FloorToInt(gridSize.y * roll);
+                int spawnZ = Random.Range(0, gridSize.y);
                 spawnPos = new Vector3(0, 0, spawnZ);
             }
             else if (shipType == "Pirate")
             {
-                int spawnX = Mathf.FloorToInt(gridSize.x * roll);
+                int spawnX = Random.Range(0, gridSize.x);
                 spawnPos = new Vector3(spawnX, 0, 0);
             }
             else if (shipType == "Patrol")
             {
-                int spawnZ = Mathf.FloorToInt(gridSize.y * roll);
+                int spawnZ = Random.Range(0, gridSize.y);
                 spawnPos = new Vector3(gridSize.x - 1, 0, spawnZ);
             }
             else
@@ -270,7 +270,17 @@ public class ShipController : MonoBehaviour
             }
             else
             {
-                Debug.Log($"[BLOCKED] {shipType} attempted spawn at {spawnPos} � already occupied this frame.");
+                Debug.Log($"[BLOCKED] {shipType} attempted spawn at {spawnPos} -> already occupied this frame.");
+            }
+            if (shipType == "Pirate")
+            {
+                int pirateRowBlocked = 0;
+                for (int x = 0; x < gridSize.x; x++)
+                {
+                    if (occupiedPositions.Contains(new Vector3(x, 0, 0)))
+                        pirateRowBlocked++;
+                }
+                Debug.LogWarning($"[SPAWN SATURATION] {pirateRowBlocked} pirate row positions are blocked.");
             }
         }
 

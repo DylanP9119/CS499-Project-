@@ -49,11 +49,11 @@ public class CargoBehavior : MonoBehaviour
     public void Step()
     {
 
-        //if (justSpawned)
-        //{
-        //    justSpawned = false;
-        //    return;
-        //}
+        if (justSpawned)
+        {
+            justSpawned = false;
+            return;
+        }
 
         // Stop all logic if captured
         if (isCaptured)

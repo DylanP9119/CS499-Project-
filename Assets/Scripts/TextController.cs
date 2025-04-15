@@ -97,11 +97,8 @@ public class TextController : MonoBehaviour
         }
     }
 
-    public void UpdateEvasion(bool attemptedEvasion, bool successfulEvasion) {
-        if (!attemptedEvasion) {
-            Debug.Log("No evasion.");
-        }
-        else if (!successfulEvasion) {
+    public void UpdateEvasion(bool successfulEvasion) {
+        if (!successfulEvasion) {
             cargoFailedEvasionCount++;
             cargosFailedEvasion.text = "Cargos escape failed : " + cargoFailedEvasionCount;
         }
