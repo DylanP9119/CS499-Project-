@@ -75,10 +75,10 @@ public class ShipInteractions : MonoBehaviour
             }
         }
 
-        // Move captured pairs downward.
-        // In replay mode, force movement each update.
+        // Move captured pairs.
+        // In replay mode or simulation, process movement when the tick has changed (supports reverse).
         bool isReplay = ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive;
-        if (isReplay || ShipController.TimeStepCounter > lastDownMovementTick)
+        if (isReplay || ShipController.TimeStepCounter != lastDownMovementTick)
         {
             foreach (KeyValuePair<GameObject, GameObject> pair in pirateToCapturedCargo)
             {
@@ -96,8 +96,12 @@ public class ShipInteractions : MonoBehaviour
 
                 if (pirateBehavior != null && cargoBehavior != null)
                 {
-                    // Move downward by one grid cell.
-                    pirateBehavior.currentGridPosition += Vector2Int.down;
+                    // Determine movement direction: normally move downward; if reversing in replay, move upward.
+                    int direction = 1;
+                    if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive && ReplayManager.Instance.replaySpeed < 0)
+                        direction = -1;
+                    // Move by one grid cell in the determined vertical direction.
+                    pirateBehavior.currentGridPosition += Vector2Int.down * direction;
                     pirateShip.transform.position = pirateBehavior.GridToWorld(pirateBehavior.currentGridPosition);
 
                     cargoBehavior.currentGridPosition = pirateBehavior.currentGridPosition;

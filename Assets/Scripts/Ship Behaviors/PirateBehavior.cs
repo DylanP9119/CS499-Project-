@@ -19,8 +19,15 @@ public class PirateBehavior : MonoBehaviour
         transform.position = GridToWorld(currentGridPosition);
     }
 
-    public void Step()
+    public void Step(object forceMoveObj = null)
     {
+        bool forceMove = (forceMoveObj is bool flag && flag);
+        if (forceMove)
+        {
+            // Bypass delay and move immediately.
+            MoveShipTowardsDestination();
+            return;
+        }
         movementTimer += Time.deltaTime;
         if (movementTimer < movementDelay)
             return;
@@ -40,7 +47,6 @@ public class PirateBehavior : MonoBehaviour
                 if (ReplayManager.Instance.replaySpeed < 0)
                     direction = -1;
             }
-            // Default movement upward; reverse for negative speed.
             currentGridPosition += Vector2Int.up * direction;
             transform.position = GridToWorld(currentGridPosition);
         }

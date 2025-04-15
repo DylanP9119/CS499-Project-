@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
-using System.IO;
 using System.Linq;
 
 public class TimeControl : MonoBehaviour
@@ -64,4 +63,6 @@ public class TimeControl : MonoBehaviour
         movementPaused = pause;
     }
 
+    // Expose pause state for other systems.
+    public bool IsPaused => movementPaused;
 }

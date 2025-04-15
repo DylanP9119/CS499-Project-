@@ -21,7 +21,7 @@ public class ShipController : MonoBehaviour
     public float patrolNightChance = 0.25f;
     public float pirateNightChance = 0.40f;
     float spawnTimer = 0.0f;
-    private TimeControl isPaused;
+    private TimeControl timeControl;
     private int cargoCounter = 1, patrolCounter = 1, pirateCounter = 1;
     public float simulationLengthHours = 24f;
     private float simMinutesPassed = 0f;
@@ -31,37 +31,53 @@ public class ShipController : MonoBehaviour
 
     void Start()
     {
-        isPaused = FindObjectOfType<TimeControl>();
+        timeControl = FindObjectOfType<TimeControl>();
     }
 
     void Update()
     {
-        // Run simulation only if not in replay mode.
+        // Replay mode branch.
         if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive)
-            return;
+        {
+            if (!ReplayManager.Instance.ReplayPaused)
+            {
+                int currentTick = Mathf.FloorToInt(ReplayManager.Instance.replayTime);
+                SetTimeStepCounter(currentTick);
 
-        if (isPaused.ShouldMove())
+                // In replay mode, call Step without forcing – the ships use their own timers.
+                foreach (GameObject ship in allShips)
+                {
+                    if (ship != null)
+                        ship.SendMessage("Step", SendMessageOptions.DontRequireReceiver);
+                }
+                ShipInteractions.Instance.CheckForInteractions(allShips);
+            }
+            return;
+        }
+
+        // Simulation mode:
+        if (!timeControl.IsPaused)
         {
             spawnTimer += Time.deltaTime;
             if (spawnTimer >= 1f)
             {
-                TimeStepCounter++; // increment simulation tick each second
+                // Increment simulation tick once per timestep.
+                TimeStepCounter++;
                 simMinutesPassed += 5f;
                 UpdateDayNightCycle();
                 SpawnShip();
+
+                // Force each ship to move one step regardless of its internal delay.
+                foreach (GameObject ship in allShips)
+                {
+                    if (ship != null)
+                        // Force step: true parameter bypasses the delay check.
+                        ship.SendMessage("Step", true, SendMessageOptions.DontRequireReceiver);
+                }
+                ShipInteractions.Instance.CheckForInteractions(allShips);
                 spawnTimer = 0f;
             }
         }
-
-        // Update ship movements.
-        foreach (GameObject ship in allShips)
-        {
-            if (ship != null)
-                ship.SendMessage("Step", SendMessageOptions.DontRequireReceiver);
-        }
-
-        // Check interactions in normal simulation.
-        ShipInteractions.Instance.CheckForInteractions(allShips);
     }
 
     void UpdateDayNightCycle()

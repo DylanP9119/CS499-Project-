@@ -18,7 +18,7 @@ public class ReplayManager : MonoBehaviour
     public TextController textController;
 
     private List<ReplayEvent> recordedEvents = new List<ReplayEvent>();
-    private float replayTime;
+    public float replayTime;  // made public to allow ShipController access.
     private bool replayPaused;
     private float maxRecordedTime;
     private int currentShipId;
@@ -32,7 +32,7 @@ public class ReplayManager : MonoBehaviour
     public bool ReplayModeActive { get; private set; }
 
     // Define discrete speeds: -1x, 1x, 2x, 10x, 20x.
-    private readonly float[] speeds = { -1f, 1f, 2f, 10f, 20f };
+    public readonly float[] speeds = { -1f, 1f, 2f, 10f, 20f };
     private int currentSpeedIndex = 1; // Start at 1x.
     public float replaySpeed { get; private set; } = 1f;
 
@@ -79,23 +79,41 @@ public class ReplayManager : MonoBehaviour
 
                 UpdateDisplay();
 
-                // Process any replay events whose timestamp has been reached.
-                while (nextEventIndex < recordedEvents.Count &&
-                       replayTime >= recordedEvents[nextEventIndex].timestamp)
+                // Process forward events when replaySpeed is positive.
+                if (replaySpeed > 0)
                 {
-                    ProcessEvent(recordedEvents[nextEventIndex]);
-                    nextEventIndex++;
+                    while (nextEventIndex < recordedEvents.Count &&
+                           replayTime >= recordedEvents[nextEventIndex].timestamp)
+                    {
+                        ProcessEvent(recordedEvents[nextEventIndex]);
+                        nextEventIndex++;
+                    }
+                }
+                // Process reverse events when replaySpeed is negative.
+                else if (replaySpeed < 0)
+                {
+                    while (nextEventIndex > 0 && replayTime < recordedEvents[nextEventIndex - 1].timestamp)
+                    {
+                        nextEventIndex--;
+                        UndoEvent(recordedEvents[nextEventIndex]);
+                    }
                 }
             }
 
-            // Update movement of already-spawned ships.
-            foreach (GameObject ship in shipController.allShips)
+            // Update movement of already-spawned ships only if replay is not paused.
+            if (!replayPaused)
             {
-                if (ship != null)
-                    ship.SendMessage("Step", SendMessageOptions.DontRequireReceiver);
+                foreach (GameObject ship in shipController.allShips)
+                {
+                    if (ship != null)
+                        ship.SendMessage("Step", SendMessageOptions.DontRequireReceiver);
+                }
             }
-            // Process interactions (including moving captured pairs downward).
-            ShipInteractions.Instance.CheckForInteractions(shipController.allShips);
+            // Process interactions (including moving captured pairs).
+            if (!replayPaused)
+            {
+                ShipInteractions.Instance.CheckForInteractions(shipController.allShips);
+            }
         }
     }
 
@@ -176,6 +194,52 @@ public class ReplayManager : MonoBehaviour
                     cargo.isCaptured = false;
                     textController.UpdateCaptures(false);
                     Debug.Log($"[Replay] Rescue event: Cargo ship ID {evt.shipId} marked as rescued.");
+                }
+            }
+        }
+    }
+
+    // New method to undo events when reversing time.
+    void UndoEvent(ReplayEvent evt)
+    {
+        if (evt.eventType == "spawn")
+        {
+            // Remove the spawned ship if it exists.
+            if (replayedShips.TryGetValue(evt.shipId, out GameObject ship))
+            {
+                shipController.allShips.Remove(ship);
+                Destroy(ship);
+                replayedShips.Remove(evt.shipId);
+            }
+        }
+        else if (evt.eventType == "capture")
+        {
+            // Undo capture: mark cargo as not captured and update UI, and pirate no longer has cargo.
+            if (replayedShips.TryGetValue(evt.shipId, out GameObject ship))
+            {
+                CargoBehavior cargo = ship.GetComponent<CargoBehavior>();
+                if (cargo != null)
+                {
+                    cargo.isCaptured = false;
+                    textController.UndoCapture();
+                    Debug.Log($"[Replay] Undo Capture: Cargo ship ID {evt.shipId} marked as not captured.");
+                }
+                PirateBehavior pirate = ship.GetComponent<PirateBehavior>();
+                if (pirate != null)
+                    pirate.hasCargo = false;
+            }
+        }
+        else if (evt.eventType == "rescue")
+        {
+            // Undo rescue: mark cargo as captured again and update UI.
+            if (replayedShips.TryGetValue(evt.shipId, out GameObject ship))
+            {
+                CargoBehavior cargo = ship.GetComponent<CargoBehavior>();
+                if (cargo != null)
+                {
+                    cargo.isCaptured = true;
+                    textController.UndoRescue();
+                    Debug.Log($"[Replay] Undo Rescue: Cargo ship ID {evt.shipId} marked as captured again.");
                 }
             }
         }
@@ -274,6 +338,9 @@ public class ReplayManager : MonoBehaviour
     }
 
     public void UIvisibility(bool visible) => replayBoxUI.SetActive(visible);
+
+    // Expose replay pause state for other systems.
+    public bool ReplayPaused => replayPaused;
 }
 
 [System.Serializable]

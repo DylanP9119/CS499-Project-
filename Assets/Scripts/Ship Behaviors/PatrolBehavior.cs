@@ -18,8 +18,14 @@ public class PatrolBehavior : MonoBehaviour
         transform.position = GridToWorld(currentGridPosition);
     }
 
-    public void Step()
+    public void Step(object forceMoveObj = null)
     {
+        bool forceMove = (forceMoveObj is bool flag && flag);
+        if (forceMove)
+        {
+            MoveShipTowardsDestination();
+            return;
+        }
         movementTimer += Time.deltaTime;
         if (movementTimer < movementDelay)
             return;
@@ -37,7 +43,6 @@ public class PatrolBehavior : MonoBehaviour
                 if (ReplayManager.Instance.replaySpeed < 0)
                     direction = -1;
             }
-            // Default movement to the left; reverse if needed.
             currentGridPosition += Vector2Int.left * direction;
             transform.position = GridToWorld(currentGridPosition);
         }

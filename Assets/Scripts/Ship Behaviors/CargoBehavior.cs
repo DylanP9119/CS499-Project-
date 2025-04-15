@@ -20,8 +20,17 @@ public class CargoBehavior : MonoBehaviour
         transform.position = GridToWorld(currentGridPosition);
     }
 
-    public void Step()
+    public void Step(object forceMoveObj = null)
     {
+        bool forceMove = (forceMoveObj is bool flag && flag);
+        if (forceMove)
+        {
+            // If captured, do not move.
+            if (isCaptured)
+                return;
+            MoveShipTowardsDestination();
+            return;
+        }
         movementTimer += Time.deltaTime;
         if (movementTimer < movementDelay)
             return;
@@ -30,7 +39,11 @@ public class CargoBehavior : MonoBehaviour
             return;
         isEvadingThisStep = false;
 
-        // Default movement to the right; reverse in replay if negative speed.
+        MoveShipTowardsDestination();
+    }
+
+    public void MoveShipTowardsDestination()
+    {
         int direction = 1;
         if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive)
         {

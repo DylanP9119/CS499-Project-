@@ -102,4 +102,17 @@ public class TextController : MonoBehaviour
             failedEvasionText.text = $"Failed Evasions: {failedEvasions}";
         }
     }
+
+    // New helper methods for undoing interactions during reverse replay.
+    public void UndoCapture()
+    {
+        captureCount = Mathf.Max(0, captureCount - 1);
+        capturesText.text = $"Captures: {captureCount}";
+    }
+
+    public void UndoRescue()
+    {
+        rescueCount = Mathf.Max(0, rescueCount - 1);
+        rescuesText.text = $"Rescues: {rescueCount}";
+    }
 }
