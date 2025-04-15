@@ -7,6 +7,8 @@ public class ShipController : MonoBehaviour
 {
     // Static simulation tick counter.
     public static int TimeStepCounter { get; private set; } = 0;
+    // For simulation testing, we use a shorter tick duration.
+    public float simulationTickDuration = 1f;
 
     public GameObject cargoPrefab;
     public GameObject patrolPrefab;
@@ -36,20 +38,13 @@ public class ShipController : MonoBehaviour
 
     void Update()
     {
-        // Replay mode branch.
+        // If in Replay Mode, handle via ReplayManager.
         if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive)
         {
             if (!ReplayManager.Instance.ReplayPaused)
             {
-                int currentTick = Mathf.FloorToInt(ReplayManager.Instance.replayTime);
+                int currentTick = Mathf.FloorToInt(ReplayManager.Instance.replayTime / simulationTickDuration);
                 SetTimeStepCounter(currentTick);
-
-                // In replay mode, call Step without forcing – the ships use their own timers.
-                foreach (GameObject ship in allShips)
-                {
-                    if (ship != null)
-                        ship.SendMessage("Step", SendMessageOptions.DontRequireReceiver);
-                }
                 ShipInteractions.Instance.CheckForInteractions(allShips);
             }
             return;
@@ -59,20 +54,39 @@ public class ShipController : MonoBehaviour
         if (!timeControl.IsPaused)
         {
             spawnTimer += Time.deltaTime;
-            if (spawnTimer >= 1f)
+            if (spawnTimer >= simulationTickDuration)
             {
-                // Increment simulation tick once per timestep.
+                // Advance simulation tick.
                 TimeStepCounter++;
-                simMinutesPassed += 5f;
+                simMinutesPassed += 1f;
                 UpdateDayNightCycle();
-                SpawnShip();
+                
+                float simTime = TimeStepCounter * simulationTickDuration;
+                SpawnShip(simTime);
 
-                // Force each ship to move one step regardless of its internal delay.
+                // Explicitly call Step on each ship's behavior component.
                 foreach (GameObject ship in allShips)
                 {
-                    if (ship != null)
-                        // Force step: true parameter bypasses the delay check.
-                        ship.SendMessage("Step", true, SendMessageOptions.DontRequireReceiver);
+                    if (ship == null)
+                        continue;
+                    if (ship.CompareTag("Cargo"))
+                    {
+                        var cargo = ship.GetComponent<CargoBehavior>();
+                        if(cargo != null)
+                            cargo.Step(true);
+                    }
+                    else if (ship.CompareTag("Patrol"))
+                    {
+                        var patrol = ship.GetComponent<PatrolBehavior>();
+                        if(patrol != null)
+                            patrol.Step(true);
+                    }
+                    else if (ship.CompareTag("Pirate"))
+                    {
+                        var pirate = ship.GetComponent<PirateBehavior>();
+                        if(pirate != null)
+                            pirate.Step(true);
+                    }
                 }
                 ShipInteractions.Instance.CheckForInteractions(allShips);
                 spawnTimer = 0f;
@@ -97,7 +111,8 @@ public class ShipController : MonoBehaviour
         }
     }
 
-    void SpawnShip()
+    // Accepts a simTime parameter (in seconds) used for replay recording.
+    void SpawnShip(float simTime)
     {
         HashSet<Vector3> occupiedPositions = new HashSet<Vector3>();
         foreach (GameObject ship in allShips)
@@ -114,14 +129,13 @@ public class ShipController : MonoBehaviour
             {
                 int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : cargoCounter;
                 string shipType = "Cargo";
-
                 GameObject cargo = Instantiate(cargoPrefab, spawnPos, GetSpawnRotation("Cargo"));
                 cargo.name = $"Cargo({cargoCounter++})";
                 cargo.tag = "Cargo";
                 allShips.Add(cargo);
                 textController.UpdateShipEnter("cargo");
                 if (ReplayManager.Instance != null)
-                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, cargo.transform.rotation);
+                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, cargo.transform.rotation, simTime);
             }
         }
         // Patrol spawn.
@@ -132,14 +146,13 @@ public class ShipController : MonoBehaviour
             {
                 int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : patrolCounter;
                 string shipType = "Patrol";
-
                 GameObject patrol = Instantiate(patrolPrefab, spawnPos, GetSpawnRotation("Patrol"));
                 patrol.name = $"Patrol({patrolCounter++})";
                 patrol.tag = "Patrol";
                 allShips.Add(patrol);
                 textController.UpdateShipEnter("patrol");
                 if (ReplayManager.Instance != null)
-                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, patrol.transform.rotation);
+                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, patrol.transform.rotation, simTime);
             }
         }
         // Pirate spawn.
@@ -150,25 +163,24 @@ public class ShipController : MonoBehaviour
             {
                 int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : pirateCounter;
                 string shipType = "Pirate";
-
                 GameObject pirate = Instantiate(piratePrefab, spawnPos, GetSpawnRotation("Pirate"));
                 pirate.name = $"Pirate({pirateCounter++})";
                 pirate.tag = "Pirate";
                 allShips.Add(pirate);
                 textController.UpdateShipEnter("pirate");
                 if (ReplayManager.Instance != null)
-                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, pirate.transform.rotation);
+                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, pirate.transform.rotation, simTime);
             }
         }
     }
 
     Vector3 GetUniqueSpawnPosition(string shipType, HashSet<Vector3> occupiedPositions)
     {
-        float roll = Random.value;
-        Vector3 spawnPos = Vector3.zero;
         int maxAttempts = 400;
+        Vector3 spawnPos = Vector3.zero;
         for (int i = 0; i < maxAttempts; i++)
         {
+            float roll = Random.value;
             if (shipType == "Cargo")
             {
                 int spawnZ = Mathf.FloorToInt(gridSize.y * roll);
@@ -184,7 +196,8 @@ public class ShipController : MonoBehaviour
                 int spawnZ = Mathf.FloorToInt(gridSize.y * roll);
                 spawnPos = new Vector3(gridSize.x - 1, 0, spawnZ);
             }
-            else return Vector3.zero;
+            else
+                return Vector3.zero;
             if (!occupiedPositions.Contains(spawnPos))
             {
                 occupiedPositions.Add(spawnPos);
@@ -222,7 +235,6 @@ public class ShipController : MonoBehaviour
             ship.name = shipName;
             ship.tag = shipType;
             allShips.Add(ship);
-            // Update UI counter for replay spawn.
             textController.UpdateShipEnter(shipType);
         }
     }
@@ -237,7 +249,7 @@ public class ShipController : MonoBehaviour
         allShips.Clear();
     }
 
-    // Public helper to update the tick (used in replay mode).
+    // Public helper to update the simulation tick (used in replay mode).
     public static void SetTimeStepCounter(int newTick)
     {
         TimeStepCounter = newTick;

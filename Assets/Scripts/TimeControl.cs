@@ -7,7 +7,7 @@ using System.Linq;
 public class TimeControl : MonoBehaviour
 {
     public Button forwardButton;
-    public float[] speedLevels = { 1.0f, 0.5f, 0.1f, 0.05f }; // 1x, 2x, 10x, 20x for simulation
+    public float[] speedLevels = { 1.0f, 0.5f, 0.1f, 0.05f }; // For simulation: 1x, 2x, 10x, 20x speeds
     private int currentSpeedIndex = 0;
     private float moveTimer = 0f;
     private bool movementPaused = false;
@@ -18,6 +18,7 @@ public class TimeControl : MonoBehaviour
         if (forwardButton != null)
             forwardButton.onClick.AddListener(CycleSpeedUp);
     }
+
     void Update()
     {
         HandleSpeedInput();
@@ -32,12 +33,14 @@ public class TimeControl : MonoBehaviour
             ToggleMovement(movementPaused);
         }
     }
+
     void CycleSpeedUp()
     {
         Debug.Log("Cycle speed button pressed in simulation mode.");
         currentSpeedIndex = (currentSpeedIndex + 1) % speedLevels.Length;
         Debug.Log($"Simulation speed set to {speedLevels[currentSpeedIndex]} seconds between moves.");
     }
+
     void UpdateMoveTimer()
     {
         if (!movementPaused)

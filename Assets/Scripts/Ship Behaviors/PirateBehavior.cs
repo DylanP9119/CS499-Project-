@@ -19,12 +19,10 @@ public class PirateBehavior : MonoBehaviour
         transform.position = GridToWorld(currentGridPosition);
     }
 
-    public void Step(object forceMoveObj = null)
+    public void Step(bool forceMove)
     {
-        bool forceMove = (forceMoveObj is bool flag && flag);
         if (forceMove)
         {
-            // Bypass delay and move immediately.
             MoveShipTowardsDestination();
             return;
         }
@@ -42,11 +40,8 @@ public class PirateBehavior : MonoBehaviour
         if (currentGridPosition != destinationGridPosition)
         {
             int direction = 1;
-            if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive)
-            {
-                if (ReplayManager.Instance.replaySpeed < 0)
-                    direction = -1;
-            }
+            if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive && ReplayManager.Instance.replaySpeed < 0)
+                direction = -1;
             currentGridPosition += Vector2Int.up * direction;
             transform.position = GridToWorld(currentGridPosition);
         }

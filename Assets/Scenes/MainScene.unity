@@ -165,6 +165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0e03ef221a445349a8c3c09807aa2e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  simulationTickDuration: 1
   cargoPrefab: {fileID: 2945873473625126443, guid: f0c21dc3fa449a04896ff4a3cd287b14, type: 3}
   patrolPrefab: {fileID: 2945873473625126443, guid: 828493d60c83e3d4daa2eec8c3e6170a, type: 3}
   piratePrefab: {fileID: 2945873473625126443, guid: ca70039599911434cb90b21854d3c217, type: 3}

@@ -20,12 +20,11 @@ public class CargoBehavior : MonoBehaviour
         transform.position = GridToWorld(currentGridPosition);
     }
 
-    public void Step(object forceMoveObj = null)
+    // When forceMove is true, bypass internal timer.
+    public void Step(bool forceMove)
     {
-        bool forceMove = (forceMoveObj is bool flag && flag);
         if (forceMove)
         {
-            // If captured, do not move.
             if (isCaptured)
                 return;
             MoveShipTowardsDestination();
@@ -38,18 +37,14 @@ public class CargoBehavior : MonoBehaviour
         if (isCaptured)
             return;
         isEvadingThisStep = false;
-
         MoveShipTowardsDestination();
     }
 
     public void MoveShipTowardsDestination()
     {
         int direction = 1;
-        if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive)
-        {
-            if (ReplayManager.Instance.replaySpeed < 0)
-                direction = -1;
-        }
+        if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive && ReplayManager.Instance.replaySpeed < 0)
+            direction = -1;
         currentGridPosition += Vector2Int.right * direction;
         transform.position = GridToWorld(currentGridPosition);
     }

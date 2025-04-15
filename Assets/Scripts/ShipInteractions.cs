@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class ShipInteractions : MonoBehaviour
 {
@@ -24,7 +25,7 @@ public class ShipInteractions : MonoBehaviour
         Instance = this;
     }
 
-    // Called each tick (or each replay update) to process interactions.
+    // Called each tick (or replay update) to process interactions.
     public void CheckForInteractions(List<GameObject> allShips)
     {
         List<GameObject> piratesToRemove = new();
@@ -34,13 +35,16 @@ public class ShipInteractions : MonoBehaviour
 
         foreach (GameObject ship in allShips)
         {
-            if (ship == null || !ship.activeInHierarchy) continue;
+            if (ship == null || !ship.activeInHierarchy)
+                continue;
             Vector3 shipPos = ship.transform.position;
 
             foreach (GameObject otherShip in allShips)
             {
-                if (otherShip == null || !otherShip.activeInHierarchy) continue;
-                if (ship == otherShip) continue;
+                if (otherShip == null || !otherShip.activeInHierarchy)
+                    continue;
+                if (ship == otherShip)
+                    continue;
                 Vector3 otherPos = otherShip.transform.position;
 
                 if (ship.CompareTag("Pirate") && otherShip.CompareTag("Patrol") && IsWithinRange(shipPos, otherPos, 3))
@@ -75,10 +79,8 @@ public class ShipInteractions : MonoBehaviour
             }
         }
 
-        // Move captured pairs.
-        // In replay mode or simulation, process movement when the tick has changed (supports reverse).
-        bool isReplay = ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive;
-        if (isReplay || ShipController.TimeStepCounter != lastDownMovementTick)
+        // Move captured pairs when the simulation tick has advanced.
+        if (ShipController.TimeStepCounter != lastDownMovementTick)
         {
             foreach (KeyValuePair<GameObject, GameObject> pair in pirateToCapturedCargo)
             {
@@ -100,7 +102,7 @@ public class ShipInteractions : MonoBehaviour
                     int direction = 1;
                     if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive && ReplayManager.Instance.replaySpeed < 0)
                         direction = -1;
-                    // Move by one grid cell in the determined vertical direction.
+                    // Move captured pair one grid cell vertically.
                     pirateBehavior.currentGridPosition += Vector2Int.down * direction;
                     pirateShip.transform.position = pirateBehavior.GridToWorld(pirateBehavior.currentGridPosition);
 
@@ -146,7 +148,8 @@ public class ShipInteractions : MonoBehaviour
     {
         foreach (GameObject ship in allShips)
         {
-            if (ship == null) continue;
+            if (ship == null)
+                continue;
             Vector3 pos = ship.transform.position;
             if (ship.CompareTag("Cargo") && pos.x > 399)
             {
