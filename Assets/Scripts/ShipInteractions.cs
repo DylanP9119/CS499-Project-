@@ -154,7 +154,7 @@ public class ShipInteractions : MonoBehaviour
         //    textController.UpdateEvasion(true, true);
         //    Debug.Log($"[SUCCESS LOGGED] {pair.Item1.name} successfully evaded {pair.Item2.name}");
         //    evadeTimestamps.Remove(pair);
-         //   evasionOutcomeLogged[pair] = true; // success logged
+        //   evasionOutcomeLogged[pair] = true; // success logged
         //}
         List<(GameObject, GameObject)> evasionCleanup = new();
         foreach (var entry in evadeTimestamps)
@@ -257,6 +257,7 @@ public class ShipInteractions : MonoBehaviour
             shipCtrl.allShips.Remove(pirate);
         }
         Destroy(pirate);
+        Debug.Log($"[PIRATE DESTROYED]");
     }
 
     private void HandleCapture(GameObject pirate, GameObject cargo)
@@ -284,37 +285,37 @@ public class ShipInteractions : MonoBehaviour
                 Debug.Log($"[SKIPPED LOGGING] {cargo.name} already marked failed for {pirate.name}");
             }
             pendingEvasions.Remove((cargo, pirate));
-        if (evadeTimestamps.ContainsKey((cargo, pirate)))
-        {
-            textController.UpdateEvasion(false, false);
-            evadeTimestamps.Remove((cargo, pirate));
-        }
+            if (evadeTimestamps.ContainsKey((cargo, pirate)))
+            {
+                textController.UpdateEvasion(false, false);
+                evadeTimestamps.Remove((cargo, pirate));
+            }
 
-        if (cargoBehavior != null)
-            cargoBehavior.isCaptured = true;
+            if (cargoBehavior != null)
+                cargoBehavior.isCaptured = true;
 
-        pirateToCapturedCargo[pirate] = cargo;
+            pirateToCapturedCargo[pirate] = cargo;
 
-        PirateBehavior pirateBehavior = pirate.GetComponent<PirateBehavior>();
-        if (pirateBehavior != null)
-            pirateBehavior.hasCargo = true;
+            PirateBehavior pirateBehavior = pirate.GetComponent<PirateBehavior>();
+            if (pirateBehavior != null)
+                pirateBehavior.hasCargo = true;
 
-        // Align pirate with cargo.
-        if (pirateBehavior != null && cargoBehavior != null)
-        {
-            pirateBehavior.currentGridPosition = cargoBehavior.currentGridPosition;
-            pirate.transform.position = cargo.transform.position;
-        }
+            // Align pirate with cargo.
+            if (pirateBehavior != null && cargoBehavior != null)
+            {
+                pirateBehavior.currentGridPosition = cargoBehavior.currentGridPosition;
+                pirate.transform.position = cargo.transform.position;
+            }
 
-        textController.UpdateCaptures(true);
+            textController.UpdateCaptures(true);
 
-        // Record the capture event so that replay includes it.
-        if (ReplayManager.Instance != null)
-        {
-            int shipId = ExtractShipId(cargo);
-            float simTime = ShipController.TimeStepCounter * 1f; // using tick duration of 1f
-            ReplayManager.Instance.RecordCaptureEvent(shipId, cargo.transform.position, cargo.transform.rotation, simTime);
-        }
+            // Record the capture event so that replay includes it.
+            if (ReplayManager.Instance != null)
+            {
+                int shipId = ExtractShipId(cargo);
+                float simTime = ShipController.TimeStepCounter * 1f; // using tick duration of 1f
+                ReplayManager.Instance.RecordCaptureEvent(shipId, cargo.transform.position, cargo.transform.rotation, simTime);
+            }
         }
     }
 
