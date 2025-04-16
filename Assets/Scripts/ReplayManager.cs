@@ -69,7 +69,7 @@ public class ReplayManager : MonoBehaviour
     {
         HandleReplayInput();
 
-        if (ReplayModeActive)
+        if (ReplayModeActive && !replayPaused)
         {
             // Even if replay is paused, update movement ticks.
             replayTime += replaySpeed * Time.unscaledDeltaTime;

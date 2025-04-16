@@ -257,6 +257,7 @@ public class ShipInteractions : MonoBehaviour
             shipCtrl.allShips.Remove(pirate);
         }
         Destroy(pirate);
+        Debug.Log($"[PIRATE DESTROYED]");
     }
 
     private void HandleCapture(GameObject pirate, GameObject cargo)
