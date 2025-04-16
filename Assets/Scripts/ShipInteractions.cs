@@ -11,6 +11,8 @@ public class ShipInteractions : MonoBehaviour
     private Dictionary<GameObject, GameObject> pirateToCapturedCargo = new();
     private Dictionary<GameObject, HashSet<GameObject>> cargoEvadedPirates = new();
     private Dictionary<(GameObject cargo, GameObject pirate), int> evadeTimestamps = new();
+    private Dictionary<(GameObject, GameObject), bool> evasionOutcomeLogged = new();
+
 
     // For controlling captured pair movement per tick.
     private int lastDownMovementTick = -1;
@@ -145,7 +147,9 @@ public class ShipInteractions : MonoBehaviour
         foreach (var pair in evasionCleanup)
         {
             textController.UpdateEvasion(true, true);
+            Debug.Log($"[SUCCESS LOGGED] {pair.Item1.name} successfully evaded {pair.Item2.name}");
             evadeTimestamps.Remove(pair);
+            evasionOutcomeLogged[pair] = true; // success logged
         }
     }
 
@@ -213,7 +217,17 @@ public class ShipInteractions : MonoBehaviour
 
         if (evadeTimestamps.ContainsKey((cargo, pirate)))
         {
-            textController.UpdateEvasion(false, false);
+            Debug.Log($"[CAPTURE] {cargo.name} was previously evaded from {pirate.name}");
+            if (!evasionOutcomeLogged.ContainsKey((cargo, pirate)) || evasionOutcomeLogged[(cargo, pirate)] == true)
+            {
+                Debug.Log($"[FAILURE LOGGED] {cargo.name} failed to evade {pirate.name}");
+                textController.UpdateEvasion(false, false);
+                evasionOutcomeLogged[(cargo, pirate)] = false; // mark that we’ve handled this pair
+            }
+            else
+            {
+                Debug.Log($"[SKIPPED LOGGING] {cargo.name} already marked failed for {pirate.name}");
+            }
             evadeTimestamps.Remove((cargo, pirate));
         }
 
@@ -296,6 +310,7 @@ public class ShipInteractions : MonoBehaviour
 
         cargoEvadedPirates[cargo].Add(pirate);
         evadeTimestamps[(cargo, pirate)] = ShipController.TimeStepCounter;
+        Debug.Log($"[EVADE] {cargo.name} evaded {pirate.name} at tick {ShipController.TimeStepCounter}");
 
         cargoBehavior.currentGridPosition += new Vector2Int(1, 1);
         cargo.transform.position = cargoBehavior.GridToWorld(cargoBehavior.currentGridPosition);
