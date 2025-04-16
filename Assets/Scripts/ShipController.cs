@@ -118,11 +118,11 @@ public class ShipController : MonoBehaviour
                     else if (ship.CompareTag("Pirate"))
                     {
                         var pirate = ship.GetComponent<PirateBehavior>();
-
-                        if(pirate != null)
-
                         if (pirate != null)
+                            pirate.Step(true);
+                    }
                 }
+                ShipInteractions.Instance.CheckForInteractions(allShips);
                 spawnTimer = 0f;
             }
         }
@@ -303,7 +303,7 @@ public class ShipController : MonoBehaviour
             return Quaternion.Euler(0, 0, 0);
         return Quaternion.identity;
     }
-    }
+
     // For replay mode: spawn a ship and update UI counter.
     public void ReplaySpawn(string shipType, Vector3 position, Quaternion rotation, string shipName, int shipId)
     {
