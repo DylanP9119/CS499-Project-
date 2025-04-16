@@ -143,8 +143,6 @@ public class ReplayManager : MonoBehaviour
             SaveReplayToFile();
         if (Input.GetKeyDown(KeyCode.L))
             LoadReplayFromFile();
-        if (Input.GetKeyDown(KeyCode.S))
-            ToggleReplay();
     }
 
     public int GetNextShipId() => currentShipId++;
@@ -256,14 +254,6 @@ public class ReplayManager : MonoBehaviour
                 }
             }
         }
-    }
-
-    public void ToggleReplay()
-    {
-        if (!ReplayModeActive)
-            StartReplay();
-        else
-            StopReplay();
     }
 
     void StartReplay()
