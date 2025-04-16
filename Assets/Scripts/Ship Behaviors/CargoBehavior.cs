@@ -18,14 +18,6 @@ public class CargoBehavior : MonoBehaviour
         currentGridPosition = WorldToGrid(transform.position);
         destinationGridPosition = new Vector2Int(gridSize.x, currentGridPosition.y);
     }
-    else
-    {
-        int startX = 0;
-        int startY = Random.Range(0, gridSize.y);
-        currentGridPosition = new Vector2Int(startX, startY);
-        destinationGridPosition = new Vector2Int(gridSize.x, startY);
-        transform.position = GridToWorld(currentGridPosition);
-    }
     }
 
     // When forceMove is true, bypass internal timer.

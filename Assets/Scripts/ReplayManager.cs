@@ -149,10 +149,14 @@ public class ReplayManager : MonoBehaviour
 
     public void RecordShipSpawn(int shipId, string shipType, Vector3 position, Quaternion rotation, float simTimestamp)
     {
-        var evt = new ReplayEvent(shipId, shipType, position, rotation, simTimestamp, "spawn");
+        Debug.Log("ReplayManager before Replay SHIP: " + shipType + position);
+        ReplayEvent evt = new ReplayEvent(shipId, shipType, position, rotation, simTimestamp, "spawn");
         recordedEvents.Add(evt);
+
         if (evt.timestamp > maxRecordedTime)
             maxRecordedTime = evt.timestamp;
+        Debug.Log("ReplayManager AFTER Replay SHIP: " + shipType + position);
+
     }
 
     public void RecordCaptureEvent(int shipId, Vector3 position, Quaternion rotation, float simTimestamp)
