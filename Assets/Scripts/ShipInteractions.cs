@@ -1,19 +1,34 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class ShipInteractions : MonoBehaviour
 {
     public static ShipInteractions Instance;
     public bool isNight = false;
+    public TextController textController;
 
     private Dictionary<GameObject, GameObject> pirateToCapturedCargo = new();
     private Dictionary<GameObject, HashSet<GameObject>> cargoEvadedPirates = new();
+    //private Dictionary<(GameObject cargo, GameObject pirate), int> evadeTimestamps = new();
+    private Dictionary<(GameObject, GameObject), bool> evasionOutcomeLogged = new();
+    private Dictionary<(GameObject cargo, GameObject pirate), int> pendingEvasions = new();
+
+
+    // For controlling captured pair movement per tick.
+    private int lastDownMovementTick = -1;
 
     void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
     }
 
+    // Called each tick (or replay update) to process interactions.
     public void CheckForInteractions(List<GameObject> allShips)
     {
         List<GameObject> piratesToRemove = new();
@@ -23,85 +38,89 @@ public class ShipInteractions : MonoBehaviour
 
         foreach (GameObject ship in allShips)
         {
+            if (ship == null || !ship.activeInHierarchy)
+                continue;
             Vector3 shipPos = ship.transform.position;
 
             foreach (GameObject otherShip in allShips)
             {
-                if (ship == otherShip) continue;
-
+                if (otherShip == null || !otherShip.activeInHierarchy)
+                    continue;
+                if (ship == otherShip)
+                    continue;
                 Vector3 otherPos = otherShip.transform.position;
 
                 if (ship.CompareTag("Pirate") && otherShip.CompareTag("Patrol") && IsWithinRange(shipPos, otherPos, 3))
                 {
-                   HandleDefeat(ship, otherShip); //bug occurs 
+                    HandleDefeat(ship, otherShip);
                 }
                 else if (ship.CompareTag("Pirate") && otherShip.CompareTag("Cargo") && !isNight && IsWithinRange(shipPos, otherPos, 3))
                 {
-                   HandleCapture(ship, otherShip); //bug occurs
+                    HandleCapture(ship, otherShip);
                 }
                 else if (ship.CompareTag("Pirate") && otherShip.CompareTag("Cargo") && isNight && IsWithinRange(shipPos, otherPos, 2))
                 {
-                   HandleCapture(ship, otherShip);
+                    HandleCapture(ship, otherShip);
                 }
                 else if (ship.CompareTag("Patrol"))
                 {
                     CargoBehavior cargoBehavior = otherShip.GetComponent<CargoBehavior>();
                     if (cargoBehavior != null && cargoBehavior.isCaptured && IsWithinRange(shipPos, otherPos, 3))
                     {
-                        Debug.Log($"[TRIGGER] {ship.name} triggered rescue of {otherShip.name}");
-                        HandleRescue(ship, otherShip); // captured cargo rescued by patrol NO BUG
+                        HandleRescue(ship);
                     }
                 }
-                else if (ship.CompareTag("Cargo") && otherShip.CompareTag("Pirate") && IsWithinRange(shipPos, otherShip.transform.position, 4))
+                else if (ship.CompareTag("Cargo") && otherShip.CompareTag("Pirate"))
                 {
-                    HandleEvasion(ship, otherShip); //NO BUG 
+                    bool inOuterRange = IsWithinRange(shipPos, otherShip.transform.position, 4);
+                    bool inInnerRange = IsWithinRange(shipPos, otherShip.transform.position, 3);
+                    if (inOuterRange && !inInnerRange)
+                    {
+                        HandleEvasion(ship, otherShip);
+                    }
                 }
             }
         }
 
-        //foreach (GameObject ship in allShips)
-        //{
-            //if (ship != null && ship.CompareTag("Evading"))
-            //{
-             //   ship.tag = "Cargo";
-           // }
-      //  }
-
-        // Move captured pirates and cargos south and remove if at the coast
-        foreach (KeyValuePair<GameObject, GameObject> pirateCargoPair in pirateToCapturedCargo)
+        // Move captured pairs when the simulation tick has advanced.
+        if (ShipController.TimeStepCounter != lastDownMovementTick)
         {
-            GameObject pirateShip = pirateCargoPair.Key;
-            GameObject capturedCargo = pirateCargoPair.Value;
-
-            if (pirateShip == null || capturedCargo == null)
+            foreach (KeyValuePair<GameObject, GameObject> pair in pirateToCapturedCargo)
             {
-                //Debug.LogWarning($"[CLEANUP] Removing null pair {pirateShip?.name}, {capturedCargo?.name}");
-                piratesToRemove.Add(pirateShip);
-                continue;
+                GameObject pirateShip = pair.Key;
+                GameObject capturedCargo = pair.Value;
+
+                if (pirateShip == null || capturedCargo == null)
+                {
+                    piratesToRemove.Add(pirateShip);
+                    continue;
+                }
+
+                PirateBehavior pirateBehavior = pirateShip.GetComponent<PirateBehavior>();
+                CargoBehavior cargoBehavior = capturedCargo.GetComponent<CargoBehavior>();
+
+                if (pirateBehavior != null && cargoBehavior != null)
+                {
+                    // Determine movement direction: normally move downward; if reversing in replay, move upward.
+                    int direction = 1;
+                    if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive && ReplayManager.Instance.replaySpeed < 0)
+                        direction = -1;
+                    // Move captured pair one grid cell vertically.
+                    pirateBehavior.currentGridPosition += Vector2Int.down * direction;
+                    pirateShip.transform.position = pirateBehavior.GridToWorld(pirateBehavior.currentGridPosition);
+
+                    cargoBehavior.currentGridPosition = pirateBehavior.currentGridPosition;
+                    capturedCargo.transform.position = pirateShip.transform.position;
+                }
+
+                if (pirateShip.transform.position.z <= 0)
+                {
+                    Destroy(pirateShip);
+                    Destroy(capturedCargo);
+                    piratesToRemove.Add(pirateShip);
+                }
             }
-
-            PirateBehavior pirateBehavior = pirateShip.GetComponent<PirateBehavior>();
-            CargoBehavior cargoBehavior = capturedCargo.GetComponent<CargoBehavior>();
-
-            if (pirateBehavior != null && cargoBehavior != null)
-            {
-                // Move both by grid
-                pirateBehavior.currentGridPosition += Vector2Int.down;
-                pirateShip.transform.position = pirateBehavior.GridToWorld(pirateBehavior.currentGridPosition);
-
-                cargoBehavior.currentGridPosition = pirateBehavior.currentGridPosition;
-                capturedCargo.transform.position = pirateShip.transform.position;
-            }
-
-            //Debug.Log($"[Captured Move] {capturedCargo.name} & {pirateShip.name} moved to {pirateShip.transform.position}");
-
-            if (pirateShip.transform.position.z <= 0)
-            {
-                Debug.Log($"[EXIT] {capturedCargo.name} and {pirateShip.name} exited at the coast and were removed.");
-                Destroy(pirateShip);
-                Destroy(capturedCargo);
-                piratesToRemove.Add(pirateShip);
-            }
+            lastDownMovementTick = ShipController.TimeStepCounter;
         }
 
         foreach (GameObject pirateToRemove in piratesToRemove)
@@ -109,38 +128,69 @@ public class ShipInteractions : MonoBehaviour
             pirateToCapturedCargo.Remove(pirateToRemove);
         }
 
-        // Clean up any ships that reach the map boundaries and are no longer active
+        // Remove ships at boundaries.
         RemoveShipsAtEdge(allShips, shipsToRemove);
-
         foreach (GameObject ship in shipsToRemove)
         {
             allShips.Remove(ship);
             Destroy(ship);
         }
+
+        // Cleanup evasion records older than 6 ticks.
+        //List<(GameObject, GameObject)> evasionCleanup = new();
+        //foreach (var entry in evadeTimestamps)
+        //{
+        //    (GameObject cargo, GameObject pirate) = entry.Key;
+        //    int evadeFrame = entry.Value;
+        //    if (ShipController.TimeStepCounter - evadeFrame >= 6)
+        //        evasionCleanup.Add((cargo, pirate));
+        //}
+        //foreach (var pair in evasionCleanup)
+        //{
+        //    textController.UpdateEvasion(true, true);
+        //    Debug.Log($"[SUCCESS LOGGED] {pair.Item1.name} successfully evaded {pair.Item2.name}");
+        //    evadeTimestamps.Remove(pair);
+         //   evasionOutcomeLogged[pair] = true; // success logged
+        //}
     }
 
     private void RemoveShipsAtEdge(List<GameObject> allShips, List<GameObject> shipsToRemove)
     {
         foreach (GameObject ship in allShips)
         {
-            if (ship == null) continue;
-
+            if (ship == null)
+                continue;
             Vector3 pos = ship.transform.position;
-
-            if (ship.CompareTag("Cargo") && pos.x >= 399)
+            if (ship.CompareTag("Cargo") && pos.x > 399)
             {
-                Debug.Log($"[Exit] {ship.name} reached the right edge and was removed.");
                 shipsToRemove.Add(ship);
+                textController.UpdateShipExit("cargo");
             }
             else if (ship.CompareTag("Patrol") && Mathf.RoundToInt(pos.x) <= 0)
             {
                 Debug.Log($"[Exit] {ship.name} reached the left edge and was removed.");
                 shipsToRemove.Add(ship);
+                textController.UpdateShipExit("patrol");
             }
-            else if (ship.CompareTag("Pirate") && pos.z >= 99 && !pirateToCapturedCargo.ContainsKey(ship))
+            else if (ship.CompareTag("Pirate") && pos.z > 99 && !pirateToCapturedCargo.ContainsKey(ship))
             {
-                Debug.Log($"[Exit] {ship.name} reached the top edge and was removed.");
                 shipsToRemove.Add(ship);
+                textController.UpdateShipExit("pirate");
+                List<(GameObject, GameObject)> resolved = new();
+                foreach (var pair in pendingEvasions)
+                {
+                    if (pair.Key.pirate == ship && !evasionOutcomeLogged.ContainsKey(pair.Key))
+                    {
+                        textController.UpdateEvasion(true, true);
+                        evasionOutcomeLogged[pair.Key] = true;
+                        Debug.Log($"[AUTO SUCCESS] {pair.Key.cargo?.name} evaded {ship.name} (pirate exited)");
+                        resolved.Add(pair.Key);
+                    }
+                }
+                foreach (var pair in resolved)
+                {
+                    pendingEvasions.Remove(pair);
+                }
             }
         }
     }
@@ -152,130 +202,166 @@ public class ShipInteractions : MonoBehaviour
         return dx <= range && dz <= range;
     }
 
-    // Pirate is defeated by Patrol
     private void HandleDefeat(GameObject pirate, GameObject patrol)
     {
-        if (pirate == null || patrol == null) return;
-    
-        Debug.Log($"[DEFEAT] {pirate.name} was defeated by {patrol.name}");
-    
+        if (pirate == null || patrol == null)
+            return;
         if (pirateToCapturedCargo.TryGetValue(pirate, out GameObject cargo))
         {
             if (cargo != null)
             {
                 CargoBehavior cargoBehavior = cargo.GetComponent<CargoBehavior>();
-                if (cargoBehavior != null) cargoBehavior.isCaptured = false;
+                if (cargoBehavior != null)
+                    cargoBehavior.isCaptured = false;
             }
-     
             pirateToCapturedCargo.Remove(pirate);
         }
-     
-        Destroy(pirate);
+        List<(GameObject, GameObject)> resolved = new();
+        foreach (var pair in pendingEvasions)
+        {
+            if (pair.Key.pirate == pirate && !evasionOutcomeLogged.ContainsKey(pair.Key))
+            {
+                textController.UpdateEvasion(true, true);
+                evasionOutcomeLogged[pair.Key] = true;
+                Debug.Log($"[AUTO SUCCESS] {pair.Key.cargo?.name} evaded {pirate.name} (pirate defeated)");
+                resolved.Add(pair.Key);
+            }
+        }
+        foreach (var pair in resolved)
+        {
+            pendingEvasions.Remove(pair);
+        }
     }
 
-    // Pirate captures Cargo
     private void HandleCapture(GameObject pirate, GameObject cargo)
     {
-        Debug.Log($"{pirate.name} captured {cargo.name}");
-
         if (pirateToCapturedCargo.ContainsValue(cargo))
-        {
-            Debug.LogWarning($"{cargo.name} is already captured by another pirate.");
             return;
-        }
-
         if (pirateToCapturedCargo.ContainsKey(pirate))
-        {
-            Debug.LogWarning($"{pirate.name} is already escorting a cargo!");
             return;
-        }
-
-        //cargo.tag = "Captured";
 
         CargoBehavior cargoBehavior = cargo.GetComponent<CargoBehavior>();
-        if (cargoBehavior != null)
+        if (cargoBehavior != null && cargoBehavior.isCaptured)
+            return;
+
+        if (pendingEvasions.ContainsKey((cargo, pirate)))
         {
-            cargoBehavior.isCaptured = true;
+            Debug.Log($"[CAPTURE] {cargo.name} was previously evaded from {pirate.name}");
+            if (!evasionOutcomeLogged.ContainsKey((cargo, pirate)) || evasionOutcomeLogged[(cargo, pirate)] == true)
+            {
+                Debug.Log($"[FAILURE LOGGED] {cargo.name} failed to evade {pirate.name}");
+                textController.UpdateEvasion(false, false);
+                evasionOutcomeLogged[(cargo, pirate)] = false; // mark that we’ve handled this pair
+            }
+            else
+            {
+                Debug.Log($"[SKIPPED LOGGING] {cargo.name} already marked failed for {pirate.name}");
+            }
+            pendingEvasions.Remove((cargo, pirate));
         }
 
-        pirate.transform.position = cargo.transform.position;
+        if (cargoBehavior != null)
+            cargoBehavior.isCaptured = true;
+
+        pirateToCapturedCargo[pirate] = cargo;
 
         PirateBehavior pirateBehavior = pirate.GetComponent<PirateBehavior>();
         if (pirateBehavior != null)
-        {
             pirateBehavior.hasCargo = true;
+
+        // Align pirate with cargo.
+        if (pirateBehavior != null && cargoBehavior != null)
+        {
+            pirateBehavior.currentGridPosition = cargoBehavior.currentGridPosition;
+            pirate.transform.position = cargo.transform.position;
         }
 
-        pirateToCapturedCargo[pirate] = cargo;
+        textController.UpdateCaptures(true);
     }
 
-    private void HandleRescue(GameObject capturedCargo, GameObject patrol)
+    private void HandleRescue(GameObject patrol)
     {
-        Debug.Log($"[RESCUE FUNC] Called with {capturedCargo?.name}, {patrol?.name}");
-
-        if (capturedCargo == null || patrol == null) 
-        {
-            Debug.LogError("[RESCUE FUNC] Either cargo or patrol is null.");
+        if (patrol == null)
             return;
-        }
-
-        GameObject capturingPirate = FindPirateNear(capturedCargo);
-        if (capturingPirate != null)
+        List<GameObject> toRescue = new();
+        foreach (var pair in pirateToCapturedCargo)
         {
-            pirateToCapturedCargo.Remove(capturingPirate);
-            Destroy(capturingPirate);
+            GameObject pirate = pair.Key;
+            GameObject cargoCandidate = pair.Value;
+            if (cargoCandidate == null || pirate == null)
+                continue;
+            Vector3 patrolPos = patrol.transform.position;
+            Vector3 cargoPos = cargoCandidate.transform.position;
+            if (IsWithinRange(patrolPos, cargoPos, 3))
+                toRescue.Add(cargoCandidate);
         }
 
-       CargoBehavior cargoBehavior = capturedCargo.GetComponent<CargoBehavior>();
-        if (cargoBehavior == null) //  cargoBehavior != null && cargoBehavior.isCaptured != false
+        foreach (GameObject cargoToRescue in toRescue)
         {
-            //cargoBehavior.isCaptured = false;
-            Debug.LogError($"[RESCUE FUNC] {capturedCargo.name} has NO CargoBehavior component!");
-            return;
+            GameObject capturingPirate = null;
+            foreach (var pair in pirateToCapturedCargo)
+            {
+                if (pair.Value == cargoToRescue)
+                {
+                    capturingPirate = pair.Key;
+                    break;
+                }
+            }
+            if (capturingPirate != null)
+            {
+                pirateToCapturedCargo.Remove(capturingPirate);
+                capturingPirate.SetActive(false);
+                Destroy(capturingPirate);
+            }
+            CargoBehavior cargoBehavior = cargoToRescue.GetComponent<CargoBehavior>();
+            if (cargoBehavior != null)
+            {
+                cargoBehavior.isCaptured = false;
+                cargoToRescue.tag = "Cargo";
+            }
         }
-        Debug.Log($"[RESCUE] {capturedCargo.name} before reset: isCaptured = {cargoBehavior.isCaptured}");
-        cargoBehavior.isCaptured = false;
-        Debug.Log($"[RESCUE] {capturedCargo.name} after reset: isCaptured = {cargoBehavior.isCaptured}");
-
-        capturedCargo.tag = "Cargo"; // Optional safety
+        textController.UpdateCaptures(false);
     }
 
     private void HandleEvasion(GameObject cargo, GameObject pirate)
     {
-        //if (cargo.CompareTag("Captured")) return;
-
+        if (pirateToCapturedCargo.ContainsKey(pirate))
+            return;
+        CargoBehavior cargoBehavior = cargo.GetComponent<CargoBehavior>();
+        if (cargoBehavior == null)
+            return;
+        if (cargoBehavior.isEvadingThisStep)
+            return;
         if (!cargoEvadedPirates.ContainsKey(cargo))
-        {
             cargoEvadedPirates[cargo] = new HashSet<GameObject>();
-        }
-
-        if (cargoEvadedPirates[cargo].Contains(pirate)) return;
+        if (cargoEvadedPirates[cargo].Contains(pirate))
+            return;
 
         cargoEvadedPirates[cargo].Add(pirate);
+        pendingEvasions[(cargo, pirate)] = ShipController.TimeStepCounter;
+        Debug.Log($"[EVADE] {cargo.name} evaded {pirate.name} at tick {ShipController.TimeStepCounter}");
 
-        CargoBehavior cargoBehavior = cargo.GetComponent<CargoBehavior>();
-        if (cargoBehavior != null)
-        {
-            cargoBehavior.currentGridPosition += new Vector2Int(1, 1);
-            cargo.transform.position = cargoBehavior.GridToWorld(cargoBehavior.currentGridPosition);
-            Debug.Log($"{cargo.name} evaded {pirate.name}!");
-        }
+        cargoBehavior.currentGridPosition += new Vector2Int(1, 1);
+        cargo.transform.position = cargoBehavior.GridToWorld(cargoBehavior.currentGridPosition);
     }
 
-    private GameObject FindPirateNear(GameObject capturedCargo)
+    private void FinalizeEvadeOutcomes()
     {
-        Vector3 cargoGridPos = capturedCargo.transform.position;
-        GameObject[] allShips = GameObject.FindGameObjectsWithTag("Pirate");
-
-        foreach (GameObject pirate in allShips)
+        List<(GameObject, GameObject)> toFinalize = new(pendingEvasions.Keys);
+        foreach (var pair in toFinalize)
         {
-            Vector3 piratePos = pirate.transform.position;
-
-            if (Mathf.Approximately(piratePos.x, cargoGridPos.x) && Mathf.Approximately(piratePos.z, cargoGridPos.z))
+            if (!evasionOutcomeLogged.ContainsKey(pair))
             {
-                return pirate;
+                textController.UpdateEvasion(true, true);
+                evasionOutcomeLogged[pair] = true;
+                Debug.Log($"[FINALIZE] Marked evade as SUCCESS: {pair.Item1?.name} vs {pair.Item2?.name}");
             }
         }
-        return null;
+        pendingEvasions.Clear();
+    }
+
+    public void FinalizePendingEvasions()
+    {
+        FinalizeEvadeOutcomes();
     }
 }

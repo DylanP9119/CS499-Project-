@@ -1,10 +1,14 @@
 fileFormatVersion: 2
+<<<<<<< Updated upstream
+guid: 04ce24980bbed0d4490e3ef818215126
+=======
 <<<<<<<< HEAD:Assets/Materials.meta
 guid: 62506370d93bffe479feda1060b5d0eb
 folderAsset: yes
 ========
 guid: 04ce24980bbed0d4490e3ef818215126
 >>>>>>>> Jacob:Assets/Scenes/creditsMenu.unity.meta
+>>>>>>> Stashed changes
 DefaultImporter:
   externalObjects: {}
   userData: 
