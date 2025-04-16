@@ -35,7 +35,15 @@ public class UILoadMenuController : MonoBehaviour
         Instantiate(itemPrefab, contentParent);
     }
 
-    public void LoadText() {
+    public void LoadButton() {
+        //fileManager.OpenFilePicker();
+    }
 
+    public void OpenFilePicker() {
+        Application.ExternalCall("openFileDialog");
+    }
+
+    public void RecieveFileContent(string content) {
+        Debug.Log("Recieved file content:\n" + content);
     }
 }
