@@ -21,6 +21,9 @@ public class PirateBehavior : MonoBehaviour
 
     public void Step(bool forceMove)
     {
+        if (hasCargo)
+            return;
+
         if (forceMove)
         {
             MoveShipTowardsDestination();
@@ -30,8 +33,6 @@ public class PirateBehavior : MonoBehaviour
         if (movementTimer < movementDelay)
             return;
         movementTimer = 0f;
-        if (hasCargo)
-            return;
         MoveShipTowardsDestination();
     }
 

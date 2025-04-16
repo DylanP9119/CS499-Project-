@@ -120,6 +120,11 @@ public class ShipInteractions : MonoBehaviour
             lastDownMovementTick = ShipController.TimeStepCounter;
         }
 
+        foreach (GameObject pirateToRemove in piratesToRemove)
+        {
+            pirateToCapturedCargo.Remove(pirateToRemove);
+        }
+
         // Remove ships at boundaries.
         RemoveShipsAtEdge(allShips, shipsToRemove);
         foreach (GameObject ship in shipsToRemove)
