@@ -11,11 +11,19 @@ public class PatrolBehavior : MonoBehaviour
 
     void Start()
     {
+    if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive)
+    {
+        currentGridPosition = WorldToGrid(transform.position);
+        destinationGridPosition = new Vector2Int(0, currentGridPosition.y);
+    }
+    else
+    {
         int startX = gridSize.x;
         int startY = Random.Range(0, gridSize.y);
         currentGridPosition = new Vector2Int(startX, startY);
         destinationGridPosition = new Vector2Int(0, startY);
         transform.position = GridToWorld(currentGridPosition);
+    }
     }
 
     public void Step(bool forceMove)
@@ -64,6 +72,12 @@ public void MoveShipTowardsDestination()
 
         return new Vector2Int(stepX, stepY);
     }
+public Vector2Int WorldToGrid(Vector3 worldPosition)
+{
+    int x = Mathf.FloorToInt(worldPosition.x / gridCellSize);
+    int y = Mathf.FloorToInt(worldPosition.z / gridCellSize);
+    return new Vector2Int(x, y);
+}
 
     public Vector3 GridToWorld(Vector2Int gridPosition)
     {
