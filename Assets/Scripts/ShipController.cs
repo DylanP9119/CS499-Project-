@@ -16,7 +16,7 @@ public class ShipController : MonoBehaviour
     public TextController textController;
     public Text timeDisplayRun;
     public Text timeDisplayRunReplay;     // replay mode clock
-    public Text timeDisplayRemaining; 
+    public Text timeDisplayRemaining;
     public bool isNight = false;
     public float cargoSpawnChance = 0.50f;
     public float patrolSpawnChance = 0.25f;
@@ -36,6 +36,15 @@ public class ShipController : MonoBehaviour
     void Start()
     {
         timeControl = FindObjectOfType<TimeControl>();
+        if (UIControllerScript.Instance != null)
+        {
+            cargoSpawnChance = UIControllerScript.Instance.cargoDayPercent / 100f;
+            cargoNightChance = UIControllerScript.Instance.cargoNightPercent / 100f;
+            pirateSpawnChance = UIControllerScript.Instance.pirateDayPercent / 100f;
+            pirateNightChance = UIControllerScript.Instance.pirateNightPercent / 100f;
+            patrolSpawnChance = UIControllerScript.Instance.patrolDayPercent / 100f;
+            patrolNightChance = UIControllerScript.Instance.patrolNightPercent / 100f;
+        }
     }
 
     void Update()
@@ -62,7 +71,7 @@ public class ShipController : MonoBehaviour
                 TimeStepCounter++;
                 simMinutesPassed += 5f;
                 UpdateDayNightCycle();
-                
+
                 int totalMinutes = Mathf.FloorToInt(simMinutesPassed);
                 int day = (totalMinutes / 1440) + 1;
                 int hour = (totalMinutes / 60) % 24;
@@ -98,19 +107,19 @@ public class ShipController : MonoBehaviour
                     if (ship.CompareTag("Cargo"))
                     {
                         var cargo = ship.GetComponent<CargoBehavior>();
-                        if(cargo != null)
+                        if (cargo != null)
                             cargo.Step(true);
                     }
                     else if (ship.CompareTag("Patrol"))
                     {
                         var patrol = ship.GetComponent<PatrolBehavior>();
-                        if(patrol != null)
+                        if (patrol != null)
                             patrol.Step(true);
                     }
                     else if (ship.CompareTag("Pirate"))
                     {
                         var pirate = ship.GetComponent<PirateBehavior>();
-                        if(pirate != null)
+                        if (pirate != null)
                             pirate.Step(true);
                     }
                 }
