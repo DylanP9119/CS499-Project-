@@ -13,11 +13,19 @@ public class CargoBehavior : MonoBehaviour
 
     void Start()
     {
+    if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive)
+    {
+        currentGridPosition = WorldToGrid(transform.position);
+        destinationGridPosition = new Vector2Int(gridSize.x, currentGridPosition.y);
+    }
+    else
+    {
         int startX = 0;
         int startY = Random.Range(0, gridSize.y);
         currentGridPosition = new Vector2Int(startX, startY);
         destinationGridPosition = new Vector2Int(gridSize.x, startY);
         transform.position = GridToWorld(currentGridPosition);
+    }
     }
 
     // When forceMove is true, bypass internal timer.
@@ -48,6 +56,12 @@ public class CargoBehavior : MonoBehaviour
         currentGridPosition += Vector2Int.right * direction;
         transform.position = GridToWorld(currentGridPosition);
     }
+public Vector2Int WorldToGrid(Vector3 worldPosition)
+{
+    int x = Mathf.FloorToInt(worldPosition.x / gridCellSize);
+    int y = Mathf.FloorToInt(worldPosition.z / gridCellSize); // Z-axis corresponds to grid Y
+    return new Vector2Int(x, y);
+}
 
     public Vector3 GridToWorld(Vector2Int gridPosition)
     {
