@@ -27,32 +27,32 @@ public class CameraSystem : MonoBehaviour
     {
         Vector3 inputDir = new Vector3(0, 0, 0);
 
-        if (Input.GetKey(KeyCode.W)) inputDir.y = +1f;
-        if (Input.GetKey(KeyCode.S)) inputDir.y = -1f;
-        if (Input.GetKey(KeyCode.A)) inputDir.x = -1f;
-        if (Input.GetKey(KeyCode.D)) inputDir.x = +1f;
+        if (Input.GetKey(KeyCode.W) && (transform.position.z < 97.95) == true) inputDir.y = +1f;
+        if (Input.GetKey(KeyCode.S) && (transform.position.z > 4.5) == true) inputDir.y = -1f;
+        if (Input.GetKey(KeyCode.A) && (transform.position.x > 4.5) == true) inputDir.x = -1f;
+        if (Input.GetKey(KeyCode.D) && (transform.position.x < 398.5) == true) inputDir.x = +1f;
 
 
-        if (Input.GetMouseButtonDown(1))
-        {
-            DragPanActive = true;
-            lastMousePos = Input.mousePosition;
-        }
-        if (Input.GetMouseButtonUp(1))
-        {
-            DragPanActive = false;
-        }
+        /* if (Input.GetMouseButtonDown(1))
+         {
+             DragPanActive = true;
+             lastMousePos = Input.mousePosition;
+         }
+         if (Input.GetMouseButtonUp(1))
+         {
+             DragPanActive = false;
+         }
 
-        if (DragPanActive)
-        {
-            Vector2 mouseMovementDelta = (Vector2)Input.mousePosition - lastMousePos;
+         if (DragPanActive)
+         {
+             Vector2 mouseMovementDelta = (Vector2)Input.mousePosition - lastMousePos;
 
-            float dragPanSpeed = 0.25f;
-            inputDir.x = -mouseMovementDelta.x * dragPanSpeed;
-            inputDir.y = -mouseMovementDelta.y * dragPanSpeed;
+             float dragPanSpeed = 0.25f;
+             inputDir.x = -mouseMovementDelta.x * dragPanSpeed;
+             inputDir.y = -mouseMovementDelta.y * dragPanSpeed;
 
-            lastMousePos = Input.mousePosition;
-        }
+             lastMousePos = Input.mousePosition;
+         }*/
 
 
         Vector3 moveDir = transform.up * inputDir.y + transform.right * inputDir.x;

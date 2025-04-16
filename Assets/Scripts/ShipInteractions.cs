@@ -10,6 +10,10 @@ public class ShipInteractions : MonoBehaviour
 
     private Dictionary<GameObject, GameObject> pirateToCapturedCargo = new();
     private Dictionary<GameObject, HashSet<GameObject>> cargoEvadedPirates = new();
+    //private Dictionary<(GameObject cargo, GameObject pirate), int> evadeTimestamps = new();
+    private Dictionary<(GameObject, GameObject), bool> evasionOutcomeLogged = new();
+    private Dictionary<(GameObject cargo, GameObject pirate), int> pendingEvasions = new();
+
     private Dictionary<(GameObject cargo, GameObject pirate), int> evadeTimestamps = new();
 
     // For controlling captured pair movement per tick.
@@ -123,6 +127,11 @@ public class ShipInteractions : MonoBehaviour
             lastDownMovementTick = ShipController.TimeStepCounter;
         }
 
+        foreach (GameObject pirateToRemove in piratesToRemove)
+        {
+            pirateToCapturedCargo.Remove(pirateToRemove);
+        }
+
         // Remove ships at boundaries.
         RemoveShipsAtEdge(allShips, shipsToRemove);
         foreach (GameObject ship in shipsToRemove)
@@ -132,6 +141,21 @@ public class ShipInteractions : MonoBehaviour
         }
 
         // Cleanup evasion records older than 6 ticks.
+        //List<(GameObject, GameObject)> evasionCleanup = new();
+        //foreach (var entry in evadeTimestamps)
+        //{
+        //    (GameObject cargo, GameObject pirate) = entry.Key;
+        //    int evadeFrame = entry.Value;
+        //    if (ShipController.TimeStepCounter - evadeFrame >= 6)
+        //        evasionCleanup.Add((cargo, pirate));
+        //}
+        //foreach (var pair in evasionCleanup)
+        //{
+        //    textController.UpdateEvasion(true, true);
+        //    Debug.Log($"[SUCCESS LOGGED] {pair.Item1.name} successfully evaded {pair.Item2.name}");
+        //    evadeTimestamps.Remove(pair);
+         //   evasionOutcomeLogged[pair] = true; // success logged
+        //}
         List<(GameObject, GameObject)> evasionCleanup = new();
         foreach (var entry in evadeTimestamps)
         {
@@ -169,6 +193,21 @@ public class ShipInteractions : MonoBehaviour
             {
                 shipsToRemove.Add(ship);
                 textController.UpdateShipExit("pirate");
+                List<(GameObject, GameObject)> resolved = new();
+                foreach (var pair in pendingEvasions)
+                {
+                    if (pair.Key.pirate == ship && !evasionOutcomeLogged.ContainsKey(pair.Key))
+                    {
+                        textController.UpdateEvasion(true, true);
+                        evasionOutcomeLogged[pair.Key] = true;
+                        Debug.Log($"[AUTO SUCCESS] {pair.Key.cargo?.name} evaded {ship.name} (pirate exited)");
+                        resolved.Add(pair.Key);
+                    }
+                }
+                foreach (var pair in resolved)
+                {
+                    pendingEvasions.Remove(pair);
+                }
             }
         }
     }
@@ -194,6 +233,21 @@ public class ShipInteractions : MonoBehaviour
             }
             pirateToCapturedCargo.Remove(pirate);
         }
+        List<(GameObject, GameObject)> resolved = new();
+        foreach (var pair in pendingEvasions)
+        {
+            if (pair.Key.pirate == pirate && !evasionOutcomeLogged.ContainsKey(pair.Key))
+            {
+                textController.UpdateEvasion(true, true);
+                evasionOutcomeLogged[pair.Key] = true;
+                Debug.Log($"[AUTO SUCCESS] {pair.Key.cargo?.name} evaded {pirate.name} (pirate defeated)");
+                resolved.Add(pair.Key);
+            }
+        }
+        foreach (var pair in resolved)
+        {
+            pendingEvasions.Remove(pair);
+        }
         textController.PirateDestroyed();
 
         pirate.SetActive(false);
@@ -216,6 +270,20 @@ public class ShipInteractions : MonoBehaviour
         if (cargoBehavior != null && cargoBehavior.isCaptured)
             return;
 
+        if (pendingEvasions.ContainsKey((cargo, pirate)))
+        {
+            Debug.Log($"[CAPTURE] {cargo.name} was previously evaded from {pirate.name}");
+            if (!evasionOutcomeLogged.ContainsKey((cargo, pirate)) || evasionOutcomeLogged[(cargo, pirate)] == true)
+            {
+                Debug.Log($"[FAILURE LOGGED] {cargo.name} failed to evade {pirate.name}");
+                textController.UpdateEvasion(false, false);
+                evasionOutcomeLogged[(cargo, pirate)] = false; // mark that we’ve handled this pair
+            }
+            else
+            {
+                Debug.Log($"[SKIPPED LOGGING] {cargo.name} already marked failed for {pirate.name}");
+            }
+            pendingEvasions.Remove((cargo, pirate));
         if (evadeTimestamps.ContainsKey((cargo, pirate)))
         {
             textController.UpdateEvasion(false, false);
@@ -246,6 +314,7 @@ public class ShipInteractions : MonoBehaviour
             int shipId = ExtractShipId(cargo);
             float simTime = ShipController.TimeStepCounter * 1f; // using tick duration of 1f
             ReplayManager.Instance.RecordCaptureEvent(shipId, cargo.transform.position, cargo.transform.rotation, simTime);
+        }
         }
     }
 
@@ -316,12 +385,33 @@ public class ShipInteractions : MonoBehaviour
             return;
 
         cargoEvadedPirates[cargo].Add(pirate);
+        pendingEvasions[(cargo, pirate)] = ShipController.TimeStepCounter;
+        Debug.Log($"[EVADE] {cargo.name} evaded {pirate.name} at tick {ShipController.TimeStepCounter}");
         evadeTimestamps[(cargo, pirate)] = ShipController.TimeStepCounter;
 
         cargoBehavior.currentGridPosition += new Vector2Int(1, 1);
         cargo.transform.position = cargoBehavior.GridToWorld(cargoBehavior.currentGridPosition);
     }
 
+    private void FinalizeEvadeOutcomes()
+    {
+        List<(GameObject, GameObject)> toFinalize = new(pendingEvasions.Keys);
+        foreach (var pair in toFinalize)
+        {
+            if (!evasionOutcomeLogged.ContainsKey(pair))
+            {
+                textController.UpdateEvasion(true, true);
+                evasionOutcomeLogged[pair] = true;
+                Debug.Log($"[FINALIZE] Marked evade as SUCCESS: {pair.Item1?.name} vs {pair.Item2?.name}");
+            }
+        }
+        pendingEvasions.Clear();
+    }
+
+    public void FinalizePendingEvasions()
+    {
+        FinalizeEvadeOutcomes();
+    }
     private int ExtractShipId(GameObject ship)
     {
         if (ship == null || string.IsNullOrEmpty(ship.name))

@@ -16,12 +16,11 @@ public class ShipController : MonoBehaviour
     public TextController textController;
     public Text timeDisplayRun;
     public Text timeDisplayRunReplay;     // replay mode clock
-    public Text timeDisplayRemaining; 
+    public Text timeDisplayRemaining;
     public bool isNight = false;
     public float cargoSpawnChance = 0.50f;
     public float patrolSpawnChance = 0.25f;
     public float pirateSpawnChance = 0.40f;
-     
     public float cargoNightChance = 0.50f;
     public float patrolNightChance = 0.25f;
     public float pirateNightChance = 0.40f;
@@ -37,7 +36,6 @@ public class ShipController : MonoBehaviour
     void Start()
     {
         timeControl = FindObjectOfType<TimeControl>();
-
         if (UIControllerScript.Instance != null)
         {
             cargoSpawnChance = UIControllerScript.Instance.cargoDayPercent / 100f;
@@ -46,7 +44,6 @@ public class ShipController : MonoBehaviour
             pirateNightChance = UIControllerScript.Instance.pirateNightPercent / 100f;
             patrolSpawnChance = UIControllerScript.Instance.patrolDayPercent / 100f;
             patrolNightChance = UIControllerScript.Instance.patrolNightPercent / 100f;
-
         }
     }
 
@@ -74,7 +71,6 @@ public class ShipController : MonoBehaviour
                 TimeStepCounter++;
                 simMinutesPassed += 5f;
                 UpdateDayNightCycle();
-                
                 int totalMinutes = Mathf.FloorToInt(simMinutesPassed);
                 int day = (totalMinutes / 1440) + 1;
                 int hour = (totalMinutes / 60) % 24;
@@ -110,23 +106,23 @@ public class ShipController : MonoBehaviour
                     if (ship.CompareTag("Cargo"))
                     {
                         var cargo = ship.GetComponent<CargoBehavior>();
-                        if(cargo != null)
+                        if (cargo != null)
                             cargo.Step(true);
                     }
                     else if (ship.CompareTag("Patrol"))
                     {
                         var patrol = ship.GetComponent<PatrolBehavior>();
-                        if(patrol != null)
+                        if (patrol != null)
                             patrol.Step(true);
                     }
                     else if (ship.CompareTag("Pirate"))
                     {
                         var pirate = ship.GetComponent<PirateBehavior>();
+
                         if(pirate != null)
-                            pirate.Step(true);
-                    }
+
+                        if (pirate != null)
                 }
-                ShipInteractions.Instance.CheckForInteractions(allShips);
                 spawnTimer = 0f;
             }
         }
@@ -176,7 +172,7 @@ public class ShipController : MonoBehaviour
                     ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, cargo.transform.rotation, simTime);
             }
         }
-        // Cargo Day spawn.
+        // Cargo Night spawn.
         if (isNight && Random.value <= cargoNightChance)
         {
             Vector3 spawnPos = GetUniqueSpawnPosition("Cargo", occupiedPositions);
@@ -245,7 +241,7 @@ public class ShipController : MonoBehaviour
                     ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, pirate.transform.rotation, simTime);
             }
         }
-        // Pirate spawn.
+        // Pirate Night spawn.
         if (isNight && Random.value <= pirateNightChance)
         {
             Vector3 spawnPos = GetUniqueSpawnPosition("Pirate", occupiedPositions);
@@ -307,7 +303,7 @@ public class ShipController : MonoBehaviour
             return Quaternion.Euler(0, 0, 0);
         return Quaternion.identity;
     }
-
+    }
     // For replay mode: spawn a ship and update UI counter.
     public void ReplaySpawn(string shipType, Vector3 position, Quaternion rotation, string shipName, int shipId)
     {
