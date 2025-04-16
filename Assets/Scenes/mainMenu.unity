@@ -1005,7 +1005,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   newSim: simMenu
-  loadSim: simMenu
+  loadSim: loadSimMenu
   credits: creditsMenu
 --- !u!4 &1119956249
 Transform:

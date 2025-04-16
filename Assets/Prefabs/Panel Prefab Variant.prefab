@@ -244,7 +244,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -0.000020605894}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &2382783484781110195
@@ -402,7 +402,7 @@ GameObject:
   - component: {fileID: 6094984471797440401}
   - component: {fileID: 7304701429536133287}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Grid Percents
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -787,7 +787,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7322758361793903459}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1554414125648437339}
+        m_TargetAssemblyTypeName: PanelScriptHandler, Assembly-CSharp
+        m_MethodName: BeginButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3409713084570509638
 GameObject:
   m_ObjectHideFlags: 0
@@ -1354,8 +1366,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6261809053105050545}
   m_HandleRect: {fileID: 437568011006036133}
   m_Direction: 2
-  m_Value: 0.9999997
-  m_Size: 0.37666658
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1617,7 +1629,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 378657306171660106}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.9999999
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1778,7 +1790,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1507241762926487888}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1554414125648437339}
+        m_TargetAssemblyTypeName: PanelScriptHandler, Assembly-CSharp
+        m_MethodName: DeleteButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1001 &5986937669659083742
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1805,11 +1829,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1829404912119817100, guid: 5eb7c6a1bd6c7c24ba5185675791c983, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1829404912119817100, guid: 5eb7c6a1bd6c7c24ba5185675791c983, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1829404912119817100, guid: 5eb7c6a1bd6c7c24ba5185675791c983, type: 3}
       propertyPath: m_AnchorMin.x
@@ -1902,8 +1926,29 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1829404912119817100, guid: 5eb7c6a1bd6c7c24ba5185675791c983, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1573250377269494113}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8751614180783370532, guid: 5eb7c6a1bd6c7c24ba5185675791c983, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1554414125648437339}
   m_SourcePrefab: {fileID: 100100000, guid: 5eb7c6a1bd6c7c24ba5185675791c983, type: 3}
+--- !u!1 &3055158730178065146 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8751614180783370532, guid: 5eb7c6a1bd6c7c24ba5185675791c983, type: 3}
+  m_PrefabInstance: {fileID: 5986937669659083742}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1554414125648437339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3055158730178065146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8423e3edbbb88264f89948a98aad791f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollContent: {fileID: 4346665563799783414}
 --- !u!224 &5365680532756553810 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1829404912119817100, guid: 5eb7c6a1bd6c7c24ba5185675791c983, type: 3}
