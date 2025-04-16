@@ -17,14 +17,6 @@ public class PirateBehavior : MonoBehaviour
         currentGridPosition = WorldToGrid(transform.position);
         destinationGridPosition = new Vector2Int(currentGridPosition.x, gridSize.y);
     }        
-    else
-    {
-        int startX = Random.Range(0, gridSize.x);
-        int startY = 0;
-        currentGridPosition = new Vector2Int(startX, startY);
-        destinationGridPosition = new Vector2Int(startX, gridSize.y);
-        transform.position = GridToWorld(currentGridPosition);
-    }
     }
 
     public void Step(bool forceMove)

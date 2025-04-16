@@ -146,153 +146,189 @@ public class ShipController : MonoBehaviour
         }
     }
 
-    // Accepts a simTime parameter (in seconds) used for replay recording.
     void SpawnShip(float simTime)
+{
+    HashSet<Vector3> occupiedPositions = new HashSet<Vector3>();
+    foreach (GameObject ship in allShips)
     {
-        HashSet<Vector3> occupiedPositions = new HashSet<Vector3>();
-        foreach (GameObject ship in allShips)
-        {
-            if (ship != null)
-                occupiedPositions.Add(ship.transform.position);
-        }
+        if (ship != null)
+            occupiedPositions.Add(ship.transform.position);
+    }
 
-        // Cargo Day spawn.
-        if (!isNight && Random.value <= cargoSpawnChance)
+    if (!isNight && Random.value <= cargoSpawnChance)
+    {
+        Vector3 spawnPos = GetUniqueSpawnPosition("Cargo", occupiedPositions);
+        if (spawnPos != Vector3.zero)
         {
-            Vector3 spawnPos = GetUniqueSpawnPosition("Cargo", occupiedPositions);
-            if (spawnPos != Vector3.zero)
-            {
-                int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : cargoCounter;
-                string shipType = "Cargo";
-                GameObject cargo = Instantiate(cargoPrefab, spawnPos, GetSpawnRotation("Cargo"));
-                cargo.name = $"Cargo({cargoCounter++})";
-                cargo.tag = "Cargo";
-                allShips.Add(cargo);
-                textController.UpdateShipEnter("cargo");
-                if (ReplayManager.Instance != null)
-                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, cargo.transform.rotation, simTime);
-            }
-        }
-        // Cargo Night spawn.
-        if (isNight && Random.value <= cargoNightChance)
-        {
-            Vector3 spawnPos = GetUniqueSpawnPosition("Cargo", occupiedPositions);
-            if (spawnPos != Vector3.zero)
-            {
-                int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : cargoCounter;
-                string shipType = "Cargo";
-                GameObject cargo = Instantiate(cargoPrefab, spawnPos, GetSpawnRotation("Cargo"));
-                cargo.name = $"Cargo({cargoCounter++})";
-                cargo.tag = "Cargo";
-                allShips.Add(cargo);
-                textController.UpdateShipEnter("cargo");
-                if (ReplayManager.Instance != null)
-                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, cargo.transform.rotation, simTime);
-            }
-        }
-        // Patrol spawn.
-        if (!isNight && Random.value <= patrolSpawnChance)
-        {
-            Vector3 spawnPos = GetUniqueSpawnPosition("Patrol", occupiedPositions);
-            if (spawnPos != Vector3.zero)
-            {
-                int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : patrolCounter;
-                string shipType = "Patrol";
-                GameObject patrol = Instantiate(patrolPrefab, spawnPos, GetSpawnRotation("Patrol"));
-                patrol.name = $"Patrol({patrolCounter++})";
-                patrol.tag = "Patrol";
-                allShips.Add(patrol);
-                textController.UpdateShipEnter("patrol");
-                if (ReplayManager.Instance != null)
-                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, patrol.transform.rotation, simTime);
-            }
-        }
-        // Patrol Night spawn.
-        if (isNight && Random.value <= patrolNightChance)
-        {
-            Vector3 spawnPos = GetUniqueSpawnPosition("Patrol", occupiedPositions);
-            if (spawnPos != Vector3.zero)
-            {
-                int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : patrolCounter;
-                string shipType = "Patrol";
-                GameObject patrol = Instantiate(patrolPrefab, spawnPos, GetSpawnRotation("Patrol"));
-                patrol.name = $"Patrol({patrolCounter++})";
-                patrol.tag = "Patrol";
-                allShips.Add(patrol);
-                textController.UpdateShipEnter("patrol");
-                if (ReplayManager.Instance != null)
-                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, patrol.transform.rotation, simTime);
-            }
-        }
-
-        // Pirate spawn.
-        if (!isNight && Random.value <= pirateSpawnChance)
-        {
-            Vector3 spawnPos = GetUniqueSpawnPosition("Pirate", occupiedPositions);
-            if (spawnPos != Vector3.zero)
-            {
-                int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : pirateCounter;
-                string shipType = "Pirate";
-                GameObject pirate = Instantiate(piratePrefab, spawnPos, GetSpawnRotation("Pirate"));
-                pirate.name = $"Pirate({pirateCounter++})";
-                pirate.tag = "Pirate";
-                allShips.Add(pirate);
-                textController.UpdateShipEnter("pirate");
-                if (ReplayManager.Instance != null)
-                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, pirate.transform.rotation, simTime);
-            }
-        }
-        // Pirate Night spawn.
-        if (isNight && Random.value <= pirateNightChance)
-        {
-            Vector3 spawnPos = GetUniqueSpawnPosition("Pirate", occupiedPositions);
-            if (spawnPos != Vector3.zero)
-            {
-                int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : pirateCounter;
-                string shipType = "Pirate";
-                GameObject pirate = Instantiate(piratePrefab, spawnPos, GetSpawnRotation("Pirate"));
-                pirate.name = $"Pirate({pirateCounter++})";
-                pirate.tag = "Pirate";
-                allShips.Add(pirate);
-                textController.UpdateShipEnter("pirate");
-                if (ReplayManager.Instance != null)
-                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, pirate.transform.rotation, simTime);
-            }
+            int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : cargoCounter;
+            GameObject cargo = Instantiate(cargoPrefab, spawnPos, GetSpawnRotation("Cargo"));
+            CargoBehavior cargoBehavior = cargo.GetComponent<CargoBehavior>();
+            cargoBehavior.gridSize = gridSize;
+            cargoBehavior.gridCellSize = 1f;
+            cargoBehavior.currentGridPosition = new Vector2Int(0, Mathf.FloorToInt(spawnPos.z / cargoBehavior.gridCellSize));
+            cargoBehavior.destinationGridPosition = new Vector2Int(gridSize.x, cargoBehavior.currentGridPosition.y);
+            cargo.name = $"Cargo({cargoCounter++})";
+            cargo.tag = "Cargo";
+            allShips.Add(cargo);
+            textController.UpdateShipEnter("cargo");
+            ReplayManager.Instance.RecordShipSpawn(shipId, "Cargo", spawnPos, cargo.transform.rotation, simTime);
         }
     }
 
-    Vector3 GetUniqueSpawnPosition(string shipType, HashSet<Vector3> occupiedPositions)
+    if (isNight && Random.value <= cargoNightChance)
     {
-        int maxAttempts = 400;
-        Vector3 spawnPos = Vector3.zero;
-        for (int i = 0; i < maxAttempts; i++)
+        Vector3 spawnPos = GetUniqueSpawnPosition("Cargo", occupiedPositions);
+        if (spawnPos != Vector3.zero)
         {
-            float roll = Random.value;
-            if (shipType == "Cargo")
-            {
-                int spawnZ = Mathf.FloorToInt(gridSize.y * roll);
-                spawnPos = new Vector3(0, 0, spawnZ);
-            }
-            else if (shipType == "Pirate")
-            {
-                int spawnX = Mathf.FloorToInt(gridSize.x * roll);
-                spawnPos = new Vector3(spawnX, 0, 0);
-            }
-            else if (shipType == "Patrol")
-            {
-                int spawnZ = Mathf.FloorToInt(gridSize.y * roll);
-                spawnPos = new Vector3(gridSize.x - 1, 0, spawnZ);
-            }
-            else
-                return Vector3.zero;
-            if (!occupiedPositions.Contains(spawnPos))
-            {
-                occupiedPositions.Add(spawnPos);
-                return spawnPos;
-            }
+            int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : cargoCounter;
+            GameObject cargo = Instantiate(cargoPrefab, spawnPos, GetSpawnRotation("Cargo"));
+            CargoBehavior cargoBehavior = cargo.GetComponent<CargoBehavior>();
+            cargoBehavior.gridSize = gridSize;
+            cargoBehavior.gridCellSize = 1f;
+            cargoBehavior.currentGridPosition = new Vector2Int(0, Mathf.FloorToInt(spawnPos.z / cargoBehavior.gridCellSize));
+            cargoBehavior.destinationGridPosition = new Vector2Int(gridSize.x, cargoBehavior.currentGridPosition.y);
+            cargo.name = $"Cargo({cargoCounter++})";
+            cargo.tag = "Cargo";
+            allShips.Add(cargo);
+            textController.UpdateShipEnter("cargo");
+            if (ReplayManager.Instance != null)
+                ReplayManager.Instance.RecordShipSpawn(shipId, "Cargo", spawnPos, cargo.transform.rotation, simTime);
         }
-        return Vector3.zero;
     }
+
+    if (!isNight && Random.value <= patrolSpawnChance)
+    {
+        Vector3 spawnPos = GetUniqueSpawnPosition("Patrol", occupiedPositions);
+        if (spawnPos != Vector3.zero)
+        {
+            int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : patrolCounter;
+            GameObject patrol = Instantiate(patrolPrefab, spawnPos, GetSpawnRotation("Patrol"));
+            PatrolBehavior patrolBehavior = patrol.GetComponent<PatrolBehavior>();
+            patrolBehavior.gridSize = gridSize;
+            patrolBehavior.gridCellSize = 1f;
+            patrolBehavior.currentGridPosition = new Vector2Int(gridSize.x - 1, Mathf.FloorToInt(spawnPos.z / patrolBehavior.gridCellSize));
+            patrolBehavior.destinationGridPosition = new Vector2Int(0, patrolBehavior.currentGridPosition.y);
+            patrol.name = $"Patrol({patrolCounter++})";
+            patrol.tag = "Patrol";
+            allShips.Add(patrol);
+            textController.UpdateShipEnter("patrol");
+            if (ReplayManager.Instance != null)
+                ReplayManager.Instance.RecordShipSpawn(shipId, "Patrol", spawnPos, patrol.transform.rotation, simTime);
+        }
+    }
+
+    if (isNight && Random.value <= patrolNightChance)
+    {
+        Vector3 spawnPos = GetUniqueSpawnPosition("Patrol", occupiedPositions);
+        if (spawnPos != Vector3.zero)
+        {
+            int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : patrolCounter;
+            GameObject patrol = Instantiate(patrolPrefab, spawnPos, GetSpawnRotation("Patrol"));
+            PatrolBehavior patrolBehavior = patrol.GetComponent<PatrolBehavior>();
+            patrolBehavior.gridSize = gridSize;
+            patrolBehavior.gridCellSize = 1f;
+            patrolBehavior.currentGridPosition = new Vector2Int(gridSize.x - 1, Mathf.FloorToInt(spawnPos.z / patrolBehavior.gridCellSize));
+            patrolBehavior.destinationGridPosition = new Vector2Int(0, patrolBehavior.currentGridPosition.y);
+            patrol.name = $"Patrol({patrolCounter++})";
+            patrol.tag = "Patrol";
+            allShips.Add(patrol);
+            textController.UpdateShipEnter("patrol");
+            if (ReplayManager.Instance != null)
+                ReplayManager.Instance.RecordShipSpawn(shipId, "Patrol", spawnPos, patrol.transform.rotation, simTime);
+        }
+    }
+
+    if (!isNight && Random.value <= pirateSpawnChance)
+    {
+        Vector3 spawnPos = GetUniqueSpawnPosition("Pirate", occupiedPositions);
+        if (spawnPos != Vector3.zero)
+        {
+            int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : pirateCounter;
+            GameObject pirate = Instantiate(piratePrefab, spawnPos, GetSpawnRotation("Pirate"));
+            PirateBehavior pirateBehavior = pirate.GetComponent<PirateBehavior>();
+            pirateBehavior.gridSize = gridSize;
+            pirateBehavior.gridCellSize = 1f;
+            pirateBehavior.currentGridPosition = new Vector2Int(Mathf.FloorToInt(spawnPos.x / pirateBehavior.gridCellSize), 0);
+            pirateBehavior.destinationGridPosition = new Vector2Int(pirateBehavior.currentGridPosition.x, gridSize.y);
+            pirate.name = $"Pirate({pirateCounter++})";
+            pirate.tag = "Pirate";
+            allShips.Add(pirate);
+            textController.UpdateShipEnter("pirate");
+            if (ReplayManager.Instance != null)
+                ReplayManager.Instance.RecordShipSpawn(shipId, "Pirate", spawnPos, pirate.transform.rotation, simTime);
+        }
+    }
+
+    if (isNight && Random.value <= pirateNightChance)
+    {
+        Vector3 spawnPos = GetUniqueSpawnPosition("Pirate", occupiedPositions);
+        if (spawnPos != Vector3.zero)
+        {
+            int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : pirateCounter;
+            GameObject pirate = Instantiate(piratePrefab, spawnPos, GetSpawnRotation("Pirate"));
+            PirateBehavior pirateBehavior = pirate.GetComponent<PirateBehavior>();
+            pirateBehavior.gridSize = gridSize;
+            pirateBehavior.gridCellSize = 1f;
+            pirateBehavior.currentGridPosition = new Vector2Int(Mathf.FloorToInt(spawnPos.x / pirateBehavior.gridCellSize), 0);
+            pirateBehavior.destinationGridPosition = new Vector2Int(pirateBehavior.currentGridPosition.x, gridSize.y);
+            pirate.name = $"Pirate({pirateCounter++})";
+            pirate.tag = "Pirate";
+            allShips.Add(pirate);
+            textController.UpdateShipEnter("pirate");
+            if (ReplayManager.Instance != null)
+                ReplayManager.Instance.RecordShipSpawn(shipId, "Pirate", spawnPos, pirate.transform.rotation, simTime);
+        }
+    }
+}
+   Vector3 GetUniqueSpawnPosition(string shipType, HashSet<Vector3> occupiedPositions)
+{
+    float gridCellSize = 1f;
+    int maxAttempts = 400;
+    Vector3 spawnPos = Vector3.zero;
+    for (int i = 0; i < maxAttempts; i++)
+    {
+        float roll = Random.value;
+        if (shipType == "Cargo")
+        {
+            int spawnZ = Mathf.FloorToInt(gridSize.y * roll);
+            // Convert grid coordinate to world position using gridCellSize
+            spawnPos = new Vector3(
+                0 * gridCellSize, 
+                0, 
+                spawnZ * gridCellSize
+            );
+        }
+        else if (shipType == "Pirate")
+        {
+            int spawnX = Mathf.FloorToInt(gridSize.x * roll);
+            // Convert grid coordinate to world position using gridCellSize
+            spawnPos = new Vector3(
+                spawnX * gridCellSize, 
+                0, 
+                0
+            );
+        }
+        else if (shipType == "Patrol")
+        {
+            int spawnZ = Mathf.FloorToInt(gridSize.y * roll);
+            // Convert grid coordinate to world position using gridCellSize
+            spawnPos = new Vector3(
+                (gridSize.x - 1) * gridCellSize, 
+                0, 
+                spawnZ * gridCellSize
+            );
+        }
+        else
+            return Vector3.zero;
+
+        if (!occupiedPositions.Contains(spawnPos))
+        {
+            occupiedPositions.Add(spawnPos);
+            return spawnPos;
+        }
+    }
+    return Vector3.zero;
+}
 
     Quaternion GetSpawnRotation(string shipType)
     {

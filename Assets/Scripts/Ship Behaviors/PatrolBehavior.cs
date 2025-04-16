@@ -13,17 +13,10 @@ public class PatrolBehavior : MonoBehaviour
     {
     if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive)
     {
-        currentGridPosition = WorldToGrid(transform.position);
-        destinationGridPosition = new Vector2Int(0, currentGridPosition.y);
+    currentGridPosition = WorldToGrid(transform.position);
+    destinationGridPosition = new Vector2Int(currentGridPosition.x, gridSize.y);
     }
-    else
-    {
-        int startX = gridSize.x;
-        int startY = Random.Range(0, gridSize.y);
-        currentGridPosition = new Vector2Int(startX, startY);
-        destinationGridPosition = new Vector2Int(0, startY);
-        transform.position = GridToWorld(currentGridPosition);
-    }
+
     }
 
     public void Step(bool forceMove)
