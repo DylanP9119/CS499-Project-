@@ -10,6 +10,10 @@ public class ShipInteractions : MonoBehaviour
 
     private Dictionary<GameObject, GameObject> pirateToCapturedCargo = new();
     private Dictionary<GameObject, HashSet<GameObject>> cargoEvadedPirates = new();
+    //private Dictionary<(GameObject cargo, GameObject pirate), int> evadeTimestamps = new();
+    private Dictionary<(GameObject, GameObject), bool> evasionOutcomeLogged = new();
+    private Dictionary<(GameObject cargo, GameObject pirate), int> pendingEvasions = new();
+
     private Dictionary<(GameObject cargo, GameObject pirate), int> evadeTimestamps = new();
 
     // For controlling captured pair movement per tick.
@@ -189,7 +193,7 @@ public class ShipInteractions : MonoBehaviour
             {
                 shipsToRemove.Add(ship);
                 textController.UpdateShipExit("pirate");
-            /*    List<(GameObject, GameObject)> resolved = new();
+                List<(GameObject, GameObject)> resolved = new();
                 foreach (var pair in pendingEvasions)
                 {
                     if (pair.Key.pirate == ship && !evasionOutcomeLogged.ContainsKey(pair.Key))
@@ -204,7 +208,6 @@ public class ShipInteractions : MonoBehaviour
                 {
                     pendingEvasions.Remove(pair);
                 }
-                */
             }
         }
     }
@@ -230,7 +233,7 @@ public class ShipInteractions : MonoBehaviour
             }
             pirateToCapturedCargo.Remove(pirate);
         }
-     /*   List<(GameObject, GameObject)> resolved = new();
+        List<(GameObject, GameObject)> resolved = new();
         foreach (var pair in pendingEvasions)
         {
             if (pair.Key.pirate == pirate && !evasionOutcomeLogged.ContainsKey(pair.Key))
@@ -245,7 +248,6 @@ public class ShipInteractions : MonoBehaviour
         {
             pendingEvasions.Remove(pair);
         }
-    */
         textController.PirateDestroyed();
 
         pirate.SetActive(false);
@@ -268,7 +270,7 @@ public class ShipInteractions : MonoBehaviour
         if (cargoBehavior != null && cargoBehavior.isCaptured)
             return;
 
-    /*    if (pendingEvasions.ContainsKey((cargo, pirate)))
+        if (pendingEvasions.ContainsKey((cargo, pirate)))
         {
             Debug.Log($"[CAPTURE] {cargo.name} was previously evaded from {pirate.name}");
             if (!evasionOutcomeLogged.ContainsKey((cargo, pirate)) || evasionOutcomeLogged[(cargo, pirate)] == true)
@@ -282,7 +284,6 @@ public class ShipInteractions : MonoBehaviour
                 Debug.Log($"[SKIPPED LOGGING] {cargo.name} already marked failed for {pirate.name}");
             }
             pendingEvasions.Remove((cargo, pirate));
-            */
         if (evadeTimestamps.ContainsKey((cargo, pirate)))
         {
             textController.UpdateEvasion(false, false);
@@ -313,6 +314,7 @@ public class ShipInteractions : MonoBehaviour
             int shipId = ExtractShipId(cargo);
             float simTime = ShipController.TimeStepCounter * 1f; // using tick duration of 1f
             ReplayManager.Instance.RecordCaptureEvent(shipId, cargo.transform.position, cargo.transform.rotation, simTime);
+        }
         }
     }
 
