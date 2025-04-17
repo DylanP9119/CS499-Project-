@@ -140,7 +140,6 @@ public class ShipInteractions : MonoBehaviour
             Destroy(ship);
         }
 
-        // Cleanup evasion records older than 6 ticks.
         //List<(GameObject, GameObject)> evasionCleanup = new();
         //foreach (var entry in evadeTimestamps)
         //{
@@ -151,24 +150,9 @@ public class ShipInteractions : MonoBehaviour
         //}
         //foreach (var pair in evasionCleanup)
         //{
-        //    textController.UpdateEvasion(true, true);
-        //    Debug.Log($"[SUCCESS LOGGED] {pair.Item1.name} successfully evaded {pair.Item2.name}");
+         //   textController.UpdateEvasion(true, true);
         //    evadeTimestamps.Remove(pair);
-         //   evasionOutcomeLogged[pair] = true; // success logged
         //}
-        List<(GameObject, GameObject)> evasionCleanup = new();
-        foreach (var entry in evadeTimestamps)
-        {
-            (GameObject cargo, GameObject pirate) = entry.Key;
-            int evadeFrame = entry.Value;
-            if (ShipController.TimeStepCounter - evadeFrame >= 6)
-                evasionCleanup.Add((cargo, pirate));
-        }
-        foreach (var pair in evasionCleanup)
-        {
-            textController.UpdateEvasion(true, true);
-            evadeTimestamps.Remove(pair);
-        }
     }
 
     private void RemoveShipsAtEdge(List<GameObject> allShips, List<GameObject> shipsToRemove)
@@ -285,12 +269,12 @@ public class ShipInteractions : MonoBehaviour
                 Debug.Log($"[SKIPPED LOGGING] {cargo.name} already marked failed for {pirate.name}");
             }
             pendingEvasions.Remove((cargo, pirate));
-        if (evadeTimestamps.ContainsKey((cargo, pirate)))
-        {
-            textController.UpdateEvasion(false, false);
-            evadeTimestamps.Remove((cargo, pirate));
+            if (evadeTimestamps.ContainsKey((cargo, pirate)))
+            {
+                textController.UpdateEvasion(false, false);
+                evadeTimestamps.Remove((cargo, pirate));
+            }
         }
-
         if (cargoBehavior != null)
             cargoBehavior.isCaptured = true;
 
@@ -316,7 +300,7 @@ public class ShipInteractions : MonoBehaviour
             float simTime = ShipController.TimeStepCounter * 1f; // using tick duration of 1f
             ReplayManager.Instance.RecordCaptureEvent(shipId, cargo.transform.position, cargo.transform.rotation, simTime);
         }
-        }
+        //}
     }
 
     private void HandleRescue(GameObject patrol)
