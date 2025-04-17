@@ -3789,11 +3789,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Adjust robabilities of each ship's spawnpoints. You can follow the formatting
-    for each line:\n[ship type],[grid spaces],[multiplier]\nShip Types: pirate, patrol,
-    cargo\nGrid Spaces: Either individual space (e.g. 35) or ranges (e.g. 20-35).
-    \n- 1-100 for patrols, cargo. 1-400 for pirates. \nMultiplier: Single value to
-    multiply odds by. All values start at 1. (eg. 2, for x2, or 0.5 for x0.5.)\n*
-    All calculations happen top to bottom, if squares are changed multiple times."
+    for each line:\n[ship type],[grid minimum],[gridmaximum],[multiplier]\nShip Types:
+    pirate, patrol, cargo\nGrid Spaces: Either individual space (e.g. 35) or ranges
+    (e.g. 20-35). \n- 1-100 for patrols, cargo. 1-400 for pirates. \nMultiplier:
+    Single value to multiply odds by. All values start at 1. (eg. 2, for x2, or 0.5
+    for x0.5.)\n* All calculations happen top to bottom, if squares are changed multiple
+    times."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
