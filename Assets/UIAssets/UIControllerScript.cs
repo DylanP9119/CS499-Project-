@@ -178,8 +178,8 @@ public class UIControllerScript : MonoBehaviour
                 Debug.Log("Entered Day Loop Successfully");
                 values = line.Split(',');
 
-                gridMinimum = Int32.Parse(values[1]);
-                gridMaximum = Int32.Parse(values[2]);
+                gridMinimum = Int32.Parse(values[1]) - 1;
+                gridMaximum = Int32.Parse(values[2]) - 1;
 
                 if (gridMaximum < gridMinimum) {
                     Debug.Log("INVALID ENTRIES! SKIPPING");
@@ -197,12 +197,12 @@ public class UIControllerScript : MonoBehaviour
                     break;
                     case "patrol":
                         for (int i = gridMinimum; i <= gridMaximum; i++) {
-                            cargoGridPercentsD[i] = cargoGridPercentsD[i] * multiplier;
+                            patrolGridPercentsD[i] = patrolGridPercentsD[i] * multiplier;
                         }
                         break;
                     case "pirate":
                         for (int i = gridMinimum; i <= gridMaximum; i++) {
-                            cargoGridPercentsD[i] = cargoGridPercentsD[i] * multiplier;
+                            pirateGridPercentsD[i] = pirateGridPercentsD[i] * multiplier;
                         }
                         break;
                     default:
@@ -227,13 +227,19 @@ public class UIControllerScript : MonoBehaviour
                 switch (values[0])
                 {
                     case "cargo":
-                        cargoGridPercentsN[gridMinimum] = cargoGridPercentsN[gridMinimum] * multiplier;
+                        for (int i = gridMinimum; i <= gridMaximum; i++) {
+                            cargoGridPercentsN[gridMinimum] = cargoGridPercentsN[gridMinimum] * multiplier;
+                        }
                         break;
                     case "patrol":
-                        patrolGridPercentsN[gridMinimum] = patrolGridPercentsN[gridMinimum] * multiplier;
+                        for (int i = gridMinimum; i <= gridMaximum; i++) {
+                            patrolGridPercentsN[gridMinimum] = patrolGridPercentsN[gridMinimum] * multiplier;
+                        }
                         break;
                     case "pirate":
-                        pirateGridPercentsN[gridMinimum] = pirateGridPercentsN[gridMinimum] * multiplier;
+                        for (int i = gridMinimum; i <= gridMaximum; i++) {
+                            pirateGridPercentsN[gridMinimum] = pirateGridPercentsN[gridMinimum] * multiplier;
+                        }
                         break;
                     default:
                         Debug.Log("Invalid Entry for ship type in line: " + line);
