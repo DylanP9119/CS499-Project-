@@ -289,6 +289,8 @@ public class ShipInteractions : MonoBehaviour
         {
             pirateBehavior.currentGridPosition = cargoBehavior.currentGridPosition;
             pirate.transform.position = cargo.transform.position;
+            pirate.transform.rotation = Quaternion.Euler(0, 180f, 0); // face south
+            cargo.transform.rotation = Quaternion.Euler(0, 180f, 0);  // cargo faces south too
         }
 
         textController.UpdateCaptures(true);
@@ -342,6 +344,8 @@ public class ShipInteractions : MonoBehaviour
             {
                 cargoBehavior.isCaptured = false;
                 cargoToRescue.tag = "Cargo";
+                cargoToRescue.transform.rotation = Quaternion.Euler(0, 90f, 0); // face east again
+
             }
 
             // Record the rescue event so that replay includes it.
