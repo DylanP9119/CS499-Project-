@@ -29,7 +29,6 @@ public class ShipController : MonoBehaviour
     private int cargoCounter = 1, patrolCounter = 1, pirateCounter = 1;
     public float simulationLengthHours = 24f;
     private float simMinutesPassed = 0f;
-    public bool useDayNightCycle = true;
     Vector2Int gridSize = new Vector2Int(400, 100);
     public List<GameObject> allShips = new List<GameObject>();
 
@@ -132,7 +131,7 @@ public class ShipController : MonoBehaviour
 
     void UpdateDayNightCycle()
     {
-        if (!useDayNightCycle)
+        if (!DataPersistence.Instance.nightCaptureEnabled)
         {
             isNight = false;
             ShipInteractions.Instance.isNight = false;
@@ -341,5 +340,39 @@ public class ShipController : MonoBehaviour
     public static void SetTimeStepCounter(int newTick)
     {
         TimeStepCounter = newTick;
+    }
+
+    public static int SelectIndexByWeight(double[] weights)
+    {
+        // Step 1: Calculate the sum of all weights
+        double totalWeight = 0;
+        foreach (double weight in weights)
+        {
+            totalWeight += weight;
+        }
+
+        // Step 2: Normalize the weights and create cumulative distribution
+        double[] cumulative = new double[weights.Length];
+        double cumulativeSum = 0;
+        for (int i = 0; i < weights.Length; i++)
+        {
+            cumulativeSum += weights[i] / totalWeight; // Normalize weight
+            cumulative[i] = cumulativeSum;
+        }
+
+        // Step 3: Generate a random number between 0 and 1
+
+        double randomNumber = Random.value;
+
+        // Step 4: Find the index using the cumulative distribution
+        for (int i = 0; i < cumulative.Length; i++)
+        {
+            if (randomNumber <= cumulative[i])
+            {
+                return i;
+            }
+        }
+
+        return -1; // Fallback (shouldn't occur with valid input)
     }
 }
