@@ -52,12 +52,12 @@
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/BUILD TEST.loader.js";
+      var loaderUrl = buildUrl + "/Test CS499 SIM.loader.js";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/BUILD TEST.data.br",
-        frameworkUrl: buildUrl + "/BUILD TEST.framework.js.br",
-        codeUrl: buildUrl + "/BUILD TEST.wasm.br",
+        dataUrl: buildUrl + "/Test CS499 SIM.data.br",
+        frameworkUrl: buildUrl + "/Test CS499 SIM.framework.js.br",
+        codeUrl: buildUrl + "/Test CS499 SIM.wasm.br",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
         productName: "CS499 Project",
@@ -123,24 +123,22 @@
       document.body.appendChild(script);
 
     </script>
-
     <input type="file" id="fileInput" accept=".txt" style="display:none" onchange="loadTextFile(event)" />
 
     <script>
-        function openFileDialog() {
-            document.getElementById('fileInput').click();
-        }
-
-        function loadTextFile(event) {
-            const reader = new FileReader();
-            reader.onload = function() {
-                const content = reader.result;
-
-                unityInstance.SendMessamge('FileManager', 'RecieveFileContent', content);
-            };
-            reader.readAsText(event.target.files[0]);
-        }
+      function openFileDialog() {
+        document.getElementById('fileInput').click();
+      }
+    
+      function loadTextFile(event) {
+        const reader = new FileReader();
+        reader.onload = function () {
+          const content = reader.result;
+          // Send the file's text content to Unity
+          unityInstance.SendMessage('FileManager', 'ReceiveFileContent', content);
+        };
+        reader.readAsText(event.target.files[0]);
+      }
     </script>
-
   </body>
 </html>
