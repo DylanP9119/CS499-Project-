@@ -36,14 +36,16 @@ public class ShipController : MonoBehaviour
     void Start()
     {
         timeControl = FindObjectOfType<TimeControl>();
-        if (UIControllerScript.Instance != null)
+        if (DataPersistence.Instance != null)
         {
-            cargoSpawnChance = UIControllerScript.Instance.cargoDayPercent / 100f;
-            cargoNightChance = UIControllerScript.Instance.cargoNightPercent / 100f;
-            pirateSpawnChance = UIControllerScript.Instance.pirateDayPercent / 100f;
-            pirateNightChance = UIControllerScript.Instance.pirateNightPercent / 100f;
-            patrolSpawnChance = UIControllerScript.Instance.patrolDayPercent / 100f;
-            patrolNightChance = UIControllerScript.Instance.patrolNightPercent / 100f;
+            cargoSpawnChance = DataPersistence.Instance.cargoDayPercent / 100f;
+            cargoNightChance = DataPersistence.Instance.cargoNightPercent / 100f;
+            pirateSpawnChance = DataPersistence.Instance.pirateDayPercent / 100f;
+            pirateNightChance = DataPersistence.Instance.pirateNightPercent / 100f;
+            patrolSpawnChance = DataPersistence.Instance.patrolDayPercent / 100f;
+            patrolNightChance = DataPersistence.Instance.patrolNightPercent / 100f;
+
+            simulationLengthHours = (DataPersistence.Instance.dayCount * 24) + DataPersistence.Instance.hourCount;
         }
     }
 

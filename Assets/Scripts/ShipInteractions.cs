@@ -62,7 +62,7 @@ public class ShipInteractions : MonoBehaviour
                 {
                     HandleCapture(ship, otherShip);
                 }
-                else if (ship.CompareTag("Pirate") && otherShip.CompareTag("Cargo") && isNight && IsWithinRange(shipPos, otherPos, 2))
+                else if (ship.CompareTag("Pirate") && otherShip.CompareTag("Cargo") && isNight && DataPersistence.Instance.nightCaptureEnabled && IsWithinRange(shipPos, otherPos, 2))
                 {
                     HandleCapture(ship, otherShip);
                 }

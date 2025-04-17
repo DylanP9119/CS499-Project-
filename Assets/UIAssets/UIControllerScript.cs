@@ -24,13 +24,13 @@ public class UIControllerScript : MonoBehaviour
     private string gridDayString;
     private string gridNightString;
 
-    private double[] cargoGridPercentsD = new double[100];
-    private double[] patrolGridPercentsD = new double[100];
-    private double[] pirateGridPercentsD = new double[400];
+    public double[] cargoGridPercentsD = new double[100];
+    public double[] patrolGridPercentsD = new double[100];
+    public double[] pirateGridPercentsD = new double[400];
 
-    private double[] cargoGridPercentsN = new double[100];
-    private double[] patrolGridPercentsN = new double[100];
-    private double[] pirateGridPercentsN = new double[400];
+    public double[] cargoGridPercentsN = new double[100];
+    public double[] patrolGridPercentsN = new double[100];
+    public double[] pirateGridPercentsN = new double[400];
 
     double multiplier = 0;
     int gridMinimum = 0;
@@ -43,9 +43,9 @@ public class UIControllerScript : MonoBehaviour
     public int patrolDayPercent;
     public int patrolNightPercent;
 
-    private int dayCount;
-    private int hourCount;
-    private int minuteCount;
+    public int dayCount;
+    public int hourCount;
+    public int minuteCount;
 
     private bool isParsed;
 
@@ -59,13 +59,15 @@ public class UIControllerScript : MonoBehaviour
 
     public void Awake()
     {
-        //if (Instance != null)
-        //{
-        //    Destroy(gameObject);
-        //    return;
-        //}
+        /*
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        */
 
-        //Instance = this;
+        Instance = this;
         //DontDestroyOnLoad(gameObject);
 
         cargoDayPercent = 50;
@@ -86,14 +88,14 @@ public class UIControllerScript : MonoBehaviour
         nightCaptureEnabled = false;
 
         //fill grid spaces with default values
-        for (int gridSpace = 1; gridSpace < cargoGridPercentsD.Length; gridSpace++)
+        for (int gridSpace = 0; gridSpace < cargoGridPercentsD.Length; gridSpace++)
         {
             cargoGridPercentsD[gridSpace] = 1;
             patrolGridPercentsD[gridSpace] = 1;
             cargoGridPercentsN[gridSpace] = 1;
             patrolGridPercentsN[gridSpace] = 1;
         }
-        for (int gridSpace = 1; gridSpace < pirateGridPercentsD.Length; gridSpace++)
+        for (int gridSpace = 0; gridSpace < pirateGridPercentsD.Length; gridSpace++)
         {
             pirateGridPercentsD[gridSpace] = 1;
             pirateGridPercentsN[gridSpace] = 1;
