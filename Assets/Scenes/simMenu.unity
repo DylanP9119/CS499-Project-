@@ -516,7 +516,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1135158723}
         m_TargetAssemblyTypeName: UIControllerScript, Assembly-CSharp
-        m_MethodName: ReadStringInputGRIDDAYPERCENT
+        m_MethodName: ReadStringInputGRIDNIGHTPERCENT
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11567,5 +11567,5 @@ SceneRoots:
   - {fileID: 883977390}
   - {fileID: 112091230}
   - {fileID: 1546207581}
-  - {fileID: 775701904}
   - {fileID: 1135158724}
+  - {fileID: 775701904}
