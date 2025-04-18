@@ -31,6 +31,8 @@ public class ShipController : MonoBehaviour
     Vector2Int gridSize = new Vector2Int(400, 100);
     public List<GameObject> allShips = new List<GameObject>();
 
+    public GameObject nightPanel; 
+
     void Start()
     {
         timeControl = FindObjectOfType<TimeControl>();
@@ -44,6 +46,8 @@ public class ShipController : MonoBehaviour
             patrolNightChance = DataPersistence.Instance.patrolNightPercent / 100f;
 
             simulationLengthHours = (DataPersistence.Instance.dayCount * 24) + DataPersistence.Instance.hourCount;
+
+            nightPanel.SetActive(false);
         }
     }
 
@@ -74,10 +78,17 @@ public class ShipController : MonoBehaviour
                 int totalMinutes = Mathf.FloorToInt(simMinutesPassed);
                 int day = (totalMinutes / 1440) + 1;
                 int hour = (totalMinutes / 60) % 24;
-                int minute = totalMinutes % 60;
+                int minute = totalMinutes % 60; 
 
-                // Current time display
-                timeDisplayRun.text = $"Day {day} — {hour:D2}:{minute:D2}";
+                // Visual time display
+                if (simMinutesPassed % 1440 >= 720) {
+                    timeDisplayRun.text = $"Night {day} — {hour:D2}:{minute:D2}";
+                    nightPanel.SetActive(true);
+                }
+                else {
+                    timeDisplayRun.text = $"Day {day} — {hour:D2}:{minute:D2}";
+                    nightPanel.SetActive(false);
+                }
 
                 // Calculate remaining time
                 float remainingMinutes = simulationLengthHours * 60f - simMinutesPassed;
