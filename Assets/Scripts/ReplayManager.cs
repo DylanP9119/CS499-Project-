@@ -62,7 +62,7 @@ public class ReplayManager : MonoBehaviour
         if (btnDecreaseSpeed != null)
             btnDecreaseSpeed.onClick.AddListener(DecreaseSpeed);
 
-        UIvisibility(false);
+        UIvisibility(true);
     }
 
     void Update()
@@ -276,7 +276,7 @@ public class ReplayManager : MonoBehaviour
     void StopReplay()
     {
         ReplayModeActive = false;
-        UIvisibility(false);
+        UIvisibility(true);
         shipController.ClearAllShips();
     }
 
@@ -323,10 +323,13 @@ public class ReplayManager : MonoBehaviour
     {
         if (currentSpeedIndex < speeds.Length - 1)
         {
+            if(ReplayModeActive)
+            {
             currentSpeedIndex++;
             replaySpeed = speeds[currentSpeedIndex];
             Debug.Log($"Replay speed set to {replaySpeed}x");
             UpdateDisplay();
+            }
         }
     }
 
@@ -334,10 +337,13 @@ public class ReplayManager : MonoBehaviour
     {
         if (currentSpeedIndex > 0)
         {
+            if(ReplayModeActive)
+            {
             currentSpeedIndex--;
             replaySpeed = speeds[currentSpeedIndex];
             Debug.Log($"Replay speed set to {replaySpeed}x");
             UpdateDisplay();
+            }
         }
     }
 
