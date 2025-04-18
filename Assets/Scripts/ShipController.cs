@@ -5,50 +5,124 @@ using System.Linq;
 
 public class ShipController : MonoBehaviour
 {
+    // Static simulation tick counter.
     public static int TimeStepCounter { get; private set; } = 0;
-    public GameObject cargoPrefab, patrolPrefab, piratePrefab;
+    // For simulation testing, we use a shorter tick duration.
+    public float simulationTickDuration = 1f;
+
+    public GameObject cargoPrefab;
+    public GameObject patrolPrefab;
+    public GameObject piratePrefab;
     public TextController textController;
-    public Text timeDisplayRun, timeDisplayRemaining;
+    public Text timeDisplayRun;
+    public Text timeDisplayRunReplay;     // replay mode clock
+    public Text timeDisplayRemaining;
     public bool isNight = false;
-    public float simulationLengthHours = 24f;
-    public bool useDayNightCycle = true;
-    private float spawnTimer = 0f;
+    public float cargoSpawnChance = 0.50f;
+    public float patrolSpawnChance = 0.25f;
+    public float pirateSpawnChance = 0.40f;
+    public float cargoNightChance = 0.50f;
+    public float patrolNightChance = 0.25f;
+    public float pirateNightChance = 0.40f;
+    float spawnTimer = 0.0f;
     private TimeControl timeControl;
     private int cargoCounter = 1, patrolCounter = 1, pirateCounter = 1;
+    public float simulationLengthHours = 24f;
     private float simMinutesPassed = 0f;
-    private float cumulativeSimTime = 0f;
-    private Vector2Int gridSize = new Vector2Int(400, 100);
+    Vector2Int gridSize = new Vector2Int(400, 100);
     public List<GameObject> allShips = new List<GameObject>();
 
     void Start()
     {
         timeControl = FindObjectOfType<TimeControl>();
-        if (UIControllerScript.Instance != null) UpdateSpawnChancesFromUI();
+        if (DataPersistence.Instance != null)
+        {
+            cargoSpawnChance = DataPersistence.Instance.cargoDayPercent / 100f;
+            cargoNightChance = DataPersistence.Instance.cargoNightPercent / 100f;
+            pirateSpawnChance = DataPersistence.Instance.pirateDayPercent / 100f;
+            pirateNightChance = DataPersistence.Instance.pirateNightPercent / 100f;
+            patrolSpawnChance = DataPersistence.Instance.patrolDayPercent / 100f;
+            patrolNightChance = DataPersistence.Instance.patrolNightPercent / 100f;
+
+            simulationLengthHours = (DataPersistence.Instance.dayCount * 24) + DataPersistence.Instance.hourCount;
+        }
     }
 
     void Update()
     {
-        if (ReplayManager.Instance?.ReplayModeActive ?? false) return;
+        // If in Replay Mode, handle via ReplayManager.
+        if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive)
+        {
+            if (!ReplayManager.Instance.ReplayPaused)
+            {
+                int currentTick = Mathf.FloorToInt(ReplayManager.Instance.replayTime / simulationTickDuration);
+                SetTimeStepCounter(currentTick);
+                ShipInteractions.Instance.CheckForInteractions(allShips);
+            }
+            return;
+        }
 
+        // Simulation mode:
         if (!timeControl.IsPaused)
         {
             spawnTimer += Time.deltaTime;
-            if (spawnTimer >= timeControl.GetSpeed())
+            if (spawnTimer >= simulationTickDuration)
             {
+                // Advance simulation tick.
                 TimeStepCounter++;
-                cumulativeSimTime += timeControl.GetSpeed();
                 simMinutesPassed += 5f;
                 UpdateDayNightCycle();
-                UpdateTimeDisplays();
+                int totalMinutes = Mathf.FloorToInt(simMinutesPassed);
+                int day = (totalMinutes / 1440) + 1;
+                int hour = (totalMinutes / 60) % 24;
+                int minute = totalMinutes % 60;
+
+                // Current time display
+                timeDisplayRun.text = $"Day {day} — {hour:D2}:{minute:D2}";
+
+                // Calculate remaining time
+                float remainingMinutes = simulationLengthHours * 60f - simMinutesPassed;
+                if (remainingMinutes < 0) remainingMinutes = 0;
+                int remainingDays = Mathf.FloorToInt(remainingMinutes / 1440f);
+                int remainingHours = Mathf.FloorToInt((remainingMinutes % 1440) / 60f);
+                int remainingMins = Mathf.FloorToInt(remainingMinutes % 60f);
+
+                timeDisplayRemaining.text = $"Remaining: {remainingDays}d {remainingHours}h {remainingMins}m";
 
                 if (simMinutesPassed >= simulationLengthHours * 60f)
                 {
-                    timeControl.ToggleMovement(true);
+                    Debug.Log("[SIM END] Reached simulation limit.");
+                    timeControl.ToggleMovement(true); // Pause simulation
                     return;
                 }
 
-                SpawnShip(cumulativeSimTime);
-                StepAllShips();
+                float simTime = TimeStepCounter * simulationTickDuration;
+                SpawnShip(simTime);
+
+                // Explicitly call Step on each ship's behavior component.
+                foreach (GameObject ship in allShips)
+                {
+                    if (ship == null)
+                        continue;
+                    if (ship.CompareTag("Cargo"))
+                    {
+                        var cargo = ship.GetComponent<CargoBehavior>();
+                        if (cargo != null)
+                            cargo.Step(true);
+                    }
+                    else if (ship.CompareTag("Patrol"))
+                    {
+                        var patrol = ship.GetComponent<PatrolBehavior>();
+                        if (patrol != null)
+                            patrol.Step(true);
+                    }
+                    else if (ship.CompareTag("Pirate"))
+                    {
+                        var pirate = ship.GetComponent<PirateBehavior>();
+                        if (pirate != null)
+                            pirate.Step(true);
+                    }
+                }
                 ShipInteractions.Instance.CheckForInteractions(allShips);
                 spawnTimer = 0f;
             }
@@ -132,11 +206,28 @@ public class ShipController : MonoBehaviour
 
     Vector3 GetUniqueSpawnPosition(string shipType, HashSet<Vector3> occupiedPositions)
     {
-        float gridCellSize = 1f;
         int maxAttempts = 400;
+        Vector3 spawnPos = Vector3.zero;
         for (int i = 0; i < maxAttempts; i++)
         {
-            Vector3 spawnPos = CalculateSpawnPosition(shipType, gridCellSize);
+            float roll = Random.value;
+            if (shipType == "Cargo")
+            {
+                int spawnZ = Mathf.FloorToInt(gridSize.y * roll);
+                spawnPos = new Vector3(0, 0, spawnZ);
+            }
+            else if (shipType == "Pirate")
+            {
+                int spawnX = Mathf.FloorToInt(gridSize.x * roll);
+                spawnPos = new Vector3(spawnX, 0, 0);
+            }
+            else if (shipType == "Patrol")
+            {
+                int spawnZ = Mathf.FloorToInt(gridSize.y * roll);
+                spawnPos = new Vector3(gridSize.x - 1, 0, spawnZ);
+            }
+            else
+                return Vector3.zero;
             if (!occupiedPositions.Contains(spawnPos))
             {
                 occupiedPositions.Add(spawnPos);
@@ -190,7 +281,39 @@ public class ShipController : MonoBehaviour
             _ => null
         };
     }
+    public static int SelectIndexByWeight(double[] weights)
+    {
+        // Step 1: Calculate the sum of all weights
+        double totalWeight = 0;
+        foreach (double weight in weights)
+        {
+            totalWeight += weight;
+        }
 
+        // Step 2: Normalize the weights and create cumulative distribution
+        double[] cumulative = new double[weights.Length];
+        double cumulativeSum = 0;
+        for (int i = 0; i < weights.Length; i++)
+        {
+            cumulativeSum += weights[i] / totalWeight; // Normalize weight
+            cumulative[i] = cumulativeSum;
+        }
+
+        // Step 3: Generate a random number between 0 and 1
+
+        double randomNumber = Random.value;
+
+        // Step 4: Find the index using the cumulative distribution
+        for (int i = 0; i < cumulative.Length; i++)
+        {
+            if (randomNumber <= cumulative[i])
+            {
+                return i;
+            }
+        }
+
+        return -1; // Fallback (shouldn't occur with valid input)
+    }
     void InitializeShipBehavior(GameObject ship, string shipType, Vector3 spawnPos)
     {
         switch (shipType)
