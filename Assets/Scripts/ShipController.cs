@@ -129,6 +129,41 @@ public class ShipController : MonoBehaviour
         }
     }
 
+    public static int SelectIndexByWeight(double[] weights)
+    {
+        // Step 1: Calculate the sum of all weights
+        double totalWeight = 0;
+        foreach (double weight in weights)
+        {
+            totalWeight += weight;
+        }
+
+        // Step 2: Normalize the weights and create cumulative distribution
+        double[] cumulative = new double[weights.Length];
+        double cumulativeSum = 0;
+        for (int i = 0; i < weights.Length; i++)
+        {
+            cumulativeSum += weights[i] / totalWeight; // Normalize weight
+            cumulative[i] = cumulativeSum;
+        }
+
+        // Step 3: Generate a random number between 0 and 1
+        System.Random rand = new System.Random();
+        double randomNumber = rand.NextDouble();
+
+        // Step 4: Find the index using the cumulative distribution
+        for (int i = 0; i < weights.Length; i++)
+        {
+            if (randomNumber <= cumulative[i])
+            {
+                Debug.Log("Spawning at Grid# " + i);
+                return i;
+            }
+        }
+
+        return -1; // Fallback (shouldn't occur with valid input)
+    }
+
     void UpdateDayNightCycle()
     {
         if (!DataPersistence.Instance.nightCaptureEnabled)
@@ -160,6 +195,7 @@ public class ShipController : MonoBehaviour
         if (!isNight && Random.value <= cargoSpawnChance)
         {
             Vector3 spawnPos = GetUniqueSpawnPosition("Cargo", occupiedPositions);
+            Debug.Log(spawnPos);
             if (spawnPos != Vector3.zero)
             {
                 int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : cargoCounter;
@@ -267,24 +303,58 @@ public class ShipController : MonoBehaviour
         Vector3 spawnPos = Vector3.zero;
         for (int i = 0; i < maxAttempts; i++)
         {
-            float roll = Random.value;
             if (shipType == "Cargo")
             {
-                int spawnZ = Mathf.FloorToInt(gridSize.y * roll);
+                int spawnZ = 0;
+
+                if (!isNight) {
+                    spawnZ = SelectIndexByWeight(DataPersistence.Instance.cargoGridPercentsD);
+                    Debug.Log("Cargo SpawnZ = " + spawnZ);
+                }
+                else
+                {
+                    spawnZ = SelectIndexByWeight(DataPersistence.Instance.cargoGridPercentsN);
+                    Debug.Log("Cargo SpawnZ = " + spawnZ);
+                }
+
                 spawnPos = new Vector3(0, 0, spawnZ);
             }
             else if (shipType == "Pirate")
             {
-                int spawnX = Mathf.FloorToInt(gridSize.x * roll);
+                int spawnX = 0;
+
+                if (!isNight)
+                {
+                    spawnX = SelectIndexByWeight(DataPersistence.Instance.pirateGridPercentsD);
+                    Debug.Log("Pirate SpawnX = " + spawnX);
+                }
+                else
+                {
+                    spawnX = SelectIndexByWeight(DataPersistence.Instance.pirateGridPercentsN);
+                    Debug.Log("Pirate SpawnX = " + spawnX);
+                }
+
                 spawnPos = new Vector3(spawnX, 0, 0);
             }
             else if (shipType == "Patrol")
             {
-                int spawnZ = Mathf.FloorToInt(gridSize.y * roll);
+                int spawnZ = 0;
+
+                if (!isNight)
+                {
+                    spawnZ = SelectIndexByWeight(DataPersistence.Instance.patrolGridPercentsD);
+                    Debug.Log("Patrol SpawnZ = " + spawnZ);
+                }
+                else
+                {
+                    spawnZ = SelectIndexByWeight(DataPersistence.Instance.patrolGridPercentsN);
+                    Debug.Log("Patrol SpawnZ = " + spawnZ);
+                }
                 spawnPos = new Vector3(gridSize.x - 1, 0, spawnZ);
             }
             else
                 return Vector3.zero;
+
             if (!occupiedPositions.Contains(spawnPos))
             {
                 occupiedPositions.Add(spawnPos);
@@ -342,37 +412,5 @@ public class ShipController : MonoBehaviour
         TimeStepCounter = newTick;
     }
 
-    public static int SelectIndexByWeight(double[] weights)
-    {
-        // Step 1: Calculate the sum of all weights
-        double totalWeight = 0;
-        foreach (double weight in weights)
-        {
-            totalWeight += weight;
-        }
 
-        // Step 2: Normalize the weights and create cumulative distribution
-        double[] cumulative = new double[weights.Length];
-        double cumulativeSum = 0;
-        for (int i = 0; i < weights.Length; i++)
-        {
-            cumulativeSum += weights[i] / totalWeight; // Normalize weight
-            cumulative[i] = cumulativeSum;
-        }
-
-        // Step 3: Generate a random number between 0 and 1
-
-        double randomNumber = Random.value;
-
-        // Step 4: Find the index using the cumulative distribution
-        for (int i = 0; i < cumulative.Length; i++)
-        {
-            if (randomNumber <= cumulative[i])
-            {
-                return i;
-            }
-        }
-
-        return -1; // Fallback (shouldn't occur with valid input)
-    }
 }

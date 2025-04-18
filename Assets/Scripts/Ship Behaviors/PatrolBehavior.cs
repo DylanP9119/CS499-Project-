@@ -18,11 +18,8 @@ public class PatrolBehavior : MonoBehaviour
     }
     else
     {
-        int startX = gridSize.x;
-        int startY = Random.Range(0, gridSize.y);
-        currentGridPosition = new Vector2Int(startX, startY);
-        destinationGridPosition = new Vector2Int(0, startY);
-        transform.position = GridToWorld(currentGridPosition);
+        currentGridPosition = WorldToGrid(transform.position);
+        destinationGridPosition = new Vector2Int(currentGridPosition.x, gridSize.y);
     }
     }
 

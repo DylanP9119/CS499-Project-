@@ -20,11 +20,8 @@ public class CargoBehavior : MonoBehaviour
     }
     else
     {
-        int startX = 0;
-        int startY = Random.Range(0, gridSize.y);
-        currentGridPosition = new Vector2Int(startX, startY);
-        destinationGridPosition = new Vector2Int(gridSize.x, startY);
-        transform.position = GridToWorld(currentGridPosition);
+        currentGridPosition = WorldToGrid(transform.position);
+        destinationGridPosition = new Vector2Int(gridSize.x, currentGridPosition.y);
     }
     }
 
