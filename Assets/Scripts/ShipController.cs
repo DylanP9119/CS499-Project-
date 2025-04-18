@@ -134,11 +134,21 @@ public class ShipController : MonoBehaviour
         // Implementation depends on UIControllerScript
     }
 
-    void UpdateDayNightCycle()
+void UpdateDayNightCycle()
     {
-        if (!useDayNightCycle) return;
+        if (!DataPersistence.Instance.nightCaptureEnabled)
+        {
+            isNight = false;
+            ShipInteractions.Instance.isNight = false;
+            return;
+        }
         int hour = Mathf.FloorToInt(simMinutesPassed / 60f) % 24;
-        ShipInteractions.Instance.isNight = isNight = (hour >= 12);
+        bool newNight = (hour >= 12);
+        if (newNight != isNight)
+        {
+            isNight = newNight;
+            ShipInteractions.Instance.isNight = isNight;
+        }
     }
 
     void UpdateTimeDisplays()
