@@ -47,13 +47,16 @@ public class CargoBehavior : MonoBehaviour
 
     public void MoveShipTowardsDestination()
     {
-        int direction = 1;
-        if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive && ReplayManager.Instance.replaySpeed < 0)
-            direction = -1;
-        currentGridPosition += Vector2Int.right * direction;
-        transform.position = GridToWorld(currentGridPosition);
+        if (currentGridPosition != destinationGridPosition)
+        {
+            int direction = 1;
+            if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive && ReplayManager.Instance.replaySpeed < 0)
+                direction = -1;
+            currentGridPosition += Vector2Int.right * direction;
+            transform.position = GridToWorld(currentGridPosition);
+        }
     }
-public Vector2Int WorldToGrid(Vector3 worldPosition)
+    public Vector2Int WorldToGrid(Vector3 worldPosition)
 {
     int x = Mathf.FloorToInt(worldPosition.x / gridCellSize);
     int y = Mathf.FloorToInt(worldPosition.z / gridCellSize); // Z-axis corresponds to grid Y

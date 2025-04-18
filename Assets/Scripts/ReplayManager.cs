@@ -62,7 +62,7 @@ public class ReplayManager : MonoBehaviour
         if (btnDecreaseSpeed != null)
             btnDecreaseSpeed.onClick.AddListener(DecreaseSpeed);
 
-        UIvisibility(false);
+        UIvisibility(true);
     }
 
     void Update()
