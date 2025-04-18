@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 public class UILoadMenuController : MonoBehaviour
 {
@@ -24,26 +25,31 @@ public class UILoadMenuController : MonoBehaviour
         Destroy(itemPrefab);
     }
 
-    //Begins the simulation with prompted information.
-    public void StartSim()
+    [DllImport("__Internal")]
+    private static extern void ShowFileUpload();
+
+    public void OpenFileUpload()
     {
-        //hjere
+    #if UNITY_WEBGL && !UNITY_EDITOR
+        ShowFileUpload();
+    #else
+        Debug.Log("File upload only works in WebGL builds.");
+    #endif
     }
 
-    public void AddItemButton()
+    // Called from JavaScript with the uploaded JSON
+    public void OnJsonFileLoaded(string json)
     {
-        Instantiate(itemPrefab, contentParent);
+        Debug.Log("JSON Loaded: " + json);
+
+        // Deserialize and use the data
+        MyData data = JsonUtility.FromJson<MyData>(json);
+        Debug.Log("Message from JSON: " + data.message);
     }
 
-    public void LoadButton() {
-        //fileManager.OpenFilePicker();
-    }
-
-    public void OpenFilePicker() {
-        Application.ExternalCall("openFileDialog");
-    }
-
-    public void RecieveFileContent(string content) {
-        Debug.Log("Recieved file content:\n" + content);
+    [System.Serializable]
+    public class MyData
+    {
+        public string message;
     }
 }

@@ -319,12 +319,50 @@ public class UIControllerScript : MonoBehaviour
         }
         else
         {
-            //scene swap
             Debug.Log("SUCCESS!");
+            Save();
             SceneManager.LoadScene(startSim);
         }
 
     }
+
+    public class MyData
+    {
+        public int days, hours, cDay, cNight, piDay, piNight, paDay, paNight;
+        public bool pNightCap;
+    }
+
+    public void Save()
+    {
+        MyData data = new MyData { 
+            days = dayCount,
+            hours = hourCount,
+            cDay = cargoDayPercent,
+            cNight = cargoNightPercent,
+            piDay = pirateDayPercent,
+            piNight = pirateNightPercent,
+            paDay = patrolDayPercent,
+            paNight = patrolNightPercent,
+            pNightCap = nightCaptureEnabled,
+            };
+        
+        string json = JsonUtility.ToJson(data, true);
+        DownloadFile("mydata.json", json);
+    }
+
+    public void DownloadFile(string filename, string content)
+    {
+    #if UNITY_WEBGL && !UNITY_EDITOR
+        DownloadFileWebGL(filename, content);
+    #else
+        // In Editor or standalone builds, save locally for testing
+        System.IO.File.WriteAllText(Application.dataPath + "/" + filename, content);
+        Debug.Log("Saved locally: " + filename);
+    #endif
+    }
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern void DownloadFileWebGL(string filename, string content);
 
     public bool GridRangeCheck(string gridMin, string gridMax, string mult) {
         if (!(Int32.TryParse(gridMin, out int gridLow))) {

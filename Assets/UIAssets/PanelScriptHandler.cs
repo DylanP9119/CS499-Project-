@@ -12,16 +12,12 @@ public class PanelScriptHandler : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public void BeginButton()
-    {
-        string values = "My Save, 04/15/2025, 10:27, 15, 12, ON, 40, 40, 15, 15, 30, 30";
-        string gridText = "this is just test\ndata\n\ntesting";
-        
-        InstantiateTextData(values, gridText);
-    }
 
-    private void InstantiateTextData(string myText, string gridText) {
-        string[] values = myText.Split(',');
+    private void InstantiateTextData(string message) {
+        string inputText = message + ",04/15/2025,10:27,15,12,ON,40,40,15,15,30,30";
+        string gridText = "this is just test\ndata\n\ntesting";
+
+        string[] values = inputText.Split(',');
 
         TMP_Text titleText = gameObject.transform.Find("Save Name Text").GetComponent<TMP_Text>();
         TMP_Text fileDateText = gameObject.transform.Find("Time Made").GetComponent<TMP_Text>();
