@@ -269,12 +269,12 @@ public class ShipInteractions : MonoBehaviour
                 Debug.Log($"[SKIPPED LOGGING] {cargo.name} already marked failed for {pirate.name}");
             }
             pendingEvasions.Remove((cargo, pirate));
-            if (evadeTimestamps.ContainsKey((cargo, pirate)))
-            {
-                textController.UpdateEvasion(false, false);
-                evadeTimestamps.Remove((cargo, pirate));
-            }
+        if (evadeTimestamps.ContainsKey((cargo, pirate)))
+        {
+            textController.UpdateEvasion(false, false);
+            evadeTimestamps.Remove((cargo, pirate));
         }
+
         if (cargoBehavior != null)
             cargoBehavior.isCaptured = true;
 
@@ -302,7 +302,7 @@ public class ShipInteractions : MonoBehaviour
             float simTime = ShipController.TimeStepCounter * 1f; // using tick duration of 1f
             ReplayManager.Instance.RecordCaptureEvent(shipId, cargo.transform.position, cargo.transform.rotation, simTime);
         }
-        //}
+        }
     }
 
     private void HandleRescue(GameObject patrol)
