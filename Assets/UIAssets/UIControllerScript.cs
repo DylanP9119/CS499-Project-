@@ -67,7 +67,7 @@ public class UIControllerScript : MonoBehaviour
 
         //Instance = this;
         //DontDestroyOnLoad(gameObject);
-
+        fileNameString = "";
         cargoDayPercent = 50;
         cargoNightPercent = 50;
         pirateDayPercent = 25;
@@ -159,7 +159,7 @@ public class UIControllerScript : MonoBehaviour
             Debug.Log("test seven");
         }
 
-        if (fileNameString == null) {
+        if (fileNameString == "") {
             canStart = false;
             Debug.Log("test eight");
         }
@@ -328,6 +328,7 @@ public class UIControllerScript : MonoBehaviour
 
     public class MyData
     {
+        public string saveName;
         public int days, hours, cDay, cNight, piDay, piNight, paDay, paNight;
         public bool pNightCap;
     }
@@ -335,6 +336,7 @@ public class UIControllerScript : MonoBehaviour
     public void Save()
     {
         MyData data = new MyData { 
+            saveName = fileNameString,
             days = dayCount,
             hours = hourCount,
             cDay = cargoDayPercent,
@@ -347,7 +349,8 @@ public class UIControllerScript : MonoBehaviour
             };
         
         string json = JsonUtility.ToJson(data, true);
-        DownloadFile("mydata.json", json);
+        string path = fileNameString + ".json";
+        DownloadFile(path, json);
     }
 
     public void DownloadFile(string filename, string content)
