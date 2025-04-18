@@ -70,6 +70,15 @@ public class UIControllerScript : MonoBehaviour
         Instance = this;
         //DontDestroyOnLoad(gameObject);
 
+        //if (Instance != null)
+        //{
+        //    Destroy(gameObject);
+        //    return;
+        //}
+
+        Instance = this;
+        //DontDestroyOnLoad(gameObject);
+        fileNameString = "";
         cargoDayPercent = 50;
         cargoNightPercent = 50;
         pirateDayPercent = 25;
@@ -161,7 +170,7 @@ public class UIControllerScript : MonoBehaviour
             Debug.Log("test seven");
         }
 
-        if (fileNameString == null) {
+        if (fileNameString == "") {
             canStart = false;
             Debug.Log("test eight");
         }
@@ -322,12 +331,53 @@ public class UIControllerScript : MonoBehaviour
         }
         else
         {
-            //scene swap
             Debug.Log("SUCCESS!");
+            Save();
             SceneManager.LoadScene(startSim);
         }
 
     }
+
+    public class MyData
+    {
+        public string saveName;
+        public int days, hours, cDay, cNight, piDay, piNight, paDay, paNight;
+        public bool pNightCap;
+    }
+
+    public void Save()
+    {
+        MyData data = new MyData { 
+            saveName = fileNameString,
+            days = dayCount,
+            hours = hourCount,
+            cDay = cargoDayPercent,
+            cNight = cargoNightPercent,
+            piDay = pirateDayPercent,
+            piNight = pirateNightPercent,
+            paDay = patrolDayPercent,
+            paNight = patrolNightPercent,
+            pNightCap = nightCaptureEnabled,
+            };
+        
+        string json = JsonUtility.ToJson(data, true);
+        string path = fileNameString + ".json";
+        DownloadFile(path, json);
+    }
+
+    public void DownloadFile(string filename, string content)
+    {
+    #if UNITY_WEBGL && !UNITY_EDITOR
+        DownloadFileWebGL(filename, content);
+    #else
+        // In Editor or standalone builds, save locally for testing
+        System.IO.File.WriteAllText(Application.dataPath + "/" + filename, content);
+        Debug.Log("Saved locally: " + filename);
+    #endif
+    }
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern void DownloadFileWebGL(string filename, string content);
 
     public bool GridRangeCheck(string gridMin, string gridMax, string mult) {
         if (!(Int32.TryParse(gridMin, out int gridLow))) {
