@@ -77,7 +77,8 @@ public class ShipController : MonoBehaviour
                 int minute = totalMinutes % 60;
 
                 // Current time display
-                timeDisplayRun.text = $"Day {day} — {hour:D2}:{minute:D2}";
+                string phase = isNight ? "Night" : "Day";
+                timeDisplayRun.text = $"{phase} {day} — {hour:D2}:{minute:D2}";
 
                 // Calculate remaining time
                 float remainingMinutes = simulationLengthHours * 60f - simMinutesPassed;
@@ -165,18 +166,20 @@ public class ShipController : MonoBehaviour
 
     void UpdateDayNightCycle()
     {
-        if (!DataPersistence.Instance.nightCaptureEnabled)
-        {
-            isNight = false;
-            ShipInteractions.Instance.isNight = false;
-            return;
-        }
+        // Always calculate day/night for clock display
         int hour = Mathf.FloorToInt(simMinutesPassed / 60f) % 24;
         bool newNight = (hour >= 12);
-        if (newNight != isNight)
+
+        isNight = newNight;
+        
+        // Only apply night logic (like 2x2 capture) if nightCaptureEnabled is true
+        if (DataPersistence.Instance.nightCaptureEnabled)
         {
-            isNight = newNight;
             ShipInteractions.Instance.isNight = isNight;
+        }
+        else
+        {
+            ShipInteractions.Instance.isNight = false; // Disable night effects, but clock still shows Night
         }
     }
 
