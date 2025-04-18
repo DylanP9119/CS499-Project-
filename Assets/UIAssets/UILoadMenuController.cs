@@ -35,14 +35,14 @@ public class UILoadMenuController : MonoBehaviour
         Debug.Log("File upload only works in WebGL builds.");
     #endif
     }
-
+    
     // Called from JavaScript with the uploaded JSON
     public void OnJsonFileLoaded(string json)
     {
         // Deserialize and use the data
         MyData data = JsonUtility.FromJson<MyData>(json);
 
-        string inputText = data.fileName + "," + data.days + "," + data.hours + "," + data.pNightCap + "," + data.cDay + "," + data.cNight + ","
+        string inputText = data.saveName + "," + data.days + "," + data.hours + "," + data.pNightCap + "," + data.cDay + "," + data.cNight + ","
                              + data.piDay + "," + data.piNight + ","  + data.paNight + ","  + data.paNight;
         string gridText = "this is just test\ndata\n\ntesting";
 
