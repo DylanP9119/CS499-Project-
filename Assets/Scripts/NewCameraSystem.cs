@@ -13,6 +13,11 @@ public class CameraSystem : MonoBehaviour
     private Vector2 lastMousePos;
     private float targetFieldOfView = 50;
 
+    public Material bigMaterial;
+    public Material medMaterial;
+    public Material smallMaterial;
+    public GameObject grid;
+
     private void Update()
     {
         HandleCameraMovement();
@@ -74,6 +79,8 @@ public class CameraSystem : MonoBehaviour
 
     private void HandleCameraZoom()
     {
+        MeshRenderer gridRenderer = grid.GetComponent<MeshRenderer>();
+
         if (Input.mouseScrollDelta.y > 0)
         {
             targetFieldOfView -= 5;
@@ -85,6 +92,16 @@ public class CameraSystem : MonoBehaviour
         }
 
         targetFieldOfView = Mathf.Clamp(targetFieldOfView, fovMin, fovMax);
+
+        if (targetFieldOfView > 35) {
+            gridRenderer.sharedMaterial = bigMaterial;
+        }
+        else if (targetFieldOfView > 10) {
+            gridRenderer.sharedMaterial = medMaterial;
+        }
+        else {
+            gridRenderer.sharedMaterial = smallMaterial;
+        }
 
         float zoomSpeed = 5f;
         cinemachineVirtualCamera.m_Lens.OrthographicSize =
