@@ -10,6 +10,7 @@ public class CargoBehavior : MonoBehaviour
     private float movementTimer = 0f;
     public bool isCaptured = false;
     public bool isEvadingThisStep = false;
+    public float interactionCooldownUntil = 3f;
 
     void Start()
     {
@@ -39,7 +40,11 @@ public class CargoBehavior : MonoBehaviour
         isEvadingThisStep = false;
         MoveShipTowardsDestination();
     }
-
+public void ResumeOriginalPath()
+{
+    transform.rotation = Quaternion.Euler(0, 90, 0); // Face right
+    destinationGridPosition = new Vector2Int(gridSize.x, currentGridPosition.y);
+}
     public void MoveShipTowardsDestination()
     {
         int direction = 1;

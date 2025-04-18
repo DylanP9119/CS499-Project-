@@ -86,6 +86,8 @@ public class ShipController : MonoBehaviour
     {
         foreach (GameObject ship in allShips)
         {
+                   if (ship == null) continue;
+    
             if (ship == null) continue;
             if (ship.CompareTag("Cargo")) ship.GetComponent<CargoBehavior>()?.Step(true);
             else if (ship.CompareTag("Patrol")) ship.GetComponent<PatrolBehavior>()?.Step(true);

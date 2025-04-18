@@ -244,16 +244,26 @@ public class ShipInteractions : MonoBehaviour
         Debug.Log($"[PIRATE DESTROYED]");
     }
 
-    private void HandleCapture(GameObject pirate, GameObject cargo)
-    {
-        if (pirateToCapturedCargo.ContainsValue(cargo))
-            return;
-        if (pirateToCapturedCargo.ContainsKey(pirate))
-            return;
+private void HandleCapture(GameObject pirate, GameObject cargo)
+{
+    if (pirateToCapturedCargo.ContainsValue(cargo))
+        return;
+    if (pirateToCapturedCargo.ContainsKey(pirate))
+        return;
 
-        CargoBehavior cargoBehavior = cargo.GetComponent<CargoBehavior>();
-        if (cargoBehavior != null && cargoBehavior.isCaptured)
-            return;
+    CargoBehavior cargoBehavior = cargo.GetComponent<CargoBehavior>();
+    PirateBehavior pirateBehavior = pirate.GetComponent<PirateBehavior>();
+
+    // Check interaction cooldown during replay
+    if (ReplayManager.Instance?.ReplayModeActive == true && 
+        (cargoBehavior?.interactionCooldownUntil > ReplayManager.Instance.replayTime || 
+         pirateBehavior?.interactionCooldownUntil > ReplayManager.Instance.replayTime))
+    {
+        return;
+    }
+
+    if (cargoBehavior != null && cargoBehavior.isCaptured)
+        return;
 
         if (pendingEvasions.ContainsKey((cargo, pirate)))
         {
@@ -280,21 +290,20 @@ public class ShipInteractions : MonoBehaviour
 
         pirateToCapturedCargo[pirate] = cargo;
 
-        PirateBehavior pirateBehavior = pirate.GetComponent<PirateBehavior>();
-        if (pirateBehavior != null)
-            pirateBehavior.hasCargo = true;
+        PirateBehavior checkpirateBehavior = pirate.GetComponent<PirateBehavior>();
+        if (checkpirateBehavior != null)
+            checkpirateBehavior.hasCargo = true;
 
         // Align pirate with cargo.
-        if (pirateBehavior != null && cargoBehavior != null)
+        if (checkpirateBehavior != null && cargoBehavior != null)
         {
-            pirateBehavior.currentGridPosition = cargoBehavior.currentGridPosition;
-            pirate.transform.position = cargo.transform.position;
-            pirate.transform.rotation = Quaternion.Euler(0, 180f, 0); // face south
+            checkpirateBehavior.currentGridPosition = cargoBehavior.currentGridPosition;
+            checkpirateBehavior.transform.position = cargo.transform.position;
+            checkpirateBehavior.transform.rotation = Quaternion.Euler(0, 180f, 0); // face south
             cargo.transform.rotation = Quaternion.Euler(0, 180f, 0);  // cargo faces south too
         }
 
         textController.UpdateCaptures(true);
-
      if (ReplayManager.Instance != null)
     {
         int cargoId = ExtractShipId(cargo);

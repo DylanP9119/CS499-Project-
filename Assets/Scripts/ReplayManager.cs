@@ -167,7 +167,8 @@ public class ReplayManager : MonoBehaviour
     }
 
 
-    void UndoEvent(ReplayEvent evt)
+
+       void UndoEvent(ReplayEvent evt)
     {
         switch (evt.eventType)
         {
@@ -179,16 +180,35 @@ public class ReplayManager : MonoBehaviour
                     replayedShips.Remove(evt.shipId);
                 }
                 break;
-            case "capture":
-                if (replayedShips.TryGetValue(evt.shipId, out GameObject cargo) && 
-                   replayedShips.TryGetValue(evt.secondaryShipId, out GameObject pirate))
-                {
-                    cargo.GetComponent<CargoBehavior>().isCaptured = false;
-                    pirate.GetComponent<PirateBehavior>().hasCargo = false;
-                    cargo.transform.position = evt.position - new Vector3(0, 0, 2);
-                    pirate.transform.position = evt.position;
-                }
-                break;
+
+case "capture":
+    if (replayedShips.TryGetValue(evt.shipId, out GameObject cargo) && 
+       replayedShips.TryGetValue(evt.secondaryShipId, out GameObject pirate))
+    {
+        // Reset states first
+        CargoBehavior cargoBehavior = cargo.GetComponent<CargoBehavior>();
+        PirateBehavior pirateBehavior = pirate.GetComponent<PirateBehavior>();
+        
+        if (cargoBehavior != null) 
+        {
+            cargoBehavior.isCaptured = false;
+            cargoBehavior.interactionCooldownUntil = replayTime + 2f; // Cooldown for 2 seconds
+        }
+        if (pirateBehavior != null) 
+        {
+            pirateBehavior.hasCargo = false;
+            pirateBehavior.interactionCooldownUntil = replayTime + 2f;
+        }
+
+        // Move ships apart (no need for large separation)
+        cargo.transform.position = evt.position;
+        pirate.transform.position = evt.position;
+
+        // Update grid positions
+        UpdateShipGridPosition(cargo, cargo.transform.position);
+        UpdateShipGridPosition(pirate, pirate.transform.position);
+    }
+    break;
             case "rescue":
                 if (replayedShips.TryGetValue(evt.shipId, out GameObject rescuedShip))
                     rescuedShip.GetComponent<CargoBehavior>().isCaptured = true;
@@ -196,6 +216,22 @@ public class ReplayManager : MonoBehaviour
         }
     }
 
+
+    void UpdateShipGridPosition(GameObject ship, Vector3 newPosition)
+    {
+        if (ship.CompareTag("Cargo"))
+        {
+            var cargo = ship.GetComponent<CargoBehavior>();
+            if (cargo != null)
+                cargo.currentGridPosition = new Vector2Int(Mathf.FloorToInt(newPosition.x), Mathf.FloorToInt(newPosition.z));
+        }
+        else if (ship.CompareTag("Pirate"))
+        {
+            var pirate = ship.GetComponent<PirateBehavior>();
+            if (pirate != null)
+                pirate.currentGridPosition = new Vector2Int(Mathf.FloorToInt(newPosition.x), Mathf.FloorToInt(newPosition.z));
+        }
+    }
     void HandleReplayInput()
     {
         if (Input.GetKeyDown(KeyCode.R)) SaveReplayToFile();
@@ -301,8 +337,15 @@ public struct ReplayEvent
     public Quaternion rotation;
     public float timestamp;
     public string eventType;
+    public Vector3 pirateOriginalPosition;
+    public Quaternion pirateOriginalRotation;
+    public Vector3 cargoOriginalPosition;
+    public Quaternion cargoOriginalRotation;
 
-    public ReplayEvent(int id, string type, Vector3 pos, Quaternion rot, float time, string evtType, int secondaryId = -1)
+    public ReplayEvent(int id, string type, Vector3 pos, Quaternion rot, float time, string evtType, 
+                      int secondaryId = -1, 
+                      Vector3 pirateOrigPos = default, Quaternion pirateOrigRot = default,
+                      Vector3 cargoOrigPos = default, Quaternion cargoOrigRot = default)
     {
         shipId = id;
         secondaryShipId = secondaryId;
@@ -311,8 +354,13 @@ public struct ReplayEvent
         rotation = rot;
         timestamp = time;
         eventType = evtType;
+        pirateOriginalPosition = pirateOrigPos;
+        pirateOriginalRotation = pirateOrigRot;
+        cargoOriginalPosition = cargoOrigPos;
+        cargoOriginalRotation = cargoOrigRot;
     }
 }
+
 
 [System.Serializable]
 public class ReplayData { public List<ReplayEvent> events; }
