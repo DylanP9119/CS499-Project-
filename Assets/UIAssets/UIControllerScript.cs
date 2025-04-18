@@ -70,6 +70,15 @@ public class UIControllerScript : MonoBehaviour
         Instance = this;
         //DontDestroyOnLoad(gameObject);
 
+        //if (Instance != null)
+        //{
+        //    Destroy(gameObject);
+        //    return;
+        //}
+
+        //Instance = this;
+        //DontDestroyOnLoad(gameObject);
+        fileNameString = "";
         cargoDayPercent = 50;
         cargoNightPercent = 50;
         pirateDayPercent = 25;

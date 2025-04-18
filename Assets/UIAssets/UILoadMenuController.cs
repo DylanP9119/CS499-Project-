@@ -36,6 +36,7 @@ public class UILoadMenuController : MonoBehaviour
     #endif
     }
     
+
     // Called from JavaScript with the uploaded JSON
     public void OnJsonFileLoaded(string json)
     {
