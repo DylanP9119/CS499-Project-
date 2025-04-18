@@ -24,13 +24,13 @@ public class UIControllerScript : MonoBehaviour
     private string gridDayString;
     private string gridNightString;
 
-    public double[] cargoGridPercentsD = new double[100];
-    public double[] patrolGridPercentsD = new double[100];
-    public double[] pirateGridPercentsD = new double[400];
+    private double[] cargoGridPercentsD = new double[100];
+    private double[] patrolGridPercentsD = new double[100];
+    private double[] pirateGridPercentsD = new double[400];
 
-    public double[] cargoGridPercentsN = new double[100];
-    public double[] patrolGridPercentsN = new double[100];
-    public double[] pirateGridPercentsN = new double[400];
+    private double[] cargoGridPercentsN = new double[100];
+    private double[] patrolGridPercentsN = new double[100];
+    private double[] pirateGridPercentsN = new double[400];
 
     double multiplier = 0;
     int gridMinimum = 0;
@@ -43,9 +43,9 @@ public class UIControllerScript : MonoBehaviour
     public int patrolDayPercent;
     public int patrolNightPercent;
 
-    public int dayCount;
-    public int hourCount;
-    public int minuteCount;
+    private int dayCount;
+    private int hourCount;
+    private int minuteCount;
 
     private bool isParsed;
 
@@ -59,16 +59,14 @@ public class UIControllerScript : MonoBehaviour
 
     public void Awake()
     {
-        /*
         if (Instance != null)
         {
             Destroy(gameObject);
             return;
         }
-        */
 
         Instance = this;
-        //DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(gameObject);
 
         cargoDayPercent = 50;
         cargoNightPercent = 50;
@@ -81,21 +79,19 @@ public class UIControllerScript : MonoBehaviour
         hourCount = 24;
         minuteCount = 0;
 
-        canStart = false;
-
         //Buttons
         buttonText.text = "DISABLED";
         nightCaptureEnabled = false;
 
         //fill grid spaces with default values
-        for (int gridSpace = 0; gridSpace < cargoGridPercentsD.Length; gridSpace++)
+        for (int gridSpace = 1; gridSpace < cargoGridPercentsD.Length; gridSpace++)
         {
             cargoGridPercentsD[gridSpace] = 1;
             patrolGridPercentsD[gridSpace] = 1;
             cargoGridPercentsN[gridSpace] = 1;
             patrolGridPercentsN[gridSpace] = 1;
         }
-        for (int gridSpace = 0; gridSpace < pirateGridPercentsD.Length; gridSpace++)
+        for (int gridSpace = 1; gridSpace < pirateGridPercentsD.Length; gridSpace++)
         {
             pirateGridPercentsD[gridSpace] = 1;
             pirateGridPercentsN[gridSpace] = 1;
@@ -129,7 +125,6 @@ public class UIControllerScript : MonoBehaviour
     {
         canStart = true;
 
-        Debug.Log("TEST : " + canStart);
         minuteCount = (hourCount * 60) + (dayCount * 24 * 60);
 
         if (cargoDayPercent < 1 || cargoDayPercent > 100) {
@@ -170,8 +165,8 @@ public class UIControllerScript : MonoBehaviour
         Grid Syntax Checking goes here
         */
         //read from textboxes
-        string[] values = new string[4];
-        Debug.Log("TEST 2: " + canStart);
+        string[] values = new string[3];
+
         //declare separated values
         //For day values...
         if (gridDayString != null) {
@@ -180,65 +175,38 @@ public class UIControllerScript : MonoBehaviour
 
             foreach (string line in gridLinesDay)
             {
-
-
-                if (!canStart)
-                    break;
-
                 Debug.Log("Entered Day Loop Successfully");
                 values = line.Split(',');
 
-                Debug.Log(values[0] + " " + values[1] + " " + values[2] + " " + values[3]);
+                gridMinimum = Int32.Parse(values[1]) - 1;
+                gridMaximum = Int32.Parse(values[2]) - 1;
 
-                canStart = GridRangeCheck(values[1], values[2], values[3]);
-
-                if (!canStart) {
+                if (gridMaximum < gridMinimum) {
+                    Debug.Log("INVALID ENTRIES! SKIPPING");
                     break;
                 }
-                else {
-                    gridMinimum = Int32.Parse(values[1]);
-                    gridMaximum = Int32.Parse(values[2]);
-                    multiplier = Int32.Parse(values[3]);
-                }
+                
+                multiplier = Convert.ToDouble(values[3]);
 
                 switch (values[0])
                 {
                     case "cargo":
-                        if (gridMinimum < 1 || gridMaximum > 100) {
-                            canStart = false;
-                            Debug.Log("Invalid range of numbers for cargo day.");
-                            break;
-                        }
-
-                        for (int i = gridMinimum - 1; i < gridMaximum; i++) {
+                        for (int i = gridMinimum; i <= gridMaximum; i++) {
                             cargoGridPercentsD[i] = cargoGridPercentsD[i] * multiplier;
-                            Debug.Log(cargoGridPercentsD[i]);
                         }
                     break;
                     case "patrol":
-                        if (gridMinimum < 1 || gridMaximum > 100) {
-                            canStart = false;
-                            Debug.Log("Invalid range of numbers for patrol day.");
-                            break;
-                        }
-
-                        for (int i = gridMinimum - 1; i < gridMaximum; i++) {
+                        for (int i = gridMinimum; i <= gridMaximum; i++) {
                             patrolGridPercentsD[i] = patrolGridPercentsD[i] * multiplier;
                         }
                         break;
                     case "pirate":
-                        if (gridMinimum < 1 || gridMaximum > 400) {
-                            canStart = false;
-                            Debug.Log("Invalid range of numbers for pirate day.");
-                            break;
-                        }
-
-                        for (int i = gridMinimum - 1; i < gridMaximum; i++) {
+                        for (int i = gridMinimum; i <= gridMaximum; i++) {
                             pirateGridPercentsD[i] = pirateGridPercentsD[i] * multiplier;
                         }
                         break;
                     default:
-                        Debug.Log("Invalid Entry for ship type in line: " + values[0]);
+                        Debug.Log("Invalid Entry for ship type in line: " + line);
                         canStart = false;
                         break;
                 }
@@ -246,69 +214,35 @@ public class UIControllerScript : MonoBehaviour
             }
         }
 
-        Debug.Log("CAN START: " + canStart);
+
         //For night values...
-        if (gridNightString != null && canStart) {
+        if (gridNightString != null) {
             Debug.Log("Grid Night String Loop is Running");
             string[] gridLinesNight = gridNightString.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
 
-            Debug.Log(gridNightString);
             foreach (string line in gridLinesNight)
             {
-                
                 Debug.Log("Entered Night Loop Successfully");
                 values = line.Split(',');
-
-                Debug.Log(values[0] + " " + values[1] + " " + values[2] + " " + values[3]);
-
-                canStart = GridRangeCheck(values[1], values[2], values[3]);
-
-                if (!canStart) {
-                    break;
-                }
-                else {
-                    gridMinimum = Int32.Parse(values[1]);
-                    gridMaximum = Int32.Parse(values[2]);
-                    multiplier = Int32.Parse(values[3]);
-                }
-
                 switch (values[0])
                 {
                     case "cargo":
-                        if (gridMinimum < 1 || gridMaximum > 100) {
-                            canStart = false;
-                            Debug.Log("Invalid range of numbers for patrol night.");
-                            break;
-                        }
-
-                        for (int i = gridMinimum - 1; i < gridMaximum; i++) {
+                        for (int i = gridMinimum; i <= gridMaximum; i++) {
                             cargoGridPercentsN[gridMinimum] = cargoGridPercentsN[gridMinimum] * multiplier;
                         }
                         break;
                     case "patrol":
-                        if (gridMinimum < 1 || gridMaximum > 100) {
-                            canStart = false;
-                            Debug.Log("Invalid range of numbers for patrol night.");
-                            break;
-                        }
-
-                        for (int i = gridMinimum - 1; i < gridMaximum; i++) {
+                        for (int i = gridMinimum; i <= gridMaximum; i++) {
                             patrolGridPercentsN[gridMinimum] = patrolGridPercentsN[gridMinimum] * multiplier;
                         }
                         break;
                     case "pirate":
-                        if (gridMinimum < 1 || gridMaximum > 400) {
-                            canStart = false;
-                            Debug.Log("Invalid range of numbers for pirate night.");
-                            break;
-                        }
-
-                        for (int i = gridMinimum - 1; i < gridMaximum; i++) {
+                        for (int i = gridMinimum; i <= gridMaximum; i++) {
                             pirateGridPercentsN[gridMinimum] = pirateGridPercentsN[gridMinimum] * multiplier;
                         }
                         break;
                     default:
-                        Debug.Log("Invalid Entry for ship type in line: " + values[0]);
+                        Debug.Log("Invalid Entry for ship type in line: " + line);
                         canStart = false;
                         break;
                 }
@@ -328,30 +262,6 @@ public class UIControllerScript : MonoBehaviour
         }
 
     }
-
-    public bool GridRangeCheck(string gridMin, string gridMax, string mult) {
-        if (!(Int32.TryParse(gridMin, out int gridLow))) {
-            Debug.Log("LOW CANT PARSE");
-            return false;
-        }
-        
-        else if(!(Int32.TryParse(gridMax, out int gridHigh))) {
-            Debug.Log("HIGH CANT PARSE");
-            return false;
-        }
-        
-        else if (gridHigh < gridLow) {
-            Debug.Log("MAX UNDER MIN CANT PARSE");
-            return false;
-        }
-
-        else if (!(Double.TryParse(mult, out double probMult))) {
-            Debug.Log("MULT UNDER MIN CANT PARSE");
-            return false;
-        }
-	
-	    return true;
-    }
     
     //FILE HANDLER
 
@@ -364,13 +274,11 @@ public class UIControllerScript : MonoBehaviour
     public void ReadStringInputGRIDDAYPERCENT(string s)
     {
         gridDayString = s;
-        Debug.Log(gridDayString);
     }
 
     public void ReadStringInputGRIDNIGHTPERCENT(string s)
     {
         gridNightString = s;
-        Debug.Log(gridNightString);
     }
 
     //ALL CARGO SET VALUES
