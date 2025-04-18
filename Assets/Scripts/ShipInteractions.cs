@@ -299,8 +299,13 @@ public class ShipInteractions : MonoBehaviour
         if (ReplayManager.Instance != null)
         {
             int shipId = ExtractShipId(cargo);
-            float simTime = ShipController.TimeStepCounter * 1f; // using tick duration of 1f
-            ReplayManager.Instance.RecordCaptureEvent(shipId, cargo.transform.position, cargo.transform.rotation, simTime);
+            int simTick = ShipController.TimeStepCounter;
+            ReplayManager.Instance.RecordCaptureEvent(
+                shipId,
+               cargo.transform.position,
+               cargo.transform.rotation,
+               simTick
+            );
         }
         }
     }
@@ -348,12 +353,16 @@ public class ShipInteractions : MonoBehaviour
 
             }
 
-            // Record the rescue event so that replay includes it.
             if (ReplayManager.Instance != null)
-            {
-                int shipId = ExtractShipId(cargoToRescue);
-                float simTime = ShipController.TimeStepCounter * 1f;
-                ReplayManager.Instance.RecordRescueEvent(shipId, cargoToRescue.transform.position, cargoToRescue.transform.rotation, simTime);
+           {
+               int shipId = ExtractShipId(cargoToRescue);
+                int simTick = ShipController.TimeStepCounter;
+                ReplayManager.Instance.RecordRescueEvent(
+                    shipId,
+                    cargoToRescue.transform.position,
+                  cargoToRescue.transform.rotation,
+                   simTick
+               );
             }
         }
         textController.UpdateCaptures(false);
