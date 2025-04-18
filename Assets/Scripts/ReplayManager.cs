@@ -7,7 +7,9 @@ using System.Linq;
 public class ReplayManager : MonoBehaviour
 {
     public static ReplayManager Instance { get; private set; }
-    public Button playPauseButton, btnIncreaseSpeed, btnDecreaseSpeed;
+    public Button playPauseButton;
+    public Button btnIncreaseSpeed;
+    public Button btnDecreaseSpeed;
     public Text timeDisplay;
     public ShipController shipController;
     public string replayFileName = "replay.json";
@@ -102,24 +104,68 @@ public class ReplayManager : MonoBehaviour
         {
             case "spawn":
                 shipController.ReplaySpawn(evt.shipType, evt.position, evt.rotation, $"{evt.shipType}({evt.shipId})", evt.shipId);
-                replayedShips[evt.shipId] = shipController.allShips.Last();
+                if (shipController.allShips.Count > 0)
+                {
+                    GameObject lastShip = shipController.allShips.Last();
+                    if (lastShip != null)
+                    {
+                        replayedShips[evt.shipId] = lastShip;
+                    }
+                    else
+                    {
+                        Debug.LogError("Failed to add ship to replayedShips: Spawned ship is null");
+                    }
+                }
                 break;
+
             case "capture":
-                if (replayedShips.TryGetValue(evt.shipId, out GameObject cargo) && 
+                // Null-check both ships and components
+                if (replayedShips.TryGetValue(evt.shipId, out GameObject cargo) &&
                    replayedShips.TryGetValue(evt.secondaryShipId, out GameObject pirate))
                 {
-                    cargo.GetComponent<CargoBehavior>().isCaptured = true;
-                    pirate.GetComponent<PirateBehavior>().hasCargo = true;
+                    if (cargo == null || pirate == null)
+                    {
+                        Debug.LogError($"Missing ships in capture event: Cargo={cargo}, Pirate={pirate}");
+                        break;
+                    }
+
+                    CargoBehavior cargoBehavior = cargo.GetComponent<CargoBehavior>();
+                    PirateBehavior pirateBehavior = pirate.GetComponent<PirateBehavior>();
+
+                    if (cargoBehavior == null || pirateBehavior == null)
+                    {
+                        Debug.LogError($"Missing components: CargoBehavior={cargoBehavior}, PirateBehavior={pirateBehavior}");
+                        break;
+                    }
+
+                    cargoBehavior.isCaptured = true;
+                    pirateBehavior.hasCargo = true;
                     cargo.transform.position = evt.position;
                     pirate.transform.position = evt.position;
                 }
+                else
+                {
+                    Debug.LogError($"Could not find ships for capture event: CargoID={evt.shipId}, PirateID={evt.secondaryShipId}");
+                }
                 break;
+
             case "rescue":
-                if (replayedShips.TryGetValue(evt.shipId, out GameObject ship))
-                    ship.GetComponent<CargoBehavior>().isCaptured = false;
+                if (replayedShips.TryGetValue(evt.shipId, out GameObject ship) && ship != null)
+                {
+                    CargoBehavior rescuedCargo = ship.GetComponent<CargoBehavior>();
+                    if (rescuedCargo != null)
+                    {
+                        rescuedCargo.isCaptured = false;
+                    }
+                    else
+                    {
+                        Debug.LogError("Rescued ship has no CargoBehavior: " + ship.name);
+                    }
+                }
                 break;
         }
     }
+
 
     void UndoEvent(ReplayEvent evt)
     {
@@ -206,6 +252,7 @@ public class ReplayManager : MonoBehaviour
         if (recordedEvents.Count == 0) return;
         string path = Path.Combine(Application.persistentDataPath, replayFileName);
         File.WriteAllText(path, JsonUtility.ToJson(new ReplayData { events = recordedEvents }, true));
+        Debug.Log("ITWORKED");
     }
 
     public void LoadReplayFromFile()

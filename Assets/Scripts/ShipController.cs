@@ -119,12 +119,13 @@ public class ShipController : MonoBehaviour
         allShips.Add(ship);
         textController.UpdateShipEnter(shipType.ToLower());
 
-    if (ReplayManager.Instance != null)
-    {
-        int shipId = ReplayManager.Instance.GetNextShipId();
-        float stepTime = TimeStepCounter * ReplayManager.Instance.simulationTickDuration;
-        ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, ship.transform.rotation, stepTime);
-    }
+        if (ReplayManager.Instance != null)
+        {
+            int shipId = ReplayManager.Instance.GetNextShipId();
+            // CHANGED: Use step-based timestamp instead of cumulativeSimTime
+            float stepTime = TimeStepCounter * ReplayManager.Instance.simulationTickDuration;
+            ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, ship.transform.rotation, stepTime);
+        }
     }
 
     Vector3 GetUniqueSpawnPosition(string shipType, HashSet<Vector3> occupiedPositions)
@@ -213,18 +214,35 @@ public class ShipController : MonoBehaviour
         }
     }
 
-    public void ReplaySpawn(string shipType, Vector3 position, Quaternion rotation, string shipName, int shipId)
+ public void ReplaySpawn(string shipType, Vector3 position, Quaternion rotation, string shipName, int shipId)
+{
+    GameObject prefab = GetPrefab(shipType);
+    if (prefab == null)
     {
-        GameObject prefab = GetPrefab(shipType);
-        if (prefab == null) return;
-
-        GameObject ship = Instantiate(prefab, position, rotation);
-        ship.name = shipName;
-        ship.tag = shipType;
-        allShips.Add(ship);
-        textController.UpdateShipEnter(shipType.ToLower());
+        Debug.LogError($"Prefab not found for {shipType}");
+        return;
     }
 
+    GameObject ship = Instantiate(prefab, position, rotation);
+    if (ship == null)
+    {
+        Debug.LogError("Failed to instantiate ship: " + shipType);
+        return;
+    }
+
+    ship.name = shipName;
+    ship.tag = shipType;
+    allShips.Add(ship);
+
+    if (textController != null)
+    {
+        textController.UpdateShipEnter(shipType.ToLower());
+    }
+    else
+    {
+        Debug.LogWarning("TextController reference is missing in ShipController");
+    }
+}
     public void ClearAllShips()
     {
         foreach (GameObject ship in allShips)

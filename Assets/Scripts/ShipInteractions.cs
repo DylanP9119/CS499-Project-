@@ -295,20 +295,26 @@ public class ShipInteractions : MonoBehaviour
 
         textController.UpdateCaptures(true);
 
-        // Record the capture event so that replay includes it.
-        if (ReplayManager.Instance != null)
+     if (ReplayManager.Instance != null)
+    {
+        int cargoId = ExtractShipId(cargo);
+        int pirateId = ExtractShipId(pirate); // CHANGED: Get pirate's ID explicitly
+        if (cargoId == 0 || pirateId == 0)
         {
-            int shipId = ExtractShipId(cargo);
-            int simTick = ShipController.TimeStepCounter;
-            ReplayManager.Instance.RecordCaptureEvent(
-                shipId,
-               cargo.transform.position,
-               cargo.transform.rotation,
-               simTick
-            );
+            Debug.LogError($"Invalid IDs: Cargo={cargoId}, Pirate={pirateId}");
+            return;
         }
-        }
+
+        float stepTime = ShipController.TimeStepCounter * ReplayManager.Instance.simulationTickDuration;
+        ReplayManager.Instance.RecordCaptureEvent(
+            cargoId,
+            pirateId, // CHANGED: Pass pirateId instead of extracting from cargo
+            cargo.transform.position,
+            cargo.transform.rotation,
+            stepTime
+        );
     }
+        }}
 
     private void HandleRescue(GameObject patrol)
     {
@@ -352,18 +358,18 @@ public class ShipInteractions : MonoBehaviour
                 cargoToRescue.transform.rotation = Quaternion.Euler(0, 90f, 0); // face east again
 
             }
-
-            if (ReplayManager.Instance != null)
-           {
-               int shipId = ExtractShipId(cargoToRescue);
-                int simTick = ShipController.TimeStepCounter;
-                ReplayManager.Instance.RecordRescueEvent(
-                    shipId,
-                    cargoToRescue.transform.position,
-                  cargoToRescue.transform.rotation,
-                   simTick
-               );
-            }
+        if (ReplayManager.Instance != null)
+        {
+            int shipId = ExtractShipId(cargoToRescue);
+            // CHANGED: Use step-based timestamp
+            float stepTime = ShipController.TimeStepCounter * ReplayManager.Instance.simulationTickDuration;
+            ReplayManager.Instance.RecordRescueEvent(
+                shipId,
+                cargoToRescue.transform.position,
+                cargoToRescue.transform.rotation,
+                stepTime  // CHANGED: Pass stepTime instead of simTick
+            );
+        }
         }
         textController.UpdateCaptures(false);
     }
