@@ -1,0 +1,17 @@
+<input type="file" id="fileInput" accept=".txt" style="display:none" onchange="loadTextFile(event)" />
+
+<script>
+    function openFileDialog() {
+        document.getElementById('fileInput').click();
+    }
+
+    function loadTextFile(event) {
+        const reader = new FileReader();
+        reader.onload = function() {
+            const content = reader.result;
+
+            unityInstance.SendMessamge('FileManager', 'RecieveFileContent', content);
+        };
+        reader.readAsText(event.target.files[0]);
+    }
+</script>

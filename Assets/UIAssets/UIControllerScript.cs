@@ -33,7 +33,8 @@ public class UIControllerScript : MonoBehaviour
     private double[] pirateGridPercentsN = new double[400];
 
     double multiplier = 0;
-    int gridLocation = 0;
+    int gridMinimum = 0;
+    int gridMaximum = 0;
 
     public int cargoDayPercent;
     public int cargoNightPercent;
@@ -177,26 +178,39 @@ public class UIControllerScript : MonoBehaviour
                 Debug.Log("Entered Day Loop Successfully");
                 values = line.Split(',');
 
-                gridLocation = Int32.Parse(values[1]);
-                multiplier = Convert.ToDouble(values[2]);
+                gridMinimum = Int32.Parse(values[1]) - 1;
+                gridMaximum = Int32.Parse(values[2]) - 1;
+
+                if (gridMaximum < gridMinimum) {
+                    Debug.Log("INVALID ENTRIES! SKIPPING");
+                    break;
+                }
+                
+                multiplier = Convert.ToDouble(values[3]);
 
                 switch (values[0])
                 {
                     case "cargo":
-                        cargoGridPercentsD[gridLocation] = cargoGridPercentsD[gridLocation] * multiplier;
-                        break;
+                        for (int i = gridMinimum; i <= gridMaximum; i++) {
+                            cargoGridPercentsD[i] = cargoGridPercentsD[i] * multiplier;
+                        }
+                    break;
                     case "patrol":
-                        patrolGridPercentsD[gridLocation] = patrolGridPercentsD[gridLocation] * multiplier;
+                        for (int i = gridMinimum; i <= gridMaximum; i++) {
+                            patrolGridPercentsD[i] = patrolGridPercentsD[i] * multiplier;
+                        }
                         break;
                     case "pirate":
-                        pirateGridPercentsD[gridLocation] = pirateGridPercentsD[gridLocation] * multiplier;
+                        for (int i = gridMinimum; i <= gridMaximum; i++) {
+                            pirateGridPercentsD[i] = pirateGridPercentsD[i] * multiplier;
+                        }
                         break;
                     default:
                         Debug.Log("Invalid Entry for ship type in line: " + line);
                         canStart = false;
                         break;
                 }
-                Debug.Log(values[0] + " " + values[1] + " " + values[2]);
+                Debug.Log(values[0] + " " + values[1] + " " + values[2] + " " + values[3]);
             }
         }
 
@@ -213,13 +227,19 @@ public class UIControllerScript : MonoBehaviour
                 switch (values[0])
                 {
                     case "cargo":
-                        cargoGridPercentsN[gridLocation] = cargoGridPercentsN[gridLocation] * multiplier;
+                        for (int i = gridMinimum; i <= gridMaximum; i++) {
+                            cargoGridPercentsN[gridMinimum] = cargoGridPercentsN[gridMinimum] * multiplier;
+                        }
                         break;
                     case "patrol":
-                        patrolGridPercentsN[gridLocation] = patrolGridPercentsN[gridLocation] * multiplier;
+                        for (int i = gridMinimum; i <= gridMaximum; i++) {
+                            patrolGridPercentsN[gridMinimum] = patrolGridPercentsN[gridMinimum] * multiplier;
+                        }
                         break;
                     case "pirate":
-                        pirateGridPercentsN[gridLocation] = pirateGridPercentsN[gridLocation] * multiplier;
+                        for (int i = gridMinimum; i <= gridMaximum; i++) {
+                            pirateGridPercentsN[gridMinimum] = pirateGridPercentsN[gridMinimum] * multiplier;
+                        }
                         break;
                     default:
                         Debug.Log("Invalid Entry for ship type in line: " + line);

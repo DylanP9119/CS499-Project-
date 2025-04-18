@@ -140,7 +140,6 @@ public class ShipInteractions : MonoBehaviour
             Destroy(ship);
         }
 
-        // Cleanup evasion records older than 6 ticks.
         //List<(GameObject, GameObject)> evasionCleanup = new();
         //foreach (var entry in evadeTimestamps)
         //{
@@ -151,24 +150,9 @@ public class ShipInteractions : MonoBehaviour
         //}
         //foreach (var pair in evasionCleanup)
         //{
-        //    textController.UpdateEvasion(true, true);
-        //    Debug.Log($"[SUCCESS LOGGED] {pair.Item1.name} successfully evaded {pair.Item2.name}");
+         //   textController.UpdateEvasion(true, true);
         //    evadeTimestamps.Remove(pair);
-         //   evasionOutcomeLogged[pair] = true; // success logged
         //}
-        List<(GameObject, GameObject)> evasionCleanup = new();
-        foreach (var entry in evadeTimestamps)
-        {
-            (GameObject cargo, GameObject pirate) = entry.Key;
-            int evadeFrame = entry.Value;
-            if (ShipController.TimeStepCounter - evadeFrame >= 6)
-                evasionCleanup.Add((cargo, pirate));
-        }
-        foreach (var pair in evasionCleanup)
-        {
-            textController.UpdateEvasion(true, true);
-            evadeTimestamps.Remove(pair);
-        }
     }
 
     private void RemoveShipsAtEdge(List<GameObject> allShips, List<GameObject> shipsToRemove)
@@ -257,6 +241,7 @@ public class ShipInteractions : MonoBehaviour
             shipCtrl.allShips.Remove(pirate);
         }
         Destroy(pirate);
+        Debug.Log($"[PIRATE DESTROYED]");
     }
 
     private void HandleCapture(GameObject pirate, GameObject cargo)
@@ -304,6 +289,8 @@ public class ShipInteractions : MonoBehaviour
         {
             pirateBehavior.currentGridPosition = cargoBehavior.currentGridPosition;
             pirate.transform.position = cargo.transform.position;
+            pirate.transform.rotation = Quaternion.Euler(0, 180f, 0); // face south
+            cargo.transform.rotation = Quaternion.Euler(0, 180f, 0);  // cargo faces south too
         }
 
         textController.UpdateCaptures(true);
@@ -357,6 +344,8 @@ public class ShipInteractions : MonoBehaviour
             {
                 cargoBehavior.isCaptured = false;
                 cargoToRescue.tag = "Cargo";
+                cargoToRescue.transform.rotation = Quaternion.Euler(0, 90f, 0); // face east again
+
             }
 
             // Record the rescue event so that replay includes it.
