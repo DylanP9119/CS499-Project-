@@ -8,6 +8,7 @@ public class ShipController : MonoBehaviour
     // Static simulation tick counter.
     public static int TimeStepCounter { get; private set; } = 0;
     // For simulation testing, we use a shorter tick duration.
+    public float simulationTickDuration = 1f;
 
     public GameObject cargoPrefab;
     public GameObject patrolPrefab;
@@ -28,7 +29,6 @@ public class ShipController : MonoBehaviour
     private int cargoCounter = 1, patrolCounter = 1, pirateCounter = 1;
     public float simulationLengthHours = 24f;
     private float simMinutesPassed = 0f;
-    public bool useDayNightCycle = true;
     Vector2Int gridSize = new Vector2Int(400, 100);
     public List<GameObject> allShips = new List<GameObject>();
 
@@ -55,7 +55,7 @@ public class ShipController : MonoBehaviour
         {
             if (!ReplayManager.Instance.ReplayPaused)
             {
-                int currentTick = Mathf.FloorToInt(ReplayManager.Instance.replayTime / timeControl.GetSpeed());
+                int currentTick = Mathf.FloorToInt(ReplayManager.Instance.replayTime / simulationTickDuration);
                 SetTimeStepCounter(currentTick);
                 ShipInteractions.Instance.CheckForInteractions(allShips);
             }
@@ -66,7 +66,7 @@ public class ShipController : MonoBehaviour
         if (!timeControl.IsPaused)
         {
             spawnTimer += Time.deltaTime;
-            if (spawnTimer >= timeControl.GetSpeed())
+            if (spawnTimer >= simulationTickDuration)
             {
                 // Advance simulation tick.
                 TimeStepCounter++;
@@ -96,7 +96,7 @@ public class ShipController : MonoBehaviour
                     return;
                 }
 
-                float simTime = TimeStepCounter * timeControl.GetSpeed();
+                float simTime = TimeStepCounter * simulationTickDuration;
                 SpawnShip(simTime);
 
                 // Explicitly call Step on each ship's behavior component.

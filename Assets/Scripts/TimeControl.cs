@@ -5,62 +5,42 @@ using UnityEngine.UI;
 using System.Linq;
 
 public class TimeControl : MonoBehaviour
-{ 
-    public Button playPauseButton;
-    public Button btnIncreaseSpeed;
-    public Button btnDecreaseSpeed;
-    public float[] speeds = { 1.0f, 0.5f, 0.1f, 0.05f }; // For simulation: 1x, 2x, 10x, 20x speeds    private int currentSpeedIndex = 0;
+{
+    public Button forwardButton;
+    public float[] speedLevels = { 1.0f, 0.5f, 0.1f, 0.05f }; // For simulation: 1x, 2x, 10x, 20x speeds
+    private int currentSpeedIndex = 0;
     private float moveTimer = 0f;
     private bool movementPaused = false;
     private float globalTime = 0f;
-    public float replaySpeed = 1f;
-    private float moveSpeed = 1f;
-    private int currentSpeedIndex = 1; // Start at 1x.
 
     void Start()
     {
-        if (playPauseButton != null)
-            playPauseButton.onClick.AddListener(TogglePlayPause);
-        if (btnIncreaseSpeed != null)
-            btnIncreaseSpeed.onClick.AddListener(IncreaseSpeed);
-        if (btnDecreaseSpeed != null)
-            btnDecreaseSpeed.onClick.AddListener(DecreaseSpeed);
+        if (forwardButton != null)
+            forwardButton.onClick.AddListener(CycleSpeedUp);
     }
 
     void Update()
     {
+        HandleSpeedInput();
         UpdateMoveTimer();
     }
-    void TogglePlayPause() => movementPaused = !movementPaused;
 
-    void IncreaseSpeed()
+    void HandleSpeedInput()
     {
-        if (currentSpeedIndex < speeds.Length - 1)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            if(!ReplayManager.Instance.ReplayModeActive)
-            {
-            currentSpeedIndex++;
-            moveSpeed = speeds[currentSpeedIndex];
-            Debug.Log($"Replay speed set to {moveSpeed}x");
-            }
+            movementPaused = !movementPaused;
+            ToggleMovement(movementPaused);
         }
     }
-    void DecreaseSpeed()
+
+    void CycleSpeedUp()
     {
-        if (currentSpeedIndex > 0)
-        {
-            if(!ReplayManager.Instance.ReplayModeActive)
-            {
-            currentSpeedIndex--;
-            moveSpeed = speeds[currentSpeedIndex];
-            Debug.Log($"Replay speed set to {moveSpeed}x");
-            }
-        }
+        Debug.Log("Cycle speed button pressed in simulation mode.");
+        currentSpeedIndex = (currentSpeedIndex + 1) % speedLevels.Length;
+        Debug.Log($"Simulation speed set to {speedLevels[currentSpeedIndex]} seconds between moves.");
     }
-    public float GetSpeed()
-    {
-        return(moveSpeed);
-    }
+
     void UpdateMoveTimer()
     {
         if (!movementPaused)
@@ -69,7 +49,7 @@ public class TimeControl : MonoBehaviour
 
     public bool ShouldMove()
     {
-        if (moveTimer >= moveSpeed && !movementPaused)
+        if (moveTimer >= speedLevels[currentSpeedIndex] && !movementPaused)
         {
             return true;
         }
