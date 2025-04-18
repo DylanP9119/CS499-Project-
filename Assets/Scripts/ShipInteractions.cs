@@ -156,19 +156,20 @@ public class ShipInteractions : MonoBehaviour
         //    evadeTimestamps.Remove(pair);
          //   evasionOutcomeLogged[pair] = true; // success logged
         //}
-        List<(GameObject, GameObject)> evasionCleanup = new();
-        foreach (var entry in evadeTimestamps)
-        {
-            (GameObject cargo, GameObject pirate) = entry.Key;
-            int evadeFrame = entry.Value;
-            if (ShipController.TimeStepCounter - evadeFrame >= 6)
-                evasionCleanup.Add((cargo, pirate));
-        }
-        foreach (var pair in evasionCleanup)
-        {
-            textController.UpdateEvasion(true, true);
-            evadeTimestamps.Remove(pair);
-        }
+        
+        //List<(GameObject, GameObject)> evasionCleanup = new();
+        //foreach (var entry in evadeTimestamps)
+        //{
+        //    (GameObject cargo, GameObject pirate) = entry.Key;
+        //    int evadeFrame = entry.Value;
+        //    if (ShipController.TimeStepCounter - evadeFrame >= 6)
+        //        evasionCleanup.Add((cargo, pirate));
+        //}
+        //foreach (var pair in evasionCleanup)
+        //{
+        //    textController.UpdateEvasion(true, true);
+        //    evadeTimestamps.Remove(pair);
+        //}
     }
 
     private void RemoveShipsAtEdge(List<GameObject> allShips, List<GameObject> shipsToRemove)
