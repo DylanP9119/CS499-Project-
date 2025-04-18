@@ -29,21 +29,22 @@ public class ShipController : MonoBehaviour
     private int cargoCounter = 1, patrolCounter = 1, pirateCounter = 1;
     public float simulationLengthHours = 24f;
     private float simMinutesPassed = 0f;
-    public bool useDayNightCycle = true;
     Vector2Int gridSize = new Vector2Int(400, 100);
     public List<GameObject> allShips = new List<GameObject>();
 
     void Start()
     {
         timeControl = FindObjectOfType<TimeControl>();
-        if (UIControllerScript.Instance != null)
+        if (DataPersistence.Instance != null)
         {
-            cargoSpawnChance = UIControllerScript.Instance.cargoDayPercent / 100f;
-            cargoNightChance = UIControllerScript.Instance.cargoNightPercent / 100f;
-            pirateSpawnChance = UIControllerScript.Instance.pirateDayPercent / 100f;
-            pirateNightChance = UIControllerScript.Instance.pirateNightPercent / 100f;
-            patrolSpawnChance = UIControllerScript.Instance.patrolDayPercent / 100f;
-            patrolNightChance = UIControllerScript.Instance.patrolNightPercent / 100f;
+            cargoSpawnChance = DataPersistence.Instance.cargoDayPercent / 100f;
+            cargoNightChance = DataPersistence.Instance.cargoNightPercent / 100f;
+            pirateSpawnChance = DataPersistence.Instance.pirateDayPercent / 100f;
+            pirateNightChance = DataPersistence.Instance.pirateNightPercent / 100f;
+            patrolSpawnChance = DataPersistence.Instance.patrolDayPercent / 100f;
+            patrolNightChance = DataPersistence.Instance.patrolNightPercent / 100f;
+
+            simulationLengthHours = (DataPersistence.Instance.dayCount * 24) + DataPersistence.Instance.hourCount;
         }
     }
 
@@ -130,7 +131,7 @@ public class ShipController : MonoBehaviour
 
     void UpdateDayNightCycle()
     {
-        if (!useDayNightCycle)
+        if (!DataPersistence.Instance.nightCaptureEnabled)
         {
             isNight = false;
             ShipInteractions.Instance.isNight = false;
@@ -375,5 +376,39 @@ public class ShipController : MonoBehaviour
     public static void SetTimeStepCounter(int newTick)
     {
         TimeStepCounter = newTick;
+    }
+
+    public static int SelectIndexByWeight(double[] weights)
+    {
+        // Step 1: Calculate the sum of all weights
+        double totalWeight = 0;
+        foreach (double weight in weights)
+        {
+            totalWeight += weight;
+        }
+
+        // Step 2: Normalize the weights and create cumulative distribution
+        double[] cumulative = new double[weights.Length];
+        double cumulativeSum = 0;
+        for (int i = 0; i < weights.Length; i++)
+        {
+            cumulativeSum += weights[i] / totalWeight; // Normalize weight
+            cumulative[i] = cumulativeSum;
+        }
+
+        // Step 3: Generate a random number between 0 and 1
+
+        double randomNumber = Random.value;
+
+        // Step 4: Find the index using the cumulative distribution
+        for (int i = 0; i < cumulative.Length; i++)
+        {
+            if (randomNumber <= cumulative[i])
+            {
+                return i;
+            }
+        }
+
+        return -1; // Fallback (shouldn't occur with valid input)
     }
 }
