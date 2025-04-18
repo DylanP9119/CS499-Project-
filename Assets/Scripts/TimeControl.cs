@@ -1,71 +1,54 @@
-using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
 
 public class TimeControl : MonoBehaviour
 {
-    public Button forwardButton;
-    public float[] speedLevels = { 1.0f, 0.5f, 0.1f, 0.05f }; // For simulation: 1x, 2x, 10x, 20x speeds
-    private int currentSpeedIndex = 0;
+    public static TimeControl Instance { get; private set; }
+    public Button playPauseButton;
+    public Button btnIncreaseSpeed;
+    public Button btnDecreaseSpeed;
+    public float[] speeds = { 1.0f, 0.5f, 0.1f, 0.05f };
+    private int currentSpeedIndex = 1;
     private float moveTimer = 0f;
     private bool movementPaused = false;
-    private float globalTime = 0f;
+    private float moveSpeed = 1f;
 
     void Start()
     {
-        if (forwardButton != null)
-            forwardButton.onClick.AddListener(CycleSpeedUp);
+        if (playPauseButton != null)
+            playPauseButton.onClick.AddListener(TogglePlayPause);
+        if (btnIncreaseSpeed != null)
+            btnIncreaseSpeed.onClick.AddListener(IncreaseSpeed);
+        if (btnDecreaseSpeed != null)
+            btnDecreaseSpeed.onClick.AddListener(DecreaseSpeed);
     }
 
-    void Update()
-    {
-        HandleSpeedInput();
-        UpdateMoveTimer();
-    }
+    void Update() => UpdateMoveTimer();
 
-    void HandleSpeedInput()
+    void TogglePlayPause() => movementPaused = !movementPaused;
+
+    void IncreaseSpeed()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (currentSpeedIndex < speeds.Length - 1 && !ReplayManager.Instance.ReplayModeActive)
         {
-            movementPaused = !movementPaused;
-            ToggleMovement(movementPaused);
+            currentSpeedIndex++;
+            moveSpeed = speeds[currentSpeedIndex];
         }
     }
 
-    void CycleSpeedUp()
+    void DecreaseSpeed()
     {
-        Debug.Log("Cycle speed button pressed in simulation mode.");
-        currentSpeedIndex = (currentSpeedIndex + 1) % speedLevels.Length;
-        Debug.Log($"Simulation speed set to {speedLevels[currentSpeedIndex]} seconds between moves.");
-    }
-
-    void UpdateMoveTimer()
-    {
-        if (!movementPaused)
-            moveTimer += Time.deltaTime;
-    }
-
-    public bool ShouldMove()
-    {
-        if (moveTimer >= speedLevels[currentSpeedIndex] && !movementPaused)
+        if (currentSpeedIndex > 0 && !ReplayManager.Instance.ReplayModeActive)
         {
-            return true;
+            currentSpeedIndex--;
+            moveSpeed = speeds[currentSpeedIndex];
         }
-        return false;
     }
 
-    public void ResetMoveTimer()
-    {
-        moveTimer = 0f;
-    }
-
-    public void ToggleMovement(bool pause)
-    {
-        movementPaused = pause;
-    }
-
-    // Expose pause state for other systems.
+    public float GetSpeed() => moveSpeed;
+    void UpdateMoveTimer() { if (!movementPaused) moveTimer += Time.deltaTime; }
+    public bool ShouldMove() => (moveTimer >= moveSpeed && !movementPaused);
+    public void ResetMoveTimer() => moveTimer = 0f;
+    public void ToggleMovement(bool pause) => movementPaused = pause;
     public bool IsPaused => movementPaused;
 }

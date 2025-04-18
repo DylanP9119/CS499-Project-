@@ -12,11 +12,16 @@ public class PirateBehavior : MonoBehaviour
 
     void Start()
     {
-        int startX = Random.Range(0, gridSize.x);
-        int startY = 0;
-        currentGridPosition = new Vector2Int(startX, startY);
-        destinationGridPosition = new Vector2Int(startX, gridSize.y);
-        transform.position = GridToWorld(currentGridPosition);
+    if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive)
+    {
+        currentGridPosition = WorldToGrid(transform.position);
+        destinationGridPosition = new Vector2Int(currentGridPosition.x, gridSize.y);
+    }        
+    else
+    {
+        currentGridPosition = WorldToGrid(transform.position);
+        destinationGridPosition = new Vector2Int(currentGridPosition.x, gridSize.y);
+    }
     }
 
     public void Step(bool forceMove)
@@ -46,6 +51,12 @@ public class PirateBehavior : MonoBehaviour
             currentGridPosition += Vector2Int.up * direction;
             transform.position = GridToWorld(currentGridPosition);
         }
+    }
+    public Vector2Int WorldToGrid(Vector3 worldPosition)
+    {
+        int x = Mathf.FloorToInt(worldPosition.x / gridCellSize);
+        int y = Mathf.FloorToInt(worldPosition.z / gridCellSize);
+        return new Vector2Int(x, y);
     }
 
     public Vector3 GridToWorld(Vector2Int gridPosition)

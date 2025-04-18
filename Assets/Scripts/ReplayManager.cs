@@ -62,14 +62,14 @@ public class ReplayManager : MonoBehaviour
         if (btnDecreaseSpeed != null)
             btnDecreaseSpeed.onClick.AddListener(DecreaseSpeed);
 
-        UIvisibility(false);
+        UIvisibility(true);
     }
 
     void Update()
     {
         HandleReplayInput();
 
-        if (ReplayModeActive)
+        if (ReplayModeActive && !replayPaused)
         {
             // Even if replay is paused, update movement ticks.
             replayTime += replaySpeed * Time.unscaledDeltaTime;
@@ -143,8 +143,6 @@ public class ReplayManager : MonoBehaviour
             SaveReplayToFile();
         if (Input.GetKeyDown(KeyCode.L))
             LoadReplayFromFile();
-        if (Input.GetKeyDown(KeyCode.S))
-            ToggleReplay();
     }
 
     public int GetNextShipId() => currentShipId++;
@@ -258,14 +256,6 @@ public class ReplayManager : MonoBehaviour
         }
     }
 
-    public void ToggleReplay()
-    {
-        if (!ReplayModeActive)
-            StartReplay();
-        else
-            StopReplay();
-    }
-
     void StartReplay()
     {
         ReplayModeActive = true;
@@ -329,23 +319,29 @@ public class ReplayManager : MonoBehaviour
 
     void IncreaseSpeed()
     {
-        if (currentSpeedIndex < speeds.Length - 1)
+        if (ReplayManager.Instance.ReplayModeActive && ReplayModeActive)
         {
-            currentSpeedIndex++;
-            replaySpeed = speeds[currentSpeedIndex];
-            Debug.Log($"Replay speed set to {replaySpeed}x");
-            UpdateDisplay();
+            if (currentSpeedIndex < speeds.Length - 1)
+            {
+                currentSpeedIndex++;
+                replaySpeed = speeds[currentSpeedIndex];
+                Debug.Log($"Replay speed set to {replaySpeed}x");
+                UpdateDisplay();
+            }
         }
     }
 
     void DecreaseSpeed()
     {
-        if (currentSpeedIndex > 0)
+        if (ReplayManager.Instance.ReplayModeActive && ReplayModeActive)
         {
-            currentSpeedIndex--;
-            replaySpeed = speeds[currentSpeedIndex];
-            Debug.Log($"Replay speed set to {replaySpeed}x");
-            UpdateDisplay();
+            if (currentSpeedIndex > 0)
+            {
+                currentSpeedIndex--;
+                replaySpeed = speeds[currentSpeedIndex];
+                Debug.Log($"Replay speed set to {replaySpeed}x");
+                UpdateDisplay();
+            }
         }
     }
 
