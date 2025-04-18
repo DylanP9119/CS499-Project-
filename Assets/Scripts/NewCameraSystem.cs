@@ -32,10 +32,10 @@ public class CameraSystem : MonoBehaviour
     {
         Vector3 inputDir = new Vector3(0, 0, 0);
 
-        if (Input.GetKey(KeyCode.W) && (transform.position.z < 97.95) == true) inputDir.y = +1f;
-        if (Input.GetKey(KeyCode.S) && (transform.position.z > 4.5) == true) inputDir.y = -1f;
-        if (Input.GetKey(KeyCode.A) && (transform.position.x > 4.5) == true) inputDir.x = -1f;
-        if (Input.GetKey(KeyCode.D) && (transform.position.x < 398.5) == true) inputDir.x = +1f;
+        if (Input.GetKey(KeyCode.W) && (transform.position.z < 100) == true) inputDir.y = +1f;
+        if (Input.GetKey(KeyCode.S) && (transform.position.z > 0) == true) inputDir.y = -1f;
+        if (Input.GetKey(KeyCode.A) && (transform.position.x > 0) == true) inputDir.x = -1f;
+        if (Input.GetKey(KeyCode.D) && (transform.position.x < 400) == true) inputDir.x = +1f;
 
 
         /* if (Input.GetMouseButtonDown(1))

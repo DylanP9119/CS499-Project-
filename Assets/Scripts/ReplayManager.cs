@@ -319,23 +319,29 @@ public class ReplayManager : MonoBehaviour
 
     void IncreaseSpeed()
     {
-        if (currentSpeedIndex < speeds.Length - 1)
+        if (ReplayManager.Instance.ReplayModeActive && ReplayModeActive)
         {
-            currentSpeedIndex++;
-            replaySpeed = speeds[currentSpeedIndex];
-            Debug.Log($"Replay speed set to {replaySpeed}x");
-            UpdateDisplay();
+            if (currentSpeedIndex < speeds.Length - 1)
+            {
+                currentSpeedIndex++;
+                replaySpeed = speeds[currentSpeedIndex];
+                Debug.Log($"Replay speed set to {replaySpeed}x");
+                UpdateDisplay();
+            }
         }
     }
 
     void DecreaseSpeed()
     {
-        if (currentSpeedIndex > 0)
+        if (ReplayManager.Instance.ReplayModeActive && ReplayModeActive)
         {
-            currentSpeedIndex--;
-            replaySpeed = speeds[currentSpeedIndex];
-            Debug.Log($"Replay speed set to {replaySpeed}x");
-            UpdateDisplay();
+            if (currentSpeedIndex > 0)
+            {
+                currentSpeedIndex--;
+                replaySpeed = speeds[currentSpeedIndex];
+                Debug.Log($"Replay speed set to {replaySpeed}x");
+                UpdateDisplay();
+            }
         }
     }
 
