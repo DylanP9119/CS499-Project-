@@ -176,7 +176,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Reduces pirate capture radius from 3x3 to 2x2 during the night cycle.
+  m_text: Enables editable NIGHT values, as well as reduced pirate capture (3x3 ->
+    2x2)
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3788,7 +3789,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Adjust robabilities of each ship's spawnpoints. You can follow the formatting
+  m_text: "Adjust probabilities of each ship's spawnpoints. You can follow the formatting
     for each line:\n[ship type],[grid minimum],[gridmaximum],[multiplier]\nShip Types:
     pirate, patrol, cargo\nGrid Spaces: 1-100 for patrols, cargo. 1-400 for pirates.
     \nMinimum MUST be equal to or less than maximum.\nMultiplier: Single value to
@@ -7378,7 +7379,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 2x2 NIGHT CAPTURE
+  m_text: NIGHT MODE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8922,6 +8923,9 @@ MonoBehaviour:
   dayCount: 0
   hourCount: 0
   minuteCount: 0
+  cargoNightBox: {fileID: 1537020702}
+  pirateNightBox: {fileID: 1845708387}
+  patrolNightBox: {fileID: 562792619}
 --- !u!4 &1135158724
 Transform:
   m_ObjectHideFlags: 0

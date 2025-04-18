@@ -49,6 +49,10 @@ public class UIControllerScript : MonoBehaviour
 
     private bool isParsed;
 
+    public TMP_InputField cargoNightBox;
+    public TMP_InputField pirateNightBox;
+    public TMP_InputField patrolNightBox;
+
     public static UIControllerScript Instance;
 
     // THINGS TO DO ON PROGRAM START
@@ -96,6 +100,10 @@ public class UIControllerScript : MonoBehaviour
         buttonText.text = "DISABLED";
         nightCaptureEnabled = false;
 
+        cargoNightBox.interactable = false;
+        patrolNightBox.interactable = false;
+        pirateNightBox.interactable = false;
+
         //fill grid spaces with default values
         for (int gridSpace = 0; gridSpace < cargoGridPercentsD.Length; gridSpace++)
         {
@@ -131,6 +139,10 @@ public class UIControllerScript : MonoBehaviour
         {
             buttonText.text = "DISABLED";
         }
+
+        cargoNightBox.interactable = nightCaptureEnabled;
+        patrolNightBox.interactable = nightCaptureEnabled;
+        pirateNightBox.interactable = nightCaptureEnabled;
     }
 
     // START THE PROGRAM, TOGGLES WHEN "BEGIN" BUTTON IS PRESSED"
