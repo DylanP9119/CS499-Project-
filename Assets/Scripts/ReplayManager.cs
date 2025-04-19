@@ -12,15 +12,16 @@ public class ReplayManager : MonoBehaviour
     public Button btnIncreaseSpeed;
     public Button btnDecreaseSpeed;
     public Text timeDisplay;
+
     public ShipController shipController;
-    public string replayFileName = "replay.json";
-    public GameObject replayBoxUI;
+    public TimeControl timeControl;
     public TextController textController;
-    
-    public float simulationTickDuration = 1f; // Must match ShipController.tickDuration for simulation.
-    
+
+    private string replayFileName = "";
+    public GameObject replayBoxUI;
+
     // Use a shorter tick interval for replay ship movement.
-    public float replayMovementTick = 0.5f;
+    public float replayMovementTick = 1; // ???
 
     private List<ReplayEvent> recordedEvents = new List<ReplayEvent>();
     public float replayTime;  // Simulation time (seconds) in replay.
@@ -47,6 +48,10 @@ public class ReplayManager : MonoBehaviour
     // Track last movement tick for replay mode.
     private int lastMovementTick = -1;
 
+
+
+
+
     void Awake()
     {
         Instance = this;
@@ -55,6 +60,11 @@ public class ReplayManager : MonoBehaviour
 
     void Start()
     {
+        if(DataPersistence.Instance.wasEnteredfromLoadScene == true)
+        {
+            LoadReplayFromFile();
+        }
+        replayFileName = DataPersistence.Instance.path;
         if (playPauseButton != null)
             playPauseButton.onClick.AddListener(TogglePlayPause);
         if (btnIncreaseSpeed != null)
@@ -79,7 +89,7 @@ public class ReplayManager : MonoBehaviour
                 replayPaused = true;
 
             // Compute simulation tick for replay events.
-            int currentTick = Mathf.FloorToInt(replayTime / simulationTickDuration);
+            int currentTick = Mathf.FloorToInt(replayTime / timeControl.GetSpeed()); // changed since main check if work
             ShipController.SetTimeStepCounter(currentTick);
 
             // Use a separate tick for ship movement.
@@ -280,26 +290,36 @@ public class ReplayManager : MonoBehaviour
 
     public void SaveReplayToFile()
     {
+        
         if (recordedEvents.Count == 0)
         {
             Debug.LogWarning("No events to save!");
             return;
         }
-        var data = new ReplayData { events = recordedEvents };
+        var data = new UILoadMenuController.MyData
+        {
+            saveName = DataPersistence.Instance.fileNameString,
+            days = DataPersistence.Instance.dayCount,
+            hours = DataPersistence.Instance.hourCount,
+            cDay = DataPersistence.Instance.cargoDayPercent,
+            cNight = DataPersistence.Instance.cargoNightPercent,
+            piDay = DataPersistence.Instance.pirateDayPercent,
+            piNight = DataPersistence.Instance.pirateNightPercent,
+            paDay = DataPersistence.Instance.patrolDayPercent,
+            paNight = DataPersistence.Instance.patrolNightPercent,
+            pNightCap = DataPersistence.Instance.nightCaptureEnabled,
+            events = recordedEvents
+        };
         string json = JsonUtility.ToJson(data, true);
-        string path = Path.Combine(Application.persistentDataPath, replayFileName);
-        File.WriteAllText(path, json);
-        Debug.Log($"Saved {recordedEvents.Count} events to: {path}");
+        File.WriteAllText(DataPersistence.Instance.path, json);
+        Debug.Log($"Saved {recordedEvents.Count} events to: {DataPersistence.Instance.path}");
     }
 
     public void LoadReplayFromFile()
     {
-        string path = Path.Combine(Application.persistentDataPath, replayFileName);
-        if (File.Exists(path))
+        if (DataPersistence.Instance.replayEvents != null)
         {
-            string json = File.ReadAllText(path);
-            ReplayData data = JsonUtility.FromJson<ReplayData>(json);
-            recordedEvents = data?.events ?? new List<ReplayEvent>();
+            recordedEvents = DataPersistence.Instance.replayEvents;
             Debug.Log($"Loaded {recordedEvents.Count} events");
             StartReplay();
         }
@@ -349,7 +369,7 @@ public class ReplayManager : MonoBehaviour
 }
 
 [System.Serializable]
-public struct ReplayEvent
+public class ReplayEvent
 {
     public int shipId;
     public string shipType;

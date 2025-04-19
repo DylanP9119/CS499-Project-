@@ -4162,9 +4162,17 @@ PrefabInstance:
       value: ReplayManager
       objectReference: {fileID: 0}
     - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+      propertyPath: timeControl
+      value: 
+      objectReference: {fileID: 18849723}
+    - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
       propertyPath: timeDisplay
       value: 
       objectReference: {fileID: 646576067}
+    - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+      propertyPath: uiController
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
       propertyPath: interpolation
       value: 1
