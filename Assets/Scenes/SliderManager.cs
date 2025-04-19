@@ -24,7 +24,7 @@ public class SliderManager : MonoBehaviour
         {
             GameObject sliderGO = Instantiate(sliderPrefab, contentParent);
             Slider slider = sliderGO.GetComponentInChildren<Slider>();
-            Text valueText = sliderGO.GetComponentInChildren<Text>();
+            Text valueText = sliderGO.GetComponentInChildren<TMP_Text>();
 
             slider.minValue = 0f;
             slider.maxValue = 1f;
