@@ -460,5 +460,27 @@ public class ShipInteractions : MonoBehaviour
         if (cargoBehavior != null)
             cargoBehavior.isCaptured = false;
     }
+
+    public GameObject GetPirateForCargo(GameObject cargo)
+    {
+        return pirateToCapturedCargo.FirstOrDefault(pair => pair.Value == cargo).Key;
+    }
+
+    public void RemoveCapturedPair(GameObject pirate, GameObject cargo)
+    {
+        if (pirateToCapturedCargo.ContainsKey(pirate))
+            pirateToCapturedCargo.Remove(pirate);
+    }
+
+    public void ResetState()
+    {
+        pirateToCapturedCargo.Clear();
+        cargoEvadedPirates.Clear();
+        evasionOutcomeLogged.Clear();
+        pendingEvasions.Clear();
+        evadeTimestamps.Clear();
+        
+        // Add other interaction state resets if needed
+    }
 }
 
