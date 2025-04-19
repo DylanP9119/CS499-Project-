@@ -31,12 +31,11 @@ public class UILoadMenuController : MonoBehaviour
 
     public void OpenFileUpload()
     {
-        OnJsonFileLoaded("C:/Users/Dylan/AppData/LocalLow/DefaultCompany/CS499 Project/Default.json");
-  //  #if UNITY_WEBGL && !UNITY_EDITOR
-  //      ShowFileUpload();
- //   #else
-  //      Debug.Log("File upload only works in WebGL builds.");
- //   #endif
+    #if UNITY_WEBGL && !UNITY_EDITOR
+        ShowFileUpload();
+    #else
+        Debug.Log("File upload only works in WebGL builds.");
+    #endif
     }
     
 
