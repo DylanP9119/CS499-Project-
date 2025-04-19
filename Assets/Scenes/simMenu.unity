@@ -3788,7 +3788,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Adjust robabilities of each ship's spawnpoints. You can follow the formatting
+  m_text: "Adjust probabilities of each ship's spawnpoints. You can follow the formatting
     for each line:\n[ship type],[grid minimum],[gridmaximum],[multiplier]\nShip Types:
     pirate, patrol, cargo\nGrid Spaces: 1-100 for patrols, cargo. 1-400 for pirates.
     \nMinimum MUST be equal to or less than maximum.\nMultiplier: Single value to

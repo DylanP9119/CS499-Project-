@@ -38,6 +38,7 @@ public class ShipInteractions : MonoBehaviour
     // Called each tick (or replay update) to process interactions.
     public void CheckForInteractions(List<GameObject> allShips)
     {
+
         List<GameObject> piratesToRemove = new(); // For pirates that need to be removed (like when reaching south edge)
         List<GameObject> shipsToRemove = new(); // For ships that leave the map
 
@@ -92,8 +93,9 @@ public class ShipInteractions : MonoBehaviour
             }
         }
 
+        int currentTick = ShipController.TimeStepCounter;
         // Move captured pairs when the simulation tick has advanced.
-        if (ShipController.TimeStepCounter != lastDownMovementTick)
+        if (currentTick != lastDownMovementTick)
         {
             foreach (KeyValuePair<GameObject, GameObject> pair in pirateToCapturedCargo)
             {
@@ -113,10 +115,7 @@ public class ShipInteractions : MonoBehaviour
 
                 if (pirateBehavior != null && cargoBehavior != null)
                 {
-                    // Determine movement direction: normally move downward; if reversing in replay, move upward.
                     int direction = 1;
-                    if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive && ReplayManager.Instance.replaySpeed < 0)
-                        direction = -1;
                     // Move captured pair one grid cell vertically.
                     pirateBehavior.currentGridPosition += Vector2Int.down * direction;
                     // Update grid position for pirate
@@ -135,7 +134,7 @@ public class ShipInteractions : MonoBehaviour
                     piratesToRemove.Add(pirateShip);
                 }
             }
-            lastDownMovementTick = ShipController.TimeStepCounter;
+            lastDownMovementTick = currentTick;
         }
 
         // Remove the pirate-cargo mappings for destroyed pirates
@@ -149,7 +148,14 @@ public class ShipInteractions : MonoBehaviour
         foreach (GameObject ship in shipsToRemove)
         {
             allShips.Remove(ship);
-            Destroy(ship);
+            if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive && ReplayManager.Instance.replaySpeed < 0)
+            {
+                ship.SetActive(false); // Hide in reverse mode
+            }
+            else
+            {
+                Destroy(ship); // Normal destroy in forward mode
+            }
         }
         //List<(GameObject, GameObject)> evasionCleanup = new();
         //foreach (var entry in evadeTimestamps)
@@ -229,6 +235,7 @@ public class ShipInteractions : MonoBehaviour
             }
             pirateToCapturedCargo.Remove(pirate);
         }
+
         List<(GameObject, GameObject)> resolved = new(); // since pirate dies, log success evade
         foreach (var pair in pendingEvasions)
         {
@@ -246,13 +253,20 @@ public class ShipInteractions : MonoBehaviour
         }
         textController.PirateDestroyed();
 
-        pirate.SetActive(false); // disable object
+        //pirate.SetActive(false); // disable object
         ShipController shipCtrl = FindObjectOfType<ShipController>();
         if (shipCtrl != null)
         {
             shipCtrl.allShips.Remove(pirate); //remove from global list
         }
-        Destroy(pirate); // defeat pirate
+        if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive && ReplayManager.Instance.replaySpeed < 0)
+        {
+            pirate.SetActive(false); // just hide it in reverse
+        }
+        else
+        {
+            Destroy(pirate); // forward sim: destroy as usual
+        }
         Debug.Log($"[PIRATE DESTROYED]");
     }
 
@@ -304,14 +318,6 @@ public class ShipInteractions : MonoBehaviour
         }
 
         textController.UpdateCaptures(true);
-
-        // Record the capture event so that replay includes it.
-        if (ReplayManager.Instance != null)
-        {
-            int shipId = ExtractShipId(cargo);
-            float simTime = ShipController.TimeStepCounter * 1f; // using tick duration of 1f
-            ReplayManager.Instance.RecordCaptureEvent(shipId, cargo.transform.position, cargo.transform.rotation, simTime);
-        }
         }
     }
 
@@ -422,6 +428,37 @@ public class ShipInteractions : MonoBehaviour
                 return id;
         }
         return 0;
+    }
+
+    public void ReviveCapturePair(GameObject pirate, GameObject cargo)
+    {
+        if (pirate != null && cargo != null)
+        {
+            if (!pirateToCapturedCargo.ContainsKey(pirate))
+                pirateToCapturedCargo[pirate] = cargo;
+
+            var pirateBehavior = pirate.GetComponent<PirateBehavior>();
+            var cargoBehavior = cargo.GetComponent<CargoBehavior>();
+
+            if (pirateBehavior != null)
+                pirateBehavior.hasCargo = true;
+            if (cargoBehavior != null)
+                cargoBehavior.isCaptured = true;
+        }
+    }
+
+    public void UnmarkCapturePair(GameObject pirate, GameObject cargo)
+    {
+        if (pirateToCapturedCargo.ContainsKey(pirate))
+            pirateToCapturedCargo.Remove(pirate);
+
+        var pirateBehavior = pirate.GetComponent<PirateBehavior>();
+        var cargoBehavior = cargo.GetComponent<CargoBehavior>();
+
+        if (pirateBehavior != null)
+            pirateBehavior.hasCargo = false;
+        if (cargoBehavior != null)
+            cargoBehavior.isCaptured = false;
     }
 }
 
