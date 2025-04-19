@@ -3956,10 +3956,11 @@ MonoBehaviour:
     Ship
     Type, Lower Range, Upper Range, Multiplier
 
-    Press "+" to add your settings
-    to the box.
+    Press "+" button to add your
+    settings to the box.
 
-    Press "E" to enable/disable raw text editing (unsafe)'
+    Press "-" button to enable/disable raw text editing
+    (unsafe)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
