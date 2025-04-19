@@ -170,10 +170,10 @@ public class UIControllerScript : MonoBehaviour
             Debug.Log("test seven");
         }
 
-        if (fileNameString == "") {
+       /* if (fileNameString == "") {
             canStart = false;
             Debug.Log("test eight");
-        }
+        }*/
 
         /*
         Grid Syntax Checking goes here
@@ -251,6 +251,8 @@ public class UIControllerScript : MonoBehaviour
                         canStart = false;
                         break;
                 }
+                Debug.Log(values[0] + " " + values[1] + " " + values[2] + " " + values[3]);
+
             }
         }
 

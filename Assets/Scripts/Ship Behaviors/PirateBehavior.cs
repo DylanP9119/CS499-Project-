@@ -9,7 +9,6 @@ public class PirateBehavior : MonoBehaviour
     public float movementDelay = 0.1f;
     private float movementTimer = 0f;
     public bool hasCargo = false;
-    public float interactionCooldownUntil = 3f;
 
     void Start()
     {
@@ -18,12 +17,13 @@ public class PirateBehavior : MonoBehaviour
         currentGridPosition = WorldToGrid(transform.position);
         destinationGridPosition = new Vector2Int(currentGridPosition.x, gridSize.y);
     }        
+    else
+    {
+        currentGridPosition = WorldToGrid(transform.position);
+        destinationGridPosition = new Vector2Int(currentGridPosition.x, gridSize.y);
     }
-public void ResumeOriginalPath() 
-{
-    transform.rotation = Quaternion.Euler(0, 0, 0); // Face up
-    destinationGridPosition = new Vector2Int(currentGridPosition.x, gridSize.y);
-}
+    }
+
     public void Step(bool forceMove)
     {
         if (hasCargo)

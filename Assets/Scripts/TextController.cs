@@ -96,7 +96,7 @@ public class TextController : MonoBehaviour
             successfulEvasions++;
             successfulEvasionText.text = $"Successful Evasions: {successfulEvasions}";
         }
-        else if (finalUpdate)
+        else //if (finalUpdate)
         {
             failedEvasions++;
             failedEvasionText.text = $"Failed Evasions: {failedEvasions}";

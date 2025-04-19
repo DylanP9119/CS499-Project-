@@ -8,7 +8,6 @@ public class ShipController : MonoBehaviour
     // Static simulation tick counter.
     public static int TimeStepCounter { get; private set; } = 0;
     // For simulation testing, we use a shorter tick duration.
-    public float simulationTickDuration = 1f;
 
     public GameObject cargoPrefab;
     public GameObject patrolPrefab;
@@ -55,7 +54,7 @@ public class ShipController : MonoBehaviour
         {
             if (!ReplayManager.Instance.ReplayPaused)
             {
-                int currentTick = Mathf.FloorToInt(ReplayManager.Instance.replayTime / simulationTickDuration);
+                int currentTick = Mathf.FloorToInt(ReplayManager.Instance.replayTime / timeControl.GetSpeed());
                 SetTimeStepCounter(currentTick);
                 ShipInteractions.Instance.CheckForInteractions(allShips);
             }
@@ -66,7 +65,7 @@ public class ShipController : MonoBehaviour
         if (!timeControl.IsPaused)
         {
             spawnTimer += Time.deltaTime;
-            if (spawnTimer >= simulationTickDuration)
+            if (spawnTimer >= timeControl.GetSpeed())
             {
                 // Advance simulation tick.
                 TimeStepCounter++;
@@ -96,7 +95,7 @@ public class ShipController : MonoBehaviour
                     return;
                 }
 
-                float simTime = TimeStepCounter * simulationTickDuration;
+                float simTime = TimeStepCounter * timeControl.GetSpeed();
                 SpawnShip(simTime);
 
                 // Explicitly call Step on each ship's behavior component.
@@ -129,168 +128,6 @@ public class ShipController : MonoBehaviour
         }
     }
 
-    void UpdateSpawnChancesFromUI()
-    {
-        // Implementation depends on UIControllerScript
-    }
-
-void UpdateDayNightCycle()
-    {
-        if (!DataPersistence.Instance.nightCaptureEnabled)
-        {
-            isNight = false;
-            ShipInteractions.Instance.isNight = false;
-            return;
-        }
-        int hour = Mathf.FloorToInt(simMinutesPassed / 60f) % 24;
-        bool newNight = (hour >= 12);
-        if (newNight != isNight)
-        {
-            isNight = newNight;
-            ShipInteractions.Instance.isNight = isNight;
-        }
-    }
-
-    void UpdateTimeDisplays()
-    {
-        int totalMinutes = Mathf.FloorToInt(simMinutesPassed);
-        int day = (totalMinutes / 1440) + 1;
-        int hour = (totalMinutes / 60) % 24;
-        int minute = totalMinutes % 60;
-        timeDisplayRun.text = $"Day {day} — {hour:D2}:{minute:D2}";
-
-        float remainingMinutes = simulationLengthHours * 60f - simMinutesPassed;
-        int remainingDays = Mathf.FloorToInt(remainingMinutes / 1440f);
-        int remainingHours = Mathf.FloorToInt((remainingMinutes % 1440) / 60f);
-        int remainingMins = Mathf.FloorToInt(remainingMinutes % 60f);
-        timeDisplayRemaining.text = $"Remaining: {remainingDays}d {remainingHours}h {remainingMins}m";
-    }
-
-    void StepAllShips()
-    {
-        foreach (GameObject ship in allShips)
-        {
-                   if (ship == null) continue;
-    
-            if (ship == null) continue;
-            if (ship.CompareTag("Cargo")) ship.GetComponent<CargoBehavior>()?.Step(true);
-            else if (ship.CompareTag("Patrol")) ship.GetComponent<PatrolBehavior>()?.Step(true);
-            else if (ship.CompareTag("Pirate")) ship.GetComponent<PirateBehavior>()?.Step(true);
-        }
-    }
-
-    void SpawnShip(float simTime)
-    {
-        HashSet<Vector3> occupiedPositions = new HashSet<Vector3>();
-        foreach (GameObject ship in allShips)
-            if (ship != null) occupiedPositions.Add(ship.transform.position);
-
-        TrySpawnShip("Cargo", occupiedPositions, simTime, isNight);
-        TrySpawnShip("Patrol", occupiedPositions, simTime, isNight);
-        TrySpawnShip("Pirate", occupiedPositions, simTime, isNight);
-    }
-
-    void TrySpawnShip(string shipType, HashSet<Vector3> occupiedPositions, float simTime, bool isNight)
-    {
-        Vector3 spawnPos = GetUniqueSpawnPosition(shipType, occupiedPositions);
-        if (spawnPos == Vector3.zero) return;
-
-        GameObject prefab = GetPrefab(shipType);
-        if (prefab == null) return;
-
-        GameObject ship = Instantiate(prefab, spawnPos, GetSpawnRotation(shipType));
-        InitializeShipBehavior(ship, shipType, spawnPos);
-        ship.name = $"{shipType}({GetCounter(ref shipType)})";
-        ship.tag = shipType;
-        allShips.Add(ship);
-        textController.UpdateShipEnter(shipType.ToLower());
-
-        if (ReplayManager.Instance != null)
-        {
-            int shipId = ReplayManager.Instance.GetNextShipId();
-            // CHANGED: Use step-based timestamp instead of cumulativeSimTime
-            float stepTime = TimeStepCounter * ReplayManager.Instance.simulationTickDuration;
-            ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, ship.transform.rotation, stepTime);
-        }
-    }
-
-    Vector3 GetUniqueSpawnPosition(string shipType, HashSet<Vector3> occupiedPositions)
-    {
-        int maxAttempts = 400;
-        Vector3 spawnPos = Vector3.zero;
-        for (int i = 0; i < maxAttempts; i++)
-        {
-            float roll = Random.value;
-            if (shipType == "Cargo")
-            {
-                int spawnZ = Mathf.FloorToInt(gridSize.y * roll);
-                spawnPos = new Vector3(0, 0, spawnZ);
-            }
-            else if (shipType == "Pirate")
-            {
-                int spawnX = Mathf.FloorToInt(gridSize.x * roll);
-                spawnPos = new Vector3(spawnX, 0, 0);
-            }
-            else if (shipType == "Patrol")
-            {
-                int spawnZ = Mathf.FloorToInt(gridSize.y * roll);
-                spawnPos = new Vector3(gridSize.x - 1, 0, spawnZ);
-            }
-            else
-                return Vector3.zero;
-            if (!occupiedPositions.Contains(spawnPos))
-            {
-                occupiedPositions.Add(spawnPos);
-                return spawnPos;
-            }
-        }
-        return Vector3.zero;
-    }
-
-    Vector3 CalculateSpawnPosition(string shipType, float cellSize)
-    {
-        float roll = Random.value;
-        return shipType switch
-        {
-            "Cargo" => new Vector3(0, 0, Mathf.FloorToInt(gridSize.y * roll) * cellSize),
-            "Pirate" => new Vector3(Mathf.FloorToInt(gridSize.x * roll) * cellSize, 0, 0),
-            "Patrol" => new Vector3((gridSize.x - 1) * cellSize, 0, Mathf.FloorToInt(gridSize.y * roll) * cellSize),
-            _ => Vector3.zero
-        };
-    }
-
-    Quaternion GetSpawnRotation(string shipType)
-    {
-        return shipType switch
-        {
-            "Cargo" => Quaternion.Euler(0, 90, 0),
-            "Patrol" => Quaternion.Euler(0, -90, 0),
-            "Pirate" => Quaternion.Euler(0, 0, 0),
-            _ => Quaternion.identity
-        };
-    }
-
-    int GetCounter(ref string shipType)
-    {
-        return shipType switch
-        {
-            "Cargo" => cargoCounter++,
-            "Patrol" => patrolCounter++,
-            "Pirate" => pirateCounter++,
-            _ => 0
-        };
-    }
-
-    GameObject GetPrefab(string shipType)
-    {
-        return shipType switch
-        {
-            "Cargo" => cargoPrefab,
-            "Patrol" => patrolPrefab,
-            "Pirate" => piratePrefab,
-            _ => null
-        };
-    }
     public static int SelectIndexByWeight(double[] weights)
     {
         // Step 1: Calculate the sum of all weights
@@ -310,80 +147,269 @@ void UpdateDayNightCycle()
         }
 
         // Step 3: Generate a random number between 0 and 1
-
-        double randomNumber = Random.value;
+        System.Random rand = new System.Random();
+        double randomNumber = rand.NextDouble();
 
         // Step 4: Find the index using the cumulative distribution
-        for (int i = 0; i < cumulative.Length; i++)
+        for (int i = 0; i < weights.Length; i++)
         {
             if (randomNumber <= cumulative[i])
             {
+                Debug.Log("Spawning at Grid# " + i);
                 return i;
             }
         }
 
         return -1; // Fallback (shouldn't occur with valid input)
     }
-    void InitializeShipBehavior(GameObject ship, string shipType, Vector3 spawnPos)
+
+    void UpdateDayNightCycle()
     {
-        switch (shipType)
+        if (!DataPersistence.Instance.nightCaptureEnabled)
         {
-            case "Cargo":
-                var cargo = ship.GetComponent<CargoBehavior>();
-                cargo.gridSize = gridSize;
-                cargo.currentGridPosition = new Vector2Int(0, Mathf.FloorToInt(spawnPos.z));
-                cargo.destinationGridPosition = new Vector2Int(gridSize.x, cargo.currentGridPosition.y);
-                break;
-            case "Patrol":
-                var patrol = ship.GetComponent<PatrolBehavior>();
-                patrol.gridSize = gridSize;
-                patrol.currentGridPosition = new Vector2Int(gridSize.x - 1, Mathf.FloorToInt(spawnPos.z));
-                patrol.destinationGridPosition = new Vector2Int(0, patrol.currentGridPosition.y);
-                break;
-            case "Pirate":
-                var pirate = ship.GetComponent<PirateBehavior>();
-                pirate.gridSize = gridSize;
-                pirate.currentGridPosition = new Vector2Int(Mathf.FloorToInt(spawnPos.x), 0);
-                pirate.destinationGridPosition = new Vector2Int(pirate.currentGridPosition.x, gridSize.y);
-                break;
+            isNight = false;
+            ShipInteractions.Instance.isNight = false;
+            return;
+        }
+        int hour = Mathf.FloorToInt(simMinutesPassed / 60f) % 24;
+        bool newNight = (hour >= 12);
+        if (newNight != isNight)
+        {
+            isNight = newNight;
+            ShipInteractions.Instance.isNight = isNight;
         }
     }
 
- public void ReplaySpawn(string shipType, Vector3 position, Quaternion rotation, string shipName, int shipId)
-{
-    GameObject prefab = GetPrefab(shipType);
-    if (prefab == null)
+    // Accepts a simTime parameter (in seconds) used for replay recording.
+    void SpawnShip(float simTime)
     {
-        Debug.LogError($"Prefab not found for {shipType}");
-        return;
+        HashSet<Vector3> occupiedPositions = new HashSet<Vector3>();
+        foreach (GameObject ship in allShips)
+        {
+            if (ship != null)
+                occupiedPositions.Add(ship.transform.position);
+        }
+
+        // Cargo Day spawn.
+        if (!isNight && Random.value <= cargoSpawnChance)
+        {
+            Vector3 spawnPos = GetUniqueSpawnPosition("Cargo", occupiedPositions);
+            Debug.Log(spawnPos);
+            if (spawnPos != Vector3.zero)
+            {
+                int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : cargoCounter;
+                string shipType = "Cargo";
+                GameObject cargo = Instantiate(cargoPrefab, spawnPos, GetSpawnRotation("Cargo"));
+                cargo.name = $"Cargo({cargoCounter++})";
+                cargo.tag = "Cargo";
+                allShips.Add(cargo);
+                textController.UpdateShipEnter("cargo");
+                if (ReplayManager.Instance != null)
+                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, cargo.transform.rotation, simTime);
+            }
+        }
+        // Cargo Night spawn.
+        if (isNight && Random.value <= cargoNightChance)
+        {
+            Vector3 spawnPos = GetUniqueSpawnPosition("Cargo", occupiedPositions);
+            if (spawnPos != Vector3.zero)
+            {
+                int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : cargoCounter;
+                string shipType = "Cargo";
+                GameObject cargo = Instantiate(cargoPrefab, spawnPos, GetSpawnRotation("Cargo"));
+                cargo.name = $"Cargo({cargoCounter++})";
+                cargo.tag = "Cargo";
+                allShips.Add(cargo);
+                textController.UpdateShipEnter("cargo");
+                if (ReplayManager.Instance != null)
+                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, cargo.transform.rotation, simTime);
+            }
+        }
+        // Patrol spawn.
+        if (!isNight && Random.value <= patrolSpawnChance)
+        {
+            Vector3 spawnPos = GetUniqueSpawnPosition("Patrol", occupiedPositions);
+            if (spawnPos != Vector3.zero)
+            {
+                int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : patrolCounter;
+                string shipType = "Patrol";
+                GameObject patrol = Instantiate(patrolPrefab, spawnPos, GetSpawnRotation("Patrol"));
+                patrol.name = $"Patrol({patrolCounter++})";
+                patrol.tag = "Patrol";
+                allShips.Add(patrol);
+                textController.UpdateShipEnter("patrol");
+                if (ReplayManager.Instance != null)
+                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, patrol.transform.rotation, simTime);
+            }
+        }
+        // Patrol Night spawn.
+        if (isNight && Random.value <= patrolNightChance)
+        {
+            Vector3 spawnPos = GetUniqueSpawnPosition("Patrol", occupiedPositions);
+            if (spawnPos != Vector3.zero)
+            {
+                int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : patrolCounter;
+                string shipType = "Patrol";
+                GameObject patrol = Instantiate(patrolPrefab, spawnPos, GetSpawnRotation("Patrol"));
+                patrol.name = $"Patrol({patrolCounter++})";
+                patrol.tag = "Patrol";
+                allShips.Add(patrol);
+                textController.UpdateShipEnter("patrol");
+                if (ReplayManager.Instance != null)
+                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, patrol.transform.rotation, simTime);
+            }
+        }
+
+        // Pirate spawn.
+        if (!isNight && Random.value <= pirateSpawnChance)
+        {
+            Vector3 spawnPos = GetUniqueSpawnPosition("Pirate", occupiedPositions);
+            if (spawnPos != Vector3.zero)
+            {
+                int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : pirateCounter;
+                string shipType = "Pirate";
+                GameObject pirate = Instantiate(piratePrefab, spawnPos, GetSpawnRotation("Pirate"));
+                pirate.name = $"Pirate({pirateCounter++})";
+                pirate.tag = "Pirate";
+                allShips.Add(pirate);
+                textController.UpdateShipEnter("pirate");
+                if (ReplayManager.Instance != null)
+                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, pirate.transform.rotation, simTime);
+            }
+        }
+        // Pirate Night spawn.
+        if (isNight && Random.value <= pirateNightChance)
+        {
+            Vector3 spawnPos = GetUniqueSpawnPosition("Pirate", occupiedPositions);
+            if (spawnPos != Vector3.zero)
+            {
+                int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : pirateCounter;
+                string shipType = "Pirate";
+                GameObject pirate = Instantiate(piratePrefab, spawnPos, GetSpawnRotation("Pirate"));
+                pirate.name = $"Pirate({pirateCounter++})";
+                pirate.tag = "Pirate";
+                allShips.Add(pirate);
+                textController.UpdateShipEnter("pirate");
+                if (ReplayManager.Instance != null)
+                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, pirate.transform.rotation, simTime);
+            }
+        }
     }
 
-    GameObject ship = Instantiate(prefab, position, rotation);
-    if (ship == null)
+    Vector3 GetUniqueSpawnPosition(string shipType, HashSet<Vector3> occupiedPositions)
     {
-        Debug.LogError("Failed to instantiate ship: " + shipType);
-        return;
+        int maxAttempts = 400;
+        Vector3 spawnPos = Vector3.zero;
+        for (int i = 0; i < maxAttempts; i++)
+        {
+            if (shipType == "Cargo")
+            {
+                int spawnZ = 0;
+
+                if (!isNight) {
+                    spawnZ = SelectIndexByWeight(DataPersistence.Instance.cargoGridPercentsD);
+                    Debug.Log("Cargo SpawnZ = " + spawnZ);
+                }
+                else
+                {
+                    spawnZ = SelectIndexByWeight(DataPersistence.Instance.cargoGridPercentsN);
+                    Debug.Log("Cargo SpawnZ = " + spawnZ);
+                }
+
+                spawnPos = new Vector3(0, 0, spawnZ);
+            }
+            else if (shipType == "Pirate")
+            {
+                int spawnX = 0;
+
+                if (!isNight)
+                {
+                    spawnX = SelectIndexByWeight(DataPersistence.Instance.pirateGridPercentsD);
+                    Debug.Log("Pirate SpawnX = " + spawnX);
+                }
+                else
+                {
+                    spawnX = SelectIndexByWeight(DataPersistence.Instance.pirateGridPercentsN);
+                    Debug.Log("Pirate SpawnX = " + spawnX);
+                }
+
+                spawnPos = new Vector3(spawnX, 0, 0);
+            }
+            else if (shipType == "Patrol")
+            {
+                int spawnZ = 0;
+
+                if (!isNight)
+                {
+                    spawnZ = SelectIndexByWeight(DataPersistence.Instance.patrolGridPercentsD);
+                    Debug.Log("Patrol SpawnZ = " + spawnZ);
+                }
+                else
+                {
+                    spawnZ = SelectIndexByWeight(DataPersistence.Instance.patrolGridPercentsN);
+                    Debug.Log("Patrol SpawnZ = " + spawnZ);
+                }
+                spawnPos = new Vector3(gridSize.x - 1, 0, spawnZ);
+            }
+            else
+                return Vector3.zero;
+
+            if (!occupiedPositions.Contains(spawnPos))
+            {
+                occupiedPositions.Add(spawnPos);
+                return spawnPos;
+            }
+        }
+        return Vector3.zero;
     }
 
-    ship.name = shipName;
-    ship.tag = shipType;
-    allShips.Add(ship);
+    Quaternion GetSpawnRotation(string shipType)
+    {
+        if (shipType == "Cargo")
+            return Quaternion.Euler(0, 90, 0);
+        else if (shipType == "Patrol")
+            return Quaternion.Euler(0, -90, 0);
+        else if (shipType == "Pirate")
+            return Quaternion.Euler(0, 0, 0);
+        return Quaternion.identity;
+    }
 
-    if (textController != null)
+    // For replay mode: spawn a ship and update UI counter.
+    public void ReplaySpawn(string shipType, Vector3 position, Quaternion rotation, string shipName, int shipId)
     {
-        textController.UpdateShipEnter(shipType.ToLower());
+        GameObject prefab = null;
+        if (shipType == "Cargo")
+            prefab = cargoPrefab;
+        else if (shipType == "Patrol")
+            prefab = patrolPrefab;
+        else if (shipType == "Pirate")
+            prefab = piratePrefab;
+
+        if (prefab != null)
+        {
+            GameObject ship = Instantiate(prefab, position, rotation);
+            ship.name = shipName;
+            ship.tag = shipType;
+            allShips.Add(ship);
+            textController.UpdateShipEnter(shipType);
+        }
     }
-    else
-    {
-        Debug.LogWarning("TextController reference is missing in ShipController");
-    }
-}
+
     public void ClearAllShips()
     {
         foreach (GameObject ship in allShips)
-            if (ship != null) Destroy(ship);
+        {
+            if (ship != null)
+                Destroy(ship);
+        }
         allShips.Clear();
     }
 
-    public static void SetTimeStepCounter(int newTick) => TimeStepCounter = newTick;
+    // Public helper to update the simulation tick (used in replay mode).
+    public static void SetTimeStepCounter(int newTick)
+    {
+        TimeStepCounter = newTick;
+    }
+
+
 }

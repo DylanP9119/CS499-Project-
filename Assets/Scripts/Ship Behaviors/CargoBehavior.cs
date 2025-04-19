@@ -10,11 +10,15 @@ public class CargoBehavior : MonoBehaviour
     private float movementTimer = 0f;
     public bool isCaptured = false;
     public bool isEvadingThisStep = false;
-    public float interactionCooldownUntil = 3f;
 
     void Start()
     {
     if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive)
+    {
+        currentGridPosition = WorldToGrid(transform.position);
+        destinationGridPosition = new Vector2Int(gridSize.x, currentGridPosition.y);
+    }
+    else
     {
         currentGridPosition = WorldToGrid(transform.position);
         destinationGridPosition = new Vector2Int(gridSize.x, currentGridPosition.y);
@@ -40,20 +44,19 @@ public class CargoBehavior : MonoBehaviour
         isEvadingThisStep = false;
         MoveShipTowardsDestination();
     }
-public void ResumeOriginalPath()
-{
-    transform.rotation = Quaternion.Euler(0, 90, 0); // Face right
-    destinationGridPosition = new Vector2Int(gridSize.x, currentGridPosition.y);
-}
+
     public void MoveShipTowardsDestination()
     {
-        int direction = 1;
-        if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive && ReplayManager.Instance.replaySpeed < 0)
-            direction = -1;
-        currentGridPosition += Vector2Int.right * direction;
-        transform.position = GridToWorld(currentGridPosition);
+        if (currentGridPosition != destinationGridPosition)
+        {
+            int direction = 1;
+            if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive && ReplayManager.Instance.replaySpeed < 0)
+                direction = -1;
+            currentGridPosition += Vector2Int.right * direction;
+            transform.position = GridToWorld(currentGridPosition);
+        }
     }
-public Vector2Int WorldToGrid(Vector3 worldPosition)
+    public Vector2Int WorldToGrid(Vector3 worldPosition)
 {
     int x = Mathf.FloorToInt(worldPosition.x / gridCellSize);
     int y = Mathf.FloorToInt(worldPosition.z / gridCellSize); // Z-axis corresponds to grid Y
