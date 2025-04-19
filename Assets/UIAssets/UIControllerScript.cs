@@ -48,10 +48,24 @@ public class UIControllerScript : MonoBehaviour
     public int minuteCount;
 
     private bool isParsed;
+    
+    public GameObject errorPanel;
+    public TMP_Text errorPanelText;
 
-    public TMP_InputField cargoNightBox;
-    public TMP_InputField pirateNightBox;
-    public TMP_InputField patrolNightBox;
+    public Slider cargoDaySlider;
+    public Slider pirateDaySlider;
+    public Slider patrolDaySlider;
+
+    public Slider cargoNightSlider;
+    public Slider pirateNightSlider;
+    public Slider patrolNightSlider;
+
+    public TMP_Text cargoDayText;
+    public TMP_Text pirateDayText;
+    public TMP_Text patrolDayText;
+    public TMP_Text cargoNightText;
+    public TMP_Text pirateNightText;
+    public TMP_Text patrolNightText;
 
     public static UIControllerScript Instance;
 
@@ -63,26 +77,12 @@ public class UIControllerScript : MonoBehaviour
 
     public void Awake()
     {
-        /*
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        */
 
         Instance = this;
-        //DontDestroyOnLoad(gameObject);
 
-        //if (Instance != null)
-        //{
-        //    Destroy(gameObject);
-        //    return;
-        //}
+        //Defaults
+        fileNameString = "MySimulation";
 
-        //Instance = this;
-        //DontDestroyOnLoad(gameObject);
-        fileNameString = "";
         cargoDayPercent = 50;
         cargoNightPercent = 50;
         pirateDayPercent = 25;
@@ -100,9 +100,11 @@ public class UIControllerScript : MonoBehaviour
         buttonText.text = "DISABLED";
         nightCaptureEnabled = false;
 
-        cargoNightBox.interactable = false;
-        patrolNightBox.interactable = false;
-        pirateNightBox.interactable = false;
+        cargoNightSlider.interactable = false;
+        patrolNightSlider.interactable = false;
+        pirateNightSlider.interactable = false;
+
+        errorPanel.SetActive(false);
 
         //fill grid spaces with default values
         for (int gridSpace = 0; gridSpace < cargoGridPercentsD.Length; gridSpace++)
@@ -125,6 +127,10 @@ public class UIControllerScript : MonoBehaviour
         SceneManager.LoadScene(mainMenu);
     }
 
+    public void ErrorOKButton() {
+        errorPanel.SetActive(false);
+    }
+
     // TOGGLE DECREASED NIGHT TIME CAPTURE, ONLY WHEN CERTAIN BUTTON IS PRESSED.
     public void NightCaptureToggle()
     {
@@ -140,9 +146,9 @@ public class UIControllerScript : MonoBehaviour
             buttonText.text = "DISABLED";
         }
 
-        cargoNightBox.interactable = nightCaptureEnabled;
-        patrolNightBox.interactable = nightCaptureEnabled;
-        pirateNightBox.interactable = nightCaptureEnabled;
+        cargoNightSlider.interactable = nightCaptureEnabled;
+        pirateNightSlider.interactable = nightCaptureEnabled;
+        patrolNightSlider.interactable = nightCaptureEnabled;
     }
 
     // START THE PROGRAM, TOGGLES WHEN "BEGIN" BUTTON IS PRESSED"
@@ -153,39 +159,17 @@ public class UIControllerScript : MonoBehaviour
         Debug.Log("TEST : " + canStart);
         minuteCount = (hourCount * 60) + (dayCount * 24 * 60);
 
-        if (cargoDayPercent < 1 || cargoDayPercent > 100) {
+        if ((dayCount < 0 || hourCount < 0) || (minuteCount < 720 || minuteCount > 43200)) {
             canStart = false;
-            Debug.Log("test one");
-        }
-        else if (cargoNightPercent < 1 || cargoNightPercent > 100) {
-            canStart = false;
-            Debug.Log("test two");
-        }
-        else if (pirateDayPercent < 1 || pirateDayPercent > 100) {
-            canStart = false;
-            Debug.Log("test three");
-        }
-        else if (pirateNightPercent < 1 || pirateNightPercent > 100) {
-            canStart = false;
-            Debug.Log("test four");
-        }
-        else if (patrolDayPercent < 1 || patrolDayPercent > 100) {
-            canStart = false;
-            Debug.Log("test five");
-        }
-        else if (patrolNightPercent < 1 || patrolNightPercent > 100) {
-            canStart = false;
-            Debug.Log("test six");
-        }
-        else if ((dayCount < 0 || hourCount < 0) || (minuteCount < 720 || minuteCount > 43200)) {
-            canStart = false;
-            Debug.Log("test seven");
+            errorPanel.SetActive(true);
+            errorPanelText.text = "Error Starting: Day and/or hour count is invalid. Ensure your parameters are between 12 hours and 30 days.";
         }
 
-       /* if (fileNameString == "") {
+        if (fileNameString == "") {
             canStart = false;
-            Debug.Log("test eight");
-        }*/
+            errorPanel.SetActive(true);
+            errorPanelText.text = "Error Starting: File name is blank. Please enter a value for your file name.";
+        }
 
         /*
         Grid Syntax Checking goes here
@@ -195,7 +179,7 @@ public class UIControllerScript : MonoBehaviour
         Debug.Log("TEST 2: " + canStart);
         //declare separated values
         //For day values...
-        if (gridDayString != null) {
+        if (gridDayString != null && canStart) {
             Debug.Log("Grid Day String Loop is Running");
             string[] gridLinesDay = gridDayString.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -438,63 +422,45 @@ public class UIControllerScript : MonoBehaviour
 
     //ALL CARGO SET VALUES
 
-    public void ReadStringInputCARGODAY(string s)
+    public void CargoDayPercentSlider(System.Single value)
     {
-        isParsed = Int32.TryParse(s, out cargoDayPercent);
-
-        //invalid entry
-        if (!isParsed)
-            cargoDayPercent = -1;
+        cargoDayPercent = (int) value;
+        cargoDayText.text = "Day: " + value + "%";
 
     }
 
-    public void ReadStringInputCARGONIGHT(string s)
+    public void CargoNightPercentSlider(System.Single value)
     {
-        isParsed = Int32.TryParse(s, out cargoNightPercent);
-
-        //invalid entry
-        if (!isParsed)
-            cargoNightPercent = -1;
+        cargoNightPercent = (int) value;
+        cargoNightText.text = "Night: " + value + "%";
 
     }
 
-    public void ReadStringInputPIRATEDAY(string s)
+    public void PirateDayPercentSlider(System.Single value)
     {
-        isParsed = Int32.TryParse(s, out pirateDayPercent);
-
-        //invalid entry
-        if (!isParsed)
-            pirateDayPercent = -1;
+        pirateDayPercent = (int) value;
+        pirateDayText.text = "Day: " + value + "%";
 
     }
 
-    public void ReadStringInputPIRATENIGHT(string s)
+    public void PirateNightPercentSlider(System.Single value)
     {
-        isParsed = Int32.TryParse(s, out pirateNightPercent);
-
-        //invalid entry
-        if (!isParsed)
-            pirateNightPercent = -1;
+        pirateNightPercent = (int) value;
+        pirateNightText.text = "Night: " + value + "%";
 
     }
 
-    public void ReadStringInputPATROLDAY(string s)
+    public void PatrolDayPercentSlider(System.Single value)
     {
-        isParsed = Int32.TryParse(s, out patrolDayPercent);
-
-        //invalid entry
-        if (!isParsed)
-            patrolDayPercent = -1;
+        patrolDayPercent = (int) value;
+        patrolDayText.text = "Day: " + value + "%";
 
     }
 
-    public void ReadStringInputPATROLNIGHT(string s)
+    public void PatrolNightPercentSlider(System.Single value)
     {
-        isParsed = Int32.TryParse(s, out patrolNightPercent);
-
-        //invalid entry
-        if (!isParsed)
-            patrolNightPercent = -1;
+        patrolNightPercent = (int) value;
+        patrolNightText.text = "Night: " + value + "%";
 
     }
 
