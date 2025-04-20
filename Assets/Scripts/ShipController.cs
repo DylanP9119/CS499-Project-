@@ -105,7 +105,7 @@ public class ShipController : MonoBehaviour
                     TimeStepCounter++;
                     if (stepCounterText != null)
                     stepCounterText.text = $"Step: {TimeStepCounter}";
-                    Debug.Log($"Processing Tick: {TimeStepCounter}");
+                    //Debug.Log($"Processing Tick: {TimeStepCounter}");
                     simMinutesPassed += 5f;
                     UpdateDayNightCycle();
                     int totalMinutes = Mathf.FloorToInt(simMinutesPassed);
@@ -196,7 +196,7 @@ public class ShipController : MonoBehaviour
         {
             if (randomNumber <= cumulative[i])
             {
-                Debug.Log("Spawning at Grid# " + i);
+                //Debug.Log("Spawning at Grid# " + i);
                 return i;
             }
         }
@@ -257,7 +257,7 @@ public class ShipController : MonoBehaviour
         if (!isNight && Random.value <= cargoSpawnChance)
         {
             Vector3 spawnPos = GetUniqueSpawnPosition("Cargo", occupiedPositions);
-            Debug.Log(spawnPos);
+            //Debug.Log(spawnPos);
             if (spawnPos != Vector3.zero)
             {
                 GameObject cargo = Instantiate(cargoPrefab, spawnPos, GetSpawnRotation("Cargo"));
@@ -267,7 +267,7 @@ public class ShipController : MonoBehaviour
                 textController.UpdateShipEnter("cargo");
                 if (ReplayManager.Instance != null && !ReplayManager.Instance.ReplayModeActive)
                 {
-                    Debug.Log($"[RECORD] Cargo({cargo}) spawned at tick {ShipController.TimeStepCounter}");                    
+                    //Debug.Log($"[RECORD] Cargo({cargo}) spawned at tick {ShipController.TimeStepCounter}");                    
                 }
             }
         }
@@ -302,7 +302,7 @@ public class ShipController : MonoBehaviour
                 textController.UpdateShipEnter("patrol");
                 if (ReplayManager.Instance != null && !ReplayManager.Instance.ReplayModeActive)
                 {
-                    Debug.Log($"[RECORD] Spawned {shipType}({patrol}) at {spawnPos} on tick {ShipController.TimeStepCounter}");
+                    //Debug.Log($"[RECORD] Spawned {shipType}({patrol}) at {spawnPos} on tick {ShipController.TimeStepCounter}");
                 }
             }
         }
@@ -320,7 +320,7 @@ public class ShipController : MonoBehaviour
                 textController.UpdateShipEnter("patrol");
                 if (ReplayManager.Instance != null && !ReplayManager.Instance.ReplayModeActive)
                 {
-                    Debug.Log($"[RECORD] Spawned {shipType}({patrol}) at {spawnPos} on tick {ShipController.TimeStepCounter}");
+                    //Debug.Log($"[RECORD] Spawned {shipType}({patrol}) at {spawnPos} on tick {ShipController.TimeStepCounter}");
                 }
             }
         }
@@ -339,7 +339,7 @@ public class ShipController : MonoBehaviour
                 textController.UpdateShipEnter("pirate");
                 if (ReplayManager.Instance != null && !ReplayManager.Instance.ReplayModeActive)
                 {
-                    Debug.Log($"[RECORD] Spawned {shipType}({pirate}) at {spawnPos} on tick {ShipController.TimeStepCounter}");
+                    //Debug.Log($"[RECORD] Spawned {shipType}({pirate}) at {spawnPos} on tick {ShipController.TimeStepCounter}");
                 }
             }
         }
@@ -357,7 +357,7 @@ public class ShipController : MonoBehaviour
                 textController.UpdateShipEnter("pirate");
                 if (ReplayManager.Instance != null && !ReplayManager.Instance.ReplayModeActive)
                 {
-                    Debug.Log($"[RECORD] Spawned {shipType}({pirate}) at {spawnPos} on tick {ShipController.TimeStepCounter}");
+                    //Debug.Log($"[RECORD] Spawned {shipType}({pirate}) at {spawnPos} on tick {ShipController.TimeStepCounter}");
                 }
             }
         }
@@ -375,12 +375,12 @@ public class ShipController : MonoBehaviour
 
                 if (!isNight) {
                     spawnZ = SelectIndexByWeight(DataPersistence.Instance.cargoGridPercentsD);
-                    Debug.Log("Cargo SpawnZ = " + spawnZ);
+                    //Debug.Log("Cargo SpawnZ = " + spawnZ);
                 }
                 else
                 {
                     spawnZ = SelectIndexByWeight(DataPersistence.Instance.cargoGridPercentsN);
-                    Debug.Log("Cargo SpawnZ = " + spawnZ);
+                    //Debug.Log("Cargo SpawnZ = " + spawnZ);
                 }
 
                 spawnPos = new Vector3(0, 0, spawnZ);
@@ -392,12 +392,12 @@ public class ShipController : MonoBehaviour
                 if (!isNight)
                 {
                     spawnX = SelectIndexByWeight(DataPersistence.Instance.pirateGridPercentsD);
-                    Debug.Log("Pirate SpawnX = " + spawnX);
+                    //Debug.Log("Pirate SpawnX = " + spawnX);
                 }
                 else
                 {
                     spawnX = SelectIndexByWeight(DataPersistence.Instance.pirateGridPercentsN);
-                    Debug.Log("Pirate SpawnX = " + spawnX);
+                    //Debug.Log("Pirate SpawnX = " + spawnX);
                 }
 
                 spawnPos = new Vector3(spawnX, 0, 0);
@@ -409,12 +409,12 @@ public class ShipController : MonoBehaviour
                 if (!isNight)
                 {
                     spawnZ = SelectIndexByWeight(DataPersistence.Instance.patrolGridPercentsD);
-                    Debug.Log("Patrol SpawnZ = " + spawnZ);
+                    //Debug.Log("Patrol SpawnZ = " + spawnZ);
                 }
                 else
                 {
                     spawnZ = SelectIndexByWeight(DataPersistence.Instance.patrolGridPercentsN);
-                    Debug.Log("Patrol SpawnZ = " + spawnZ);
+                    //Debug.Log("Patrol SpawnZ = " + spawnZ);
                 }
                 spawnPos = new Vector3(gridSize.x - 1, 0, spawnZ);
             }

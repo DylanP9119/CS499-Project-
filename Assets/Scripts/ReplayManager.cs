@@ -81,7 +81,6 @@ public class ReplayManager : MonoBehaviour
         }
     }
 
-
     }
     void HandleReplayInput()
     {
@@ -92,11 +91,14 @@ public class ReplayManager : MonoBehaviour
     }
     public void RecordTick(int currentTick)
     {
+
         // Clear previous tick's data if it exists
    //     recordedEvents.RemoveAll(e => e.tick == currentTick);
   
         foreach (GameObject ship in shipController.allShips)
         {
+            if (ship == null) continue; // Skip destroyed GameObjects
+
             int shipId = ExtractShipId(ship);
             if (shipId == -1) continue;
 
@@ -109,7 +111,6 @@ public class ReplayManager : MonoBehaviour
             ));
         }    
         if (currentTick > maxRecordedTick) maxRecordedTick = currentTick;
-        
     }
 
     private int ExtractShipId(GameObject ship)
@@ -270,7 +271,7 @@ void UpdateReplay()
             events = data.events
         };
         data.header.Add(headerdata);
-        string json = JsonUtility.ToJson(data, true);
+        string json = JsonUtility.ToJson(data, false);
         File.WriteAllText(DataPersistence.Instance.path, json);
         Debug.Log("EVENTS SAVED " + data.events.Count); 
     }
