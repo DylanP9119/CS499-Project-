@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using TMPro;
+using System.IO;
 
 public class UILoadMenuController : MonoBehaviour
 {
@@ -22,6 +23,7 @@ public class UILoadMenuController : MonoBehaviour
     public void PlayButton()
     {
         SceneManager.LoadScene(simMenu);
+        DataPersistence.Instance.wasEnteredfromLoadScene = true;
     }
 
     [DllImport("__Internal")]
@@ -38,14 +40,28 @@ public class UILoadMenuController : MonoBehaviour
     
 
     // Called from JavaScript with the uploaded JSON
-    public void OnJsonFileLoaded(string json)
+    public void OnJsonFileLoaded(string path)
     {
-        // Deserialize and use the data
+        string json = File.ReadAllText(path);
         MyData data = JsonUtility.FromJson<MyData>(json);
 
-        string inputText = data.saveName + "," + data.days + "," + data.hours + "," + data.pNightCap + "," + data.cDay + "," + data.cNight + ","
-                             + data.piDay + "," + data.piNight + ","  + data.paNight + ","  + data.paNight;
-        //string gridText = "this is just test\ndata\n\ntesting";
+        // Save header data to DataPersistence
+        DataPersistence.Instance.fileNameString = data.saveName;
+        DataPersistence.Instance.dayCount = data.days;
+        DataPersistence.Instance.hourCount = data.hours;
+        DataPersistence.Instance.cargoDayPercent = data.cDay;
+        DataPersistence.Instance.cargoNightPercent = data.cNight;
+        DataPersistence.Instance.pirateDayPercent = data.piDay;
+        DataPersistence.Instance.pirateNightPercent = data.piNight;
+        DataPersistence.Instance.patrolDayPercent = data.paDay;
+        DataPersistence.Instance.patrolNightPercent = data.paNight;
+        DataPersistence.Instance.nightCaptureEnabled = data.pNightCap;
+        // Save replay events
+        DataPersistence.Instance.replayEvents = data.events;
+        // Update UI
+        string inputText = $"{data.saveName},{data.days},{data.hours},{data.pNightCap}," +
+                           $"{data.cDay},{data.cNight},{data.piDay},{data.piNight},{data.paDay},{data.paNight}";
+        string gridText = "this is just test\ndata\n\ntesting";
 
         string[] values = inputText.Split(',');
 
@@ -54,29 +70,31 @@ public class UILoadMenuController : MonoBehaviour
         TMP_Text captureAndShipPercentsText = LoadPanel.transform.Find("Ship Percents").GetComponent<TMP_Text>();
         TMP_Text gridPercentsText = scrollContent.GetComponentInChildren<TMP_Text>();
 
-        titleText.text = "File Name: " + values[0];
+        titleText.text = values[0];
         runtimeText.text = "Days: " + values[1] + "\nHours: " + values[2];
-        captureAndShipPercentsText.text = "2x2 Pirate Night Capture: " + values[3] + "\nCargo: " + values[4] + "% Day, " + values[5] + "% Night " + 
-                                                                                     "\nPatrol: " + values[6] + "% Day, " + values[7] + "% Night " + 
-                                                                                     "\nPirate: " + values[8] + "% Day, " + values[9] + "% Night ";
-        
-        //gridPercentsText.text = gridText;
+        captureAndShipPercentsText.text = $"2x2 Pirate Night Capture: {values[3]}\n" +
+                                        $"Cargo: {values[4]}% Day, {values[5]}% Night\n" +
+                                        $"Patrol: {values[8]}% Day, {values[9]}% Night\n" +
+                                        $"Pirate: {values[6]}% Day, {values[7]}% Night";
+        gridPercentsText.text = gridText;
     }
 
     [System.Serializable]
     public class MyData
     {
-        public string saveName;
-        public int days;
-        public int hours;
-        public int cDay;
-        public int cNight;
-        public int piDay;
-        public int piNight; 
-        public int paDay;
-        public int paNight;
-        public bool pNightCap;
+    public string saveName;
+    public int days;
+    public int hours;
+    public int cDay;
+    public int cNight;
+    public int piDay;
+    public int piNight;
+    public int paDay;
+    public int paNight;
+    public bool pNightCap;
+    public List<ReplayData> events;
     }
+
 
     /*
     public void DebuggerFunction() {

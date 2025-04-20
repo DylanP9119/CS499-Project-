@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
+using System.IO;
+using System.Linq;
 public class DataPersistence : MonoBehaviour
 {
     public double[] cargoGridPercentsD = new double[100];
@@ -20,9 +23,12 @@ public class DataPersistence : MonoBehaviour
     public int dayCount;
     public int hourCount;
     public int minuteCount;
-
     public bool nightCaptureEnabled = false;
     public string fileNameString; 
+    public string path;
+    public bool wasEnteredfromLoadScene;
+
+    public List<ReplayData> replayEvents = new List <ReplayData>(); 
 
     public static DataPersistence Instance;
 
