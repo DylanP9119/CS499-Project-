@@ -4866,7 +4866,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 762756855}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c20ac0987a103c34b91ce369eae3d089, type: 3}
+  m_Script: {fileID: 11500000, guid: e1bec5c6de2b0a14ba21ae0b33984539, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cargoGridPercentsD:
@@ -6087,6 +6087,8 @@ MonoBehaviour:
   nightCaptureEnabled: 0
   fileNameString: 
   path: 
+  wasEnteredfromLoadScene: 0
+  replayEvents: []
 --- !u!4 &762756857
 Transform:
   m_ObjectHideFlags: 0
@@ -7704,7 +7706,7 @@ MonoBehaviour:
   nightCaptureButton: {fileID: 5849048168602493889, guid: 9739a0ac66c6318419b543987e8ea005, type: 3}
   buttonText: {fileID: 434989658}
   nightCaptureEnabled: 0
-  beginButton: {fileID: 0}
+  beginButton: {fileID: 903701176}
   canStart: 0
   saveFileName: {fileID: 0}
   fileNameString: 
@@ -9024,7 +9026,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.55}
   m_AnchorMax: {x: 1, y: 0.65}
-  m_AnchoredPosition: {x: -3.000061, y: -0.00006866455}
+  m_AnchoredPosition: {x: -3, y: -0.00006866455}
   m_SizeDelta: {x: -20, y: -20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1175220718

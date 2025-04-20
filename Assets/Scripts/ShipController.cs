@@ -234,7 +234,6 @@ public class ShipController : MonoBehaviour
             Debug.Log(spawnPos);
             if (spawnPos != Vector3.zero)
             {
-                string shipType = "Cargo";
                 GameObject cargo = Instantiate(cargoPrefab, spawnPos, GetSpawnRotation("Cargo"));
                 cargo.name = $"Cargo({cargoCounter++})";
                 cargo.tag = "Cargo";
@@ -436,7 +435,7 @@ public class ShipController : MonoBehaviour
             replayedShips[shipId] = ship;
             textController.UpdateShipEnter(shipType);
             return ship;
-            Debug.Log($"[ReplaySpawn] Spawned {shipType}({shipId}) at {position}");
+            //Debug.Log($"[ReplaySpawn] Spawned {shipType}({shipId}) at {position}");
         }
         return null;
     }
