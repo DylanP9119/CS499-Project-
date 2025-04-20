@@ -5,7 +5,7 @@ using TMPro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.IO;
 public class UIControllerScript : MonoBehaviour
 {
 
@@ -46,7 +46,7 @@ public class UIControllerScript : MonoBehaviour
     public int dayCount;
     public int hourCount;
     public int minuteCount;
-
+    private string path;
     private bool isParsed;
     
     public GameObject errorPanel;
@@ -100,12 +100,26 @@ public class UIControllerScript : MonoBehaviour
 
     public void Awake()
     {
+        /*
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        */
 
         Instance = this;
+        //DontDestroyOnLoad(gameObject);
 
-        //Defaults
-        fileNameString = "MySimulation";
+        //if (Instance != null)
+        //{
+        //    Destroy(gameObject);
+        //    return;
+        //}
 
+        //Instance = this;
+        //DontDestroyOnLoad(gameObject);
+        fileNameString = "Default";
         cargoDayPercent = 50;
         cargoNightPercent = 50;
         pirateDayPercent = 25;
@@ -200,6 +214,7 @@ public class UIControllerScript : MonoBehaviour
         if (canStart) {
             Debug.Log("SUCCESS!");
             Save();
+            DataPersistence.Instance.wasEnteredfromLoadScene = false;
             SceneManager.LoadScene(startSim);
         }
 
@@ -228,8 +243,9 @@ public class UIControllerScript : MonoBehaviour
             };
         
         string json = JsonUtility.ToJson(data, true);
-        string path = fileNameString + ".json";
         DownloadFile(path, json);
+        DataPersistence.Instance.path = path;
+        DataPersistence.Instance.fileNameString = path;
     }
 
     public void DownloadFile(string filename, string content)
@@ -238,8 +254,10 @@ public class UIControllerScript : MonoBehaviour
         DownloadFileWebGL(filename, content);
     #else
         // In Editor or standalone builds, save locally for testing
-        System.IO.File.WriteAllText(Application.dataPath + "/" + filename, content);
-        Debug.Log("Saved locally: " + filename);
+        path = Path.Combine(Application.persistentDataPath, DataPersistence.Instance.fileNameString + ".json");  
+        DataPersistence.Instance.path = path;      
+        System.IO.File.WriteAllText(path, content);
+        Debug.Log("Saved locally: " + path);
     #endif
     }
 
@@ -274,6 +292,7 @@ public class UIControllerScript : MonoBehaviour
 
     public void SaveFileName(string s) {
         fileNameString = s;
+        DataPersistence.Instance.fileNameString = fileNameString;
     }
 
     //GRID PROBABILITY HANDLING FUNCTIONS

@@ -2,11 +2,11 @@
     "saveName": "",
     "days": 0,
     "hours": 24,
-    "cDay": 100,
+    "cDay": 50,
     "cNight": 50,
-    "piDay": 100,
+    "piDay": 25,
     "piNight": 25,
-    "paDay": 100,
+    "paDay": 40,
     "paNight": 40,
     "pNightCap": false
 }

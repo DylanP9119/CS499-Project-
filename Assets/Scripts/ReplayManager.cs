@@ -8,44 +8,36 @@ public class ReplayManager : MonoBehaviour
 {
     public static ReplayManager Instance { get; private set; }
 
+    // Existing UI references
     public Button playPauseButton;
     public Button btnIncreaseSpeed;
     public Button btnDecreaseSpeed;
     public Text timeDisplay;
     public ShipController shipController;
-    public string replayFileName = "replay.json";
-    public GameObject replayBoxUI;
-    public TextController textController;
-    
-    public float simulationTickDuration = 1f; // Must match ShipController.tickDuration for simulation.
-    
-    // Use a shorter tick interval for replay ship movement.
-    public float replayMovementTick = 0.5f;
 
+    public TimeControl timeControl;
+
+    public GameObject replayBoxUI;
+
+    public TextController textController;
+    // Recording system
     private List<ReplayEvent> recordedEvents = new List<ReplayEvent>();
-    public float replayTime;  // Simulation time (seconds) in replay.
+    private Dictionary<int, List<ReplayEvent>> tickData = new Dictionary<int, List<ReplayEvent>>();
+    private int currentTick;
+    private int maxRecordedTick;   
+    private int lastRecordedTick = -1;
+    // Replay state
+    public float replayTime;
     private bool replayPaused;
-    private float maxRecordedTime;
+    private int replayTick = -1;
+    private Dictionary<int, GameObject> replayedShips = new Dictionary<int, GameObject>();
     private int currentShipId;
 
-    // Pointer for processing replay events.
-    private int nextEventIndex = 0;
-
-    // Mapping from ship ID to spawned GameObject.
-    private Dictionary<int, GameObject> replayedShips = new Dictionary<int, GameObject>();
-
-    public bool ReplayModeActive { get; private set; }
-
-    // Expose replayPaused state.
+    public bool ReplayModeActive = false;
     public bool ReplayPaused => replayPaused;
-
-    // Define discrete speeds: -1x, 1x, 2x, 10x, 20x.
     public readonly float[] speeds = { -1f, 1f, 2f, 10f, 20f };
-    private int currentSpeedIndex = 1; // Start at 1x.
+    private int currentSpeedIndex = 1;
     public float replaySpeed { get; private set; } = 1f;
-
-    // Track last movement tick for replay mode.
-    private int lastMovementTick = -1;
 
     void Awake()
     {
@@ -55,88 +47,41 @@ public class ReplayManager : MonoBehaviour
 
     void Start()
     {
-        if (playPauseButton != null)
-            playPauseButton.onClick.AddListener(TogglePlayPause);
-        if (btnIncreaseSpeed != null)
-            btnIncreaseSpeed.onClick.AddListener(IncreaseSpeed);
-        if (btnDecreaseSpeed != null)
-            btnDecreaseSpeed.onClick.AddListener(DecreaseSpeed);
-
+        if (DataPersistence.Instance.wasEnteredfromLoadScene)
+        {
+            LoadReplayFromFile();
+            ProcessLoadedEvents();
+        }
+        
+        playPauseButton?.onClick.AddListener(TogglePlayPause);
+        btnIncreaseSpeed?.onClick.AddListener(IncreaseSpeed);
+        btnDecreaseSpeed?.onClick.AddListener(DecreaseSpeed);
         UIvisibility(true);
+        ReplayModeActive = false;
     }
 
     void Update()
     {
-        HandleReplayInput();
-
-        if (ReplayModeActive && !replayPaused)
+   HandleReplayInput();
+    
+    if (ReplayModeActive && !replayPaused)
+    {
+        UpdateReplay();
+    }
+    else if (!ReplayModeActive && !timeControl.IsPaused)
+    {
+        // Use the actual simulation time for recording ticks
+        float simTime = ShipController.TimeStepCounter * timeControl.GetSpeed();
+        int currentSimTick = Mathf.FloorToInt(simTime / timeControl.GetSpeed());
+        
+        if (currentSimTick != lastRecordedTick)
         {
-            // Even if replay is paused, update movement ticks.
-            replayTime += replaySpeed * Time.unscaledDeltaTime;
-            replayTime = Mathf.Clamp(replayTime, 0, maxRecordedTime);
-
-            if (Mathf.Approximately(replayTime, maxRecordedTime))
-                replayPaused = true;
-
-            // Compute simulation tick for replay events.
-            int currentTick = Mathf.FloorToInt(replayTime / simulationTickDuration);
-            ShipController.SetTimeStepCounter(currentTick);
-
-            // Use a separate tick for ship movement.
-            int currentMovementTick = Mathf.FloorToInt(replayTime / replayMovementTick);
-            if (currentMovementTick != lastMovementTick)
-            {
-                // Explicitly force movement on each ship in replay.
-                foreach (GameObject ship in shipController.allShips)
-                {
-                    if (ship == null)
-                        continue;
-                    if (ship.CompareTag("Cargo"))
-                    {
-                        var cargo = ship.GetComponent<CargoBehavior>();
-                        if(cargo != null)
-                            cargo.Step(true);
-                    }
-                    else if (ship.CompareTag("Patrol"))
-                    {
-                        var patrol = ship.GetComponent<PatrolBehavior>();
-                        if(patrol != null)
-                            patrol.Step(true);
-                    }
-                    else if (ship.CompareTag("Pirate"))
-                    {
-                        var pirate = ship.GetComponent<PirateBehavior>();
-                        if(pirate != null)
-                            pirate.Step(true);
-                    }
-                }
-                lastMovementTick = currentMovementTick;
-            }
-
-            UpdateDisplay();
-
-            if (replaySpeed > 0)
-            {
-                while (nextEventIndex < recordedEvents.Count &&
-                       replayTime >= recordedEvents[nextEventIndex].timestamp)
-                {
-                    ProcessEvent(recordedEvents[nextEventIndex]);
-                    nextEventIndex++;
-                }
-            }
-            else if (replaySpeed < 0)
-            {
-                while (nextEventIndex > 0 && replayTime < recordedEvents[nextEventIndex - 1].timestamp)
-                {
-                    nextEventIndex--;
-                    UndoEvent(recordedEvents[nextEventIndex]);
-                }
-            }
-
-            ShipInteractions.Instance.CheckForInteractions(shipController.allShips);
+            RecordTick(currentSimTick);
+            lastRecordedTick = currentSimTick;
         }
     }
 
+    }
     void HandleReplayInput()
     {
         if (Input.GetKeyDown(KeyCode.R))
@@ -144,164 +89,203 @@ public class ReplayManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.L))
             LoadReplayFromFile();
     }
-
-    public int GetNextShipId() => currentShipId++;
-
-    public void RecordShipSpawn(int shipId, string shipType, Vector3 position, Quaternion rotation, float simTimestamp)
+    public void RecordTick(int currentTick)
     {
-        var evt = new ReplayEvent(shipId, shipType, position, rotation, simTimestamp, "spawn");
-        recordedEvents.Add(evt);
-        if (evt.timestamp > maxRecordedTime)
-            maxRecordedTime = evt.timestamp;
-    }
 
-    public void RecordCaptureEvent(int shipId, Vector3 position, Quaternion rotation, float simTimestamp)
-    {
-        var evt = new ReplayEvent(shipId, "Cargo", position, rotation, simTimestamp, "capture");
-        recordedEvents.Add(evt);
-        if (evt.timestamp > maxRecordedTime)
-            maxRecordedTime = evt.timestamp;
-    }
-
-    public void RecordRescueEvent(int shipId, Vector3 position, Quaternion rotation, float simTimestamp)
-    {
-        var evt = new ReplayEvent(shipId, "Cargo", position, rotation, simTimestamp, "rescue");
-        recordedEvents.Add(evt);
-        if (evt.timestamp > maxRecordedTime)
-            maxRecordedTime = evt.timestamp;
-    }
-
-    void ProcessEvent(ReplayEvent evt)
-    {
-        if (evt.eventType == "spawn")
+        // Clear previous tick's data if it exists
+   //     recordedEvents.RemoveAll(e => e.tick == currentTick);
+  
+        foreach (GameObject ship in shipController.allShips)
         {
-            shipController.ReplaySpawn(evt.shipType, evt.position, evt.rotation, $"{evt.shipType}({evt.shipId})", evt.shipId);
-            GameObject spawned = shipController.allShips.LastOrDefault();
-            if (spawned != null)
-                replayedShips[evt.shipId] = spawned;
-        }
-        else if (evt.eventType == "capture")
+            if (ship == null) continue; // Skip destroyed GameObjects
+
+            int shipId = ExtractShipId(ship);
+            if (shipId == -1) continue;
+
+            recordedEvents.Add(new ReplayEvent(
+                shipId,
+                ship.tag,
+                ship.transform.position,
+                ship.transform.rotation,
+                currentTick
+            ));
+        }    
+        if (currentTick > maxRecordedTick) maxRecordedTick = currentTick;
+    }
+
+    private int ExtractShipId(GameObject ship)
+    {
+        string name = ship.name;
+        int openParen = name.IndexOf('(');
+        int closeParen = name.IndexOf(')');
+        if (openParen >= 0 && closeParen > openParen)
         {
-            if (replayedShips.TryGetValue(evt.shipId, out GameObject ship))
+            string idStr = name.Substring(openParen + 1, closeParen - openParen - 1);
+            if (int.TryParse(idStr, out int id))
             {
-                CargoBehavior cargo = ship.GetComponent<CargoBehavior>();
-                if (cargo != null)
-                {
-                    cargo.isCaptured = true;
-                    textController.UpdateCaptures(true);
-                    Debug.Log($"[Replay] Capture event: Cargo ship ID {evt.shipId} marked as captured.");
-                }
-                PirateBehavior pirate = ship.GetComponent<PirateBehavior>();
-                if (pirate != null)
-                {
-                    pirate.hasCargo = true;
-                    Debug.Log($"[Replay] Capture event: Pirate ship ID {evt.shipId} marked as having cargo.");
-                }
+                return id;
             }
         }
-        else if (evt.eventType == "rescue")
+        return -1;
+    }
+
+    void ProcessLoadedEvents()
+    {
+        tickData = recordedEvents
+            .GroupBy(e => e.tick)
+            .ToDictionary(g => g.Key, g => g.ToList());
+        
+        if (tickData.Count > 0)
         {
-            if (replayedShips.TryGetValue(evt.shipId, out GameObject ship))
+            maxRecordedTick = tickData.Keys.Max();
+        }
+    }
+
+void UpdateReplay()
+{
+    if (timeControl == null)
+    {
+        Debug.LogError("TimeControl reference is missing!");
+        return;
+    }
+
+    replayTime += Time.unscaledDeltaTime * replaySpeed;
+    replayTime = Mathf.Clamp(replayTime, 0, maxRecordedTick);
+    
+    int targetTick = Mathf.FloorToInt(replayTime);
+    
+    if (Mathf.Approximately(replayTime, maxRecordedTick))
+        replayPaused = true;
+
+    if (targetTick != replayTick)
+    {
+        ApplyTick(targetTick);
+        replayTick = targetTick;
+    }
+
+    UpdateDisplay();
+}
+
+    void ApplyTick(int tick)
+    {
+        ClearReplayedShips();
+
+        if (tickData.TryGetValue(tick, out List<ReplayEvent> events))
+        {
+            foreach (ReplayEvent e in events)
             {
-                CargoBehavior cargo = ship.GetComponent<CargoBehavior>();
-                if (cargo != null)
-                {
-                    cargo.isCaptured = false;
-                    textController.UpdateCaptures(false);
-                    Debug.Log($"[Replay] Rescue event: Cargo ship ID {evt.shipId} marked as rescued.");
-                }
+                GameObject ship = shipController.ReplaySpawn(
+                    e.shipType,
+                    e.position,
+                    e.rotation,
+                    $"{e.shipType}({e.shipId})",
+                    e.shipId
+                );
+                replayedShips[e.shipId] = ship;
             }
         }
     }
 
-    void UndoEvent(ReplayEvent evt)
+    void ClearReplayedShips()
     {
-        if (evt.eventType == "spawn")
+        foreach (GameObject ship in replayedShips.Values)
         {
-            if (replayedShips.TryGetValue(evt.shipId, out GameObject ship))
+            if (ship != null)
             {
-                shipController.allShips.Remove(ship);
                 Destroy(ship);
-                replayedShips.Remove(evt.shipId);
             }
         }
-        else if (evt.eventType == "capture")
-        {
-            if (replayedShips.TryGetValue(evt.shipId, out GameObject ship))
-            {
-                CargoBehavior cargo = ship.GetComponent<CargoBehavior>();
-                if (cargo != null)
-                {
-                    cargo.isCaptured = false;
-                    textController.UndoCapture();
-                    Debug.Log($"[Replay] Undo Capture: Cargo ship ID {evt.shipId} marked as not captured.");
-                }
-                PirateBehavior pirate = ship.GetComponent<PirateBehavior>();
-                if (pirate != null)
-                    pirate.hasCargo = false;
-            }
-        }
-        else if (evt.eventType == "rescue")
-        {
-            if (replayedShips.TryGetValue(evt.shipId, out GameObject ship))
-            {
-                CargoBehavior cargo = ship.GetComponent<CargoBehavior>();
-                if (cargo != null)
-                {
-                    cargo.isCaptured = true;
-                    textController.UndoRescue();
-                    Debug.Log($"[Replay] Undo Rescue: Cargo ship ID {evt.shipId} marked as captured again.");
-                }
-            }
-        }
+        replayedShips.Clear();
+        
+        shipController.ClearAllShips();
     }
+    
 
-    void StartReplay()
+    public void StartReplay()
     {
-        ReplayModeActive = true;
-        UIvisibility(true);
-        replayPaused = false; // Start replay unpaused.
-        replayTime = 0;
-        nextEventIndex = 0;
+    if (recordedEvents.Count == 0)
+    {
+        Debug.LogWarning("No replay data to play");
+        return;
+    }
+   // replaySpeed = speeds[1];
+    ReplayModeActive = true;
+    if (ShipController.Instance != null)
+        ShipController.Instance.ClearAllShips();
+    if (textController != null)
         textController.ResetCounters();
-        shipController.ClearAllShips();
-        recordedEvents = recordedEvents.OrderBy(e => e.timestamp).ToList();
-        maxRecordedTime = recordedEvents.Count > 0 ? recordedEvents.Max(e => e.timestamp) : 0;
-        lastMovementTick = -1;
-        UpdateDisplay();
+    
+    replayPaused = true;
+    replayTime = 0;
+    replayTick = -1;
+    UIvisibility(true);
     }
 
-    void StopReplay()
+    // Rest of the original methods remain unchanged...
+    void UpdateDisplay()
     {
-        ReplayModeActive = false;
-        UIvisibility(false);
-        shipController.ClearAllShips();
+        float timeLeft = (maxRecordedTick * timeControl.GetSpeed()) - replayTime;
+        timeDisplay.text = $"Tick: {replayTick} | Speed: {replaySpeed}x | Time: {replayTime:0.0}s";
+    }
+
+    void TogglePlayPause() => replayPaused = !replayPaused;
+
+    void IncreaseSpeed()
+    {
+        if (currentSpeedIndex < speeds.Length - 1)
+        {
+            currentSpeedIndex++;
+            replaySpeed = speeds[currentSpeedIndex];
+            Debug.Log($"Replay speed set to {replaySpeed}x");
+            UpdateDisplay();
+        }
+    }
+
+    void DecreaseSpeed()
+    {
+        if (currentSpeedIndex > 0)
+        {
+            currentSpeedIndex--;
+            replaySpeed = speeds[currentSpeedIndex];
+            Debug.Log($"Replay speed set to {replaySpeed}x");
+            UpdateDisplay();
+        }
     }
 
     public void SaveReplayToFile()
     {
-        if (recordedEvents.Count == 0)
+        ReplayData data = new ReplayData();
+        data.events = recordedEvents;
+        var headerdata= new UILoadMenuController.MyData
         {
-            Debug.LogWarning("No events to save!");
-            return;
-        }
-        var data = new ReplayData { events = recordedEvents };
-        string json = JsonUtility.ToJson(data, true);
-        string path = Path.Combine(Application.persistentDataPath, replayFileName);
-        File.WriteAllText(path, json);
-        Debug.Log($"Saved {recordedEvents.Count} events to: {path}");
+            saveName = DataPersistence.Instance.fileNameString,
+            days = DataPersistence.Instance.dayCount,
+            hours = DataPersistence.Instance.hourCount,
+            cDay = DataPersistence.Instance.cargoDayPercent,
+            cNight = DataPersistence.Instance.cargoNightPercent,
+            piDay = DataPersistence.Instance.pirateDayPercent,
+            piNight = DataPersistence.Instance.pirateNightPercent,
+            paDay = DataPersistence.Instance.patrolDayPercent,
+            paNight = DataPersistence.Instance.patrolNightPercent,
+            pNightCap = DataPersistence.Instance.nightCaptureEnabled,
+            events = data.events
+        };
+        data.header.Add(headerdata);
+        string json = JsonUtility.ToJson(data, false);
+        File.WriteAllText(DataPersistence.Instance.path, json);
+        Debug.Log("EVENTS SAVED " + data.events.Count); 
     }
 
     public void LoadReplayFromFile()
     {
-        string path = Path.Combine(Application.persistentDataPath, replayFileName);
-        if (File.Exists(path))
+        if (File.Exists(DataPersistence.Instance.path))
         {
-            string json = File.ReadAllText(path);
+            string json = File.ReadAllText(DataPersistence.Instance.path);
             ReplayData data = JsonUtility.FromJson<ReplayData>(json);
-            recordedEvents = data?.events ?? new List<ReplayEvent>();
+            recordedEvents = data.events;
+            ProcessLoadedEvents();
             Debug.Log($"Loaded {recordedEvents.Count} events");
-            StartReplay();
+            StartReplay(); 
         }
         else
         {
@@ -309,68 +293,32 @@ public class ReplayManager : MonoBehaviour
         }
     }
 
-    void UpdateDisplay()
-    {
-        float timeLeft = maxRecordedTime - replayTime;
-        timeDisplay.text = $"{timeLeft:0.0}s remaining  [Speed: {replaySpeed}x]";
-    }
-
-    void TogglePlayPause() => replayPaused = !replayPaused;
-
-    void IncreaseSpeed()
-    {
-        if (ReplayManager.Instance.ReplayModeActive && ReplayModeActive)
-        {
-            if (currentSpeedIndex < speeds.Length - 1)
-            {
-                currentSpeedIndex++;
-                replaySpeed = speeds[currentSpeedIndex];
-                Debug.Log($"Replay speed set to {replaySpeed}x");
-                UpdateDisplay();
-            }
-        }
-    }
-
-    void DecreaseSpeed()
-    {
-        if (ReplayManager.Instance.ReplayModeActive && ReplayModeActive)
-        {
-            if (currentSpeedIndex > 0)
-            {
-                currentSpeedIndex--;
-                replaySpeed = speeds[currentSpeedIndex];
-                Debug.Log($"Replay speed set to {replaySpeed}x");
-                UpdateDisplay();
-            }
-        }
-    }
-
     public void UIvisibility(bool visible) => replayBoxUI.SetActive(visible);
+    public int GetNextShipId() => currentShipId++;
 }
 
 [System.Serializable]
-public struct ReplayEvent
+public class ReplayEvent
 {
     public int shipId;
     public string shipType;
     public Vector3 position;
     public Quaternion rotation;
-    public float timestamp;
-    public string eventType;
+    public int tick;
 
-    public ReplayEvent(int id, string type, Vector3 pos, Quaternion rot, float time, string evtType)
+    public ReplayEvent(int id, string type, Vector3 pos, Quaternion rot, int t)
     {
         shipId = id;
         shipType = type;
         position = pos;
         rotation = rot;
-        timestamp = time;
-        eventType = evtType;
+        tick = t;
     }
 }
 
 [System.Serializable]
 public class ReplayData
 {
-    public List<ReplayEvent> events;
+    public List<UILoadMenuController.MyData> header = new List<UILoadMenuController.MyData>();
+    public List<ReplayEvent> events = new List<ReplayEvent>();
 }
