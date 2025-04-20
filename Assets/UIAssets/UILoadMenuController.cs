@@ -92,7 +92,7 @@ public class UILoadMenuController : MonoBehaviour
     public int paDay;
     public int paNight;
     public bool pNightCap;
-    public List<ReplayData> events;
+    public List<ReplayEvent> events;
     }
 
 

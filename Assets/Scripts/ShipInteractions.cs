@@ -166,7 +166,7 @@ public class ShipInteractions : MonoBehaviour
                     {
                         textController.UpdateEvasion(true, true); // Mark successful evasion
                         evasionOutcomeLogged[pair] = true;
-                        Debug.Log($"[EVADE SUCCESS] {pair.Item1?.name} evaded {pair.Item2?.name} on tick {evadeTick}");
+                        //Debug.Log($"[EVADE SUCCESS] {pair.Item1?.name} evaded {pair.Item2?.name} on tick {evadeTick}");
                     }
                 evasionSuccesses.Add(pair); // Schedule cleanup
             }
@@ -194,7 +194,7 @@ public class ShipInteractions : MonoBehaviour
             }
             else if (ship.CompareTag("Patrol") && Mathf.RoundToInt(pos.x) <= 0) // Patrol exit west
             {
-                Debug.Log($"[Exit] {ship.name} reached the left edge and was removed.");
+                //Debug.Log($"[Exit] {ship.name} reached the left edge and was removed.");
                 shipsToRemove.Add(ship);
                 textController.UpdateShipExit("patrol");
             }
@@ -236,7 +236,7 @@ public class ShipInteractions : MonoBehaviour
             shipCtrl.allShips.Remove(pirate); //remove from global list
         }
         Destroy(pirate); // defeat pirate
-        Debug.Log($"[PIRATE DESTROYED]");
+        //Debug.Log($"[PIRATE DESTROYED]");
     }
 
     private void HandleCapture(GameObject pirate, GameObject cargo)
@@ -252,16 +252,16 @@ public class ShipInteractions : MonoBehaviour
 
         if (pendingEvasions.ContainsKey((cargo, pirate))) // handle failed evasion log
         {
-            Debug.Log($"[CAPTURE] {cargo.name} was previously evaded from {pirate.name}");
+            //Debug.Log($"[CAPTURE] {cargo.name} was previously evaded from {pirate.name}");
             if (!evasionOutcomeLogged.ContainsKey((cargo, pirate)) || evasionOutcomeLogged[(cargo, pirate)] == true)
             {
-                Debug.Log($"[FAILURE LOGGED] {cargo.name} failed to evade {pirate.name}");
+                //Debug.Log($"[FAILURE LOGGED] {cargo.name} failed to evade {pirate.name}");
                 textController.UpdateEvasion(false, false);
                 evasionOutcomeLogged[(cargo, pirate)] = false; // mark that we’ve handled this pair
             }
             else
             {
-                Debug.Log($"[SKIPPED LOGGING] {cargo.name} already marked failed for {pirate.name}");
+                //Debug.Log($"[SKIPPED LOGGING] {cargo.name} already marked failed for {pirate.name}");
             }
             pendingEvasions.Remove((cargo, pirate));
             if (evadeTimestamps.ContainsKey((cargo, pirate)))
@@ -360,7 +360,7 @@ public class ShipInteractions : MonoBehaviour
 
         cargoEvadedPirates[cargo].Add(pirate); // Log that the cargo has evaded the pirate. 
         pendingEvasions[(cargo, pirate)] = ShipController.TimeStepCounter;
-        Debug.Log($"[EVADE] {cargo.name} evaded {pirate.name} at tick {ShipController.TimeStepCounter}");
+        //Debug.Log($"[EVADE] {cargo.name} evaded {pirate.name} at tick {ShipController.TimeStepCounter}");
         evadeTimestamps[(cargo, pirate)] = ShipController.TimeStepCounter;
 
         cargoBehavior.currentGridPosition += new Vector2Int(1, 1); //actually evade northeast. 
@@ -376,7 +376,7 @@ public class ShipInteractions : MonoBehaviour
             {
                 textController.UpdateEvasion(true, true);  // mark it successful evasion and log
                 evasionOutcomeLogged[pair] = true;
-                Debug.Log($"[FINALIZE] Marked evade as SUCCESS: {pair.Item1?.name} vs {pair.Item2?.name}");
+                //Debug.Log($"[FINALIZE] Marked evade as SUCCESS: {pair.Item1?.name} vs {pair.Item2?.name}");
             }
         }
         pendingEvasions.Clear(); // clear the list

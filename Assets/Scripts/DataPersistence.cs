@@ -28,7 +28,7 @@ public class DataPersistence : MonoBehaviour
     public string path;
     public bool wasEnteredfromLoadScene;
 
-    public List<ReplayData> replayEvents = new List <ReplayData>(); 
+    public List<ReplayEvent> replayEvents = new List <ReplayEvent>(); 
 
     public static DataPersistence Instance;
 
