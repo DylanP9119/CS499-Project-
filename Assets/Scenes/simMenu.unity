@@ -4866,7 +4866,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 762756855}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c20ac0987a103c34b91ce369eae3d089, type: 3}
+  m_Script: {fileID: 11500000, guid: c6b757466a8550d4bb4e88c136433e69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cargoGridPercentsD:
@@ -6087,6 +6087,8 @@ MonoBehaviour:
   nightCaptureEnabled: 0
   fileNameString: 
   path: 
+  wasEnteredfromLoadScene: 0
+  replayEvents: []
 --- !u!4 &762756857
 Transform:
   m_ObjectHideFlags: 0
@@ -7704,7 +7706,7 @@ MonoBehaviour:
   nightCaptureButton: {fileID: 5849048168602493889, guid: 9739a0ac66c6318419b543987e8ea005, type: 3}
   buttonText: {fileID: 434989658}
   nightCaptureEnabled: 0
-  beginButton: {fileID: 0}
+  beginButton: {fileID: 903701176}
   canStart: 0
   saveFileName: {fileID: 0}
   fileNameString: 
