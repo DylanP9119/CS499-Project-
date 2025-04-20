@@ -161,7 +161,7 @@ public class ShipController : MonoBehaviour
                         }
                     }
                     ShipInteractions.Instance.CheckForInteractions(allShips);
-                    ReplayManager.Instance.RecordSnapshotForTick(TimeStepCounter, allShips);
+             //       ReplayManager.Instance.RecordTick();
                     //ShipInteractions.Instance.CheckForInteractions(allShips);
                     spawnTimer = 0f;
                 }

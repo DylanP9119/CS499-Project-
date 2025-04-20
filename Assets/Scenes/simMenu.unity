@@ -4866,7 +4866,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 762756855}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1bec5c6de2b0a14ba21ae0b33984539, type: 3}
+  m_Script: {fileID: 11500000, guid: c6b757466a8550d4bb4e88c136433e69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cargoGridPercentsD:
@@ -9026,7 +9026,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.55}
   m_AnchorMax: {x: 1, y: 0.65}
-  m_AnchoredPosition: {x: -3, y: -0.00006866455}
+  m_AnchoredPosition: {x: -3.000061, y: -0.00006866455}
   m_SizeDelta: {x: -20, y: -20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1175220718
