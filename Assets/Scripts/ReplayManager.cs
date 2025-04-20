@@ -93,7 +93,7 @@ public class ReplayManager : MonoBehaviour
     public void RecordTick(int currentTick)
     {
         // Clear previous tick's data if it exists
-        recordedEvents.RemoveAll(e => e.tick == currentTick);
+   //     recordedEvents.RemoveAll(e => e.tick == currentTick);
   
         foreach (GameObject ship in shipController.allShips)
         {
@@ -207,14 +207,14 @@ void UpdateReplay()
         Debug.LogWarning("No replay data to play");
         return;
     }
-
+   // replaySpeed = speeds[1];
     ReplayModeActive = true;
     if (ShipController.Instance != null)
         ShipController.Instance.ClearAllShips();
     if (textController != null)
         textController.ResetCounters();
     
-    replayPaused = false;
+    replayPaused = true;
     replayTime = 0;
     replayTick = -1;
     UIvisibility(true);
@@ -255,7 +255,21 @@ void UpdateReplay()
     {
         ReplayData data = new ReplayData();
         data.events = recordedEvents;
-        
+        var headerdata= new UILoadMenuController.MyData
+        {
+            saveName = DataPersistence.Instance.fileNameString,
+            days = DataPersistence.Instance.dayCount,
+            hours = DataPersistence.Instance.hourCount,
+            cDay = DataPersistence.Instance.cargoDayPercent,
+            cNight = DataPersistence.Instance.cargoNightPercent,
+            piDay = DataPersistence.Instance.pirateDayPercent,
+            piNight = DataPersistence.Instance.pirateNightPercent,
+            paDay = DataPersistence.Instance.patrolDayPercent,
+            paNight = DataPersistence.Instance.patrolNightPercent,
+            pNightCap = DataPersistence.Instance.nightCaptureEnabled,
+            events = data.events
+        };
+        data.header.Add(headerdata);
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(DataPersistence.Instance.path, json);
         Debug.Log("EVENTS SAVED " + data.events.Count); 
@@ -304,5 +318,6 @@ public class ReplayEvent
 [System.Serializable]
 public class ReplayData
 {
+    public List<UILoadMenuController.MyData> header = new List<UILoadMenuController.MyData>();
     public List<ReplayEvent> events = new List<ReplayEvent>();
 }
