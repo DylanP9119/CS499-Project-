@@ -45,7 +45,7 @@ public class UILoadMenuController : MonoBehaviour
 
         string inputText = data.saveName + "," + data.days + "," + data.hours + "," + data.pNightCap + "," + data.cDay + "," + data.cNight + ","
                              + data.piDay + "," + data.piNight + ","  + data.paNight + ","  + data.paNight;
-        string gridText = "this is just test\ndata\n\ntesting";
+        //string gridText = "this is just test\ndata\n\ntesting";
 
         string[] values = inputText.Split(',');
 
@@ -54,13 +54,13 @@ public class UILoadMenuController : MonoBehaviour
         TMP_Text captureAndShipPercentsText = LoadPanel.transform.Find("Ship Percents").GetComponent<TMP_Text>();
         TMP_Text gridPercentsText = scrollContent.GetComponentInChildren<TMP_Text>();
 
-        titleText.text = values[0];
-        runtimeText.text = "Created on:\n" + values[1] + ", " + values[2];
+        titleText.text = "File Name: " + values[0];
+        runtimeText.text = "Days: " + values[1] + "\nHours: " + values[2];
         captureAndShipPercentsText.text = "2x2 Pirate Night Capture: " + values[3] + "\nCargo: " + values[4] + "% Day, " + values[5] + "% Night " + 
                                                                                      "\nPatrol: " + values[6] + "% Day, " + values[7] + "% Night " + 
                                                                                      "\nPirate: " + values[8] + "% Day, " + values[9] + "% Night ";
         
-        gridPercentsText.text = gridText;
+        //gridPercentsText.text = gridText;
     }
 
     [System.Serializable]
