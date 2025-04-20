@@ -149,19 +149,35 @@ public class ShipInteractions : MonoBehaviour
             allShips.Remove(ship);
             Destroy(ship);
         }
-        //List<(GameObject, GameObject)> evasionCleanup = new();
-        //foreach (var entry in evadeTimestamps)
-        //{
-        //    (GameObject cargo, GameObject pirate) = entry.Key;
-        //    int evadeFrame = entry.Value;
-        //    if (ShipController.TimeStepCounter - evadeFrame >= 6)
-        //        evasionCleanup.Add((cargo, pirate));
-        //}
-        //foreach (var pair in evasionCleanup)
-        //{
-        //    textController.UpdateEvasion(true, true);
-        //    evadeTimestamps.Remove(pair);
-        //}
+
+    // Finalize evasion outcome if not captured on next tick
+        List<(GameObject, GameObject)> evasionSuccesses = new();
+
+        foreach (var entry in evadeTimestamps)
+        {
+            var pair = entry.Key;
+            int evadeTick = entry.Value;
+
+            if (ShipController.TimeStepCounter == evadeTick + 1)
+            {
+            // If cargo not captured and not already logged
+                if (!pirateToCapturedCargo.ContainsKey(pair.Item2) &&
+                (!evasionOutcomeLogged.ContainsKey(pair) || evasionOutcomeLogged[pair] == false))
+                    {
+                        textController.UpdateEvasion(true, true); // Mark successful evasion
+                        evasionOutcomeLogged[pair] = true;
+                        Debug.Log($"[EVADE SUCCESS] {pair.Item1?.name} evaded {pair.Item2?.name} on tick {evadeTick}");
+                    }
+                evasionSuccesses.Add(pair); // Schedule cleanup
+            }
+        }
+
+        // Remove finalized entries
+        foreach (var pair in evasionSuccesses)
+        {
+            evadeTimestamps.Remove(pair);
+            pendingEvasions.Remove(pair);
+        }    
     }
 
     private void RemoveShipsAtEdge(List<GameObject> allShips, List<GameObject> shipsToRemove)
@@ -186,22 +202,6 @@ public class ShipInteractions : MonoBehaviour
             {
                 shipsToRemove.Add(ship);
                 textController.UpdateShipExit("pirate");
-                // Log evasion success if pirate exits and cargo is pending evasion
-                List<(GameObject, GameObject)> resolved = new();
-                foreach (var pair in pendingEvasions)
-                {
-                    if (pair.Key.pirate == ship && !evasionOutcomeLogged.ContainsKey(pair.Key)) 
-                    {
-                        textController.UpdateEvasion(true, true);
-                        evasionOutcomeLogged[pair.Key] = true;
-                        Debug.Log($"[AUTO SUCCESS] {pair.Key.cargo?.name} evaded {ship.name} (pirate exited)");
-                        resolved.Add(pair.Key);
-                    }
-                }
-                foreach (var pair in resolved) //when pirate gone, remove from pendingEvasions
-                {
-                    pendingEvasions.Remove(pair);
-                }
             }
         }
     }
@@ -226,21 +226,6 @@ public class ShipInteractions : MonoBehaviour
                     cargoBehavior.isCaptured = false;
             }
             pirateToCapturedCargo.Remove(pirate);
-        }
-        List<(GameObject, GameObject)> resolved = new(); // since pirate dies, log success evade
-        foreach (var pair in pendingEvasions)
-        {
-            if (pair.Key.pirate == pirate && !evasionOutcomeLogged.ContainsKey(pair.Key))
-            {
-                textController.UpdateEvasion(true, true);
-                evasionOutcomeLogged[pair.Key] = true;
-                Debug.Log($"[AUTO SUCCESS] {pair.Key.cargo?.name} evaded {pirate.name} (pirate defeated)");
-                resolved.Add(pair.Key);
-            }
-        }
-        foreach (var pair in resolved)
-        {
-            pendingEvasions.Remove(pair);
         }
         textController.PirateDestroyed();
 
@@ -279,32 +264,31 @@ public class ShipInteractions : MonoBehaviour
                 Debug.Log($"[SKIPPED LOGGING] {cargo.name} already marked failed for {pirate.name}");
             }
             pendingEvasions.Remove((cargo, pirate));
-        if (evadeTimestamps.ContainsKey((cargo, pirate)))
-        {
-            textController.UpdateEvasion(false, false);
-            evadeTimestamps.Remove((cargo, pirate));
-        }
+            if (evadeTimestamps.ContainsKey((cargo, pirate)))
+            {
+                textController.UpdateEvasion(false, false);
+                evadeTimestamps.Remove((cargo, pirate));
+            }
 
-        if (cargoBehavior != null)  // marks cargo as captured
-            cargoBehavior.isCaptured = true;
+            if (cargoBehavior != null)  // marks cargo as captured
+                cargoBehavior.isCaptured = true;
 
-        pirateToCapturedCargo[pirate] = cargo; //record as a pair
+            pirateToCapturedCargo[pirate] = cargo; //record as a pair
 
-        PirateBehavior pirateBehavior = pirate.GetComponent<PirateBehavior>(); //mark pirate as has cargo
-        if (pirateBehavior != null)
-            pirateBehavior.hasCargo = true;
+            PirateBehavior pirateBehavior = pirate.GetComponent<PirateBehavior>(); //mark pirate as has cargo
+            if (pirateBehavior != null)
+                pirateBehavior.hasCargo = true;
 
-        // Align pirate with cargo, same cell
-        if (pirateBehavior != null && cargoBehavior != null)
-        {
-            pirateBehavior.currentGridPosition = cargoBehavior.currentGridPosition;
-            pirate.transform.position = cargo.transform.position;
+            // Align pirate with cargo, same cell
+            if (pirateBehavior != null && cargoBehavior != null)
+            {
+                pirateBehavior.currentGridPosition = cargoBehavior.currentGridPosition;
+                pirate.transform.position = cargo.transform.position;
 
-            cargo.transform.rotation = Quaternion.Euler(0, 180, 0);
-            pirate.transform.rotation = Quaternion.Euler(0, 180, 0);
-        }
-
-        textController.UpdateCaptures(true);
+                cargo.transform.rotation = Quaternion.Euler(0, 180, 0);
+                pirate.transform.rotation = Quaternion.Euler(0, 180, 0);
+            }
+            textController.UpdateCaptures(true);
         }
     }
 

@@ -33,6 +33,7 @@ public class ShipController : MonoBehaviour
     public static ShipController Instance;
     private int lastReplayTick = -1;
     private Dictionary<int, GameObject> replayedShips = new();
+    public Text stepCounterText;
 
 
 
@@ -60,6 +61,8 @@ public class ShipController : MonoBehaviour
 
             simulationLengthHours = (DataPersistence.Instance.dayCount * 24) + DataPersistence.Instance.hourCount;
         }
+
+        UpdateTimeDisplays();
     }
 
     void Update()
@@ -100,6 +103,8 @@ public class ShipController : MonoBehaviour
                 {
                     // Advance simulation tick.
                     TimeStepCounter++;
+                    if (stepCounterText != null)
+                    stepCounterText.text = $"Step: {TimeStepCounter}";
                     Debug.Log($"Processing Tick: {TimeStepCounter}");
                     simMinutesPassed += 5f;
                     UpdateDayNightCycle();
@@ -216,6 +221,26 @@ public class ShipController : MonoBehaviour
         {
             ShipInteractions.Instance.isNight = false; // Disable night effects, but clock still shows Night
         }
+    }
+
+    private void UpdateTimeDisplays()
+    {
+        // Force update of remaining time and clock display at tick 0
+        float remainingMinutes = simulationLengthHours * 60f - simMinutesPassed;
+        if (remainingMinutes < 0) remainingMinutes = 0;
+        int remainingDays = Mathf.FloorToInt(remainingMinutes / 1440f);
+        int remainingHours = Mathf.FloorToInt((remainingMinutes % 1440) / 60f);
+        int remainingMins = Mathf.FloorToInt(remainingMinutes % 60f);
+
+        timeDisplayRemaining.text = $"Remaining: {remainingDays}d {remainingHours}h {remainingMins}m";
+
+        // Also update the day/night clock text on top bar
+        int totalMinutes = Mathf.FloorToInt(simMinutesPassed);
+        int day = (totalMinutes / 1440) + 1;
+        int hour = (totalMinutes / 60) % 24;
+        int minute = totalMinutes % 60;
+        string phase = isNight ? "Night" : "Day";
+        timeDisplayRun.text = $"{phase} {day} — {hour:D2}:{minute:D2}";
     }
 
     // Accepts a simTime parameter (in seconds) used for replay recording.

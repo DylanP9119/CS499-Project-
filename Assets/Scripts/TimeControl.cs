@@ -16,6 +16,7 @@ public class TimeControl : MonoBehaviour
     void Start()
     {
         Instance = this;
+        movementPaused = true;
 
         if (playPauseButton != null)
             playPauseButton.onClick.AddListener(TogglePlayPause);
