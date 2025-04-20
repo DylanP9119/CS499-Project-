@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System;
+using System.Collections.Generic;
 
 public class UIControllerScript : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class UIControllerScript : MonoBehaviour
     public Button beginButton;
     public bool canStart = false;
 
+    public bool rawTextEditor;
+
     public Button saveFileName;
     public string fileNameString;
 
@@ -24,17 +27,13 @@ public class UIControllerScript : MonoBehaviour
     private string gridDayString;
     private string gridNightString;
 
-    public double[] cargoGridPercentsD = new double[100];
-    public double[] patrolGridPercentsD = new double[100];
-    public double[] pirateGridPercentsD = new double[400];
+    public double[] cargoGridPercentsD = new double[101];
+    public double[] patrolGridPercentsD = new double[101];
+    public double[] pirateGridPercentsD = new double[401];
 
-    public double[] cargoGridPercentsN = new double[100];
-    public double[] patrolGridPercentsN = new double[100];
-    public double[] pirateGridPercentsN = new double[400];
-
-    double multiplier = 0;
-    int gridMinimum = 0;
-    int gridMaximum = 0;
+    public double[] cargoGridPercentsN = new double[101];
+    public double[] patrolGridPercentsN = new double[101];
+    public double[] pirateGridPercentsN = new double[401];
 
     public int cargoDayPercent;
     public int cargoNightPercent;
@@ -52,6 +51,7 @@ public class UIControllerScript : MonoBehaviour
     public GameObject errorPanel;
     public TMP_Text errorPanelText;
 
+    //SLIDERS FOR SHIP PERCENTAGES
     public Slider cargoDaySlider;
     public Slider pirateDaySlider;
     public Slider patrolDaySlider;
@@ -60,12 +60,34 @@ public class UIControllerScript : MonoBehaviour
     public Slider pirateNightSlider;
     public Slider patrolNightSlider;
 
+    //TEXT FOR THE PERCENTAGES
     public TMP_Text cargoDayText;
     public TMP_Text pirateDayText;
     public TMP_Text patrolDayText;
     public TMP_Text cargoNightText;
     public TMP_Text pirateNightText;
     public TMP_Text patrolNightText;
+
+    //VALUES FOR THE GRID PERCENTAGE ADDER
+    public int dayTimeMinimumRange;
+    public int dayTimeMaximumRange;
+    public double dayTimeMultiplier;
+
+    public int nightTimeMinimumRange;
+    public int nightTimeMaximumRange;
+    public double nightTimeMultiplier;
+
+    public TMP_InputField dayGridPercentagesPanel;
+    public TMP_InputField nightGridPercentagesPanel;
+
+    public TMP_Dropdown dayShipSelection;
+    public TMP_Dropdown nightShipSelection;
+
+    public TMP_Dropdown removeOptionDay;
+    public TMP_Dropdown removeOptionNight;
+
+    public List<string> dayGridPercentList = new List<string>();
+    public List<string> nightGridPercentList = new List<string>();
 
     public static UIControllerScript Instance;
 
@@ -99,6 +121,7 @@ public class UIControllerScript : MonoBehaviour
         //Buttons
         buttonText.text = "DISABLED";
         nightCaptureEnabled = false;
+        rawTextEditor = false;
 
         cargoNightSlider.interactable = false;
         patrolNightSlider.interactable = false;
@@ -171,163 +194,71 @@ public class UIControllerScript : MonoBehaviour
             errorPanelText.text = "Error Starting: File name is blank. Please enter a value for your file name.";
         }
 
-        /*
-        Grid Syntax Checking goes here
-        */
-        //read from textboxes
-        string[] values = new string[4];
-        Debug.Log("TEST 2: " + canStart);
-        //declare separated values
-        //For day values...
-        if (gridDayString != null && canStart) {
-            Debug.Log("Grid Day String Loop is Running");
-            string[] gridLinesDay = gridDayString.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
+        if (canStart) {
+            foreach (string line in dayGridPercentList) {
+                string[] values = line.Split(',');
 
-            foreach (string line in gridLinesDay)
-            {
+                int gridMinimum = Int32.Parse(values[1]);
+                int gridMaximum = Int32.Parse(values[2]);
+                double multiplier = Double.Parse(values[3]);
 
-
-                if (!canStart)
-                    break;
-
-                Debug.Log("Entered Day Loop Successfully");
-                values = line.Split(',');
-
-                Debug.Log(values[0] + " " + values[1] + " " + values[2] + " " + values[3]);
-
-                canStart = GridRangeCheck(values[1], values[2], values[3]);
-
-                if (!canStart) {
-                    break;
+                if (values[0] == "cargo") {
+                    for (int i = gridMinimum; i <= gridMaximum; i++) {
+                        cargoGridPercentsD[i] = cargoGridPercentsD[i] * multiplier;
+                    }
+                }
+                else if (values[0] == "pirate") {
+                    for (int i = gridMinimum; i <= gridMaximum; i++) {
+                        pirateGridPercentsD[i] = pirateGridPercentsD[i] * multiplier;
+                    }
+                }
+                else if (values[0] == "patrol") {
+                    for (int i = gridMinimum; i <= gridMaximum; i++) {
+                        patrolGridPercentsD[i] = patrolGridPercentsD[i] * multiplier;
+                    }
                 }
                 else {
-                    gridMinimum = Int32.Parse(values[1]);
-                    gridMaximum = Int32.Parse(values[2]);
-                    multiplier = Int32.Parse(values[3]);
-                }
-
-                switch (values[0])
-                {
-                    case "cargo":
-                        if (gridMinimum < 1 || gridMaximum > 100) {
-                            canStart = false;
-                            Debug.Log("Invalid range of numbers for cargo day.");
-                            break;
-                        }
-
-                        for (int i = gridMinimum - 1; i < gridMaximum; i++) {
-                            cargoGridPercentsD[i] = cargoGridPercentsD[i] * multiplier;
-                            Debug.Log(cargoGridPercentsD[i]);
-                        }
+                    errorPanel.SetActive(true);
+                    errorPanelText.text = "Error starting: A ship type in the Day Grid is not right!: \"" + values[0] + "\". Be careful using raw text editor!";
+                    canStart = false;
                     break;
-                    case "patrol":
-                        if (gridMinimum < 1 || gridMaximum > 100) {
-                            canStart = false;
-                            Debug.Log("Invalid range of numbers for patrol day.");
-                            break;
-                        }
-
-                        for (int i = gridMinimum - 1; i < gridMaximum; i++) {
-                            patrolGridPercentsD[i] = patrolGridPercentsD[i] * multiplier;
-                        }
-                        break;
-                    case "pirate":
-                        if (gridMinimum < 1 || gridMaximum > 400) {
-                            canStart = false;
-                            Debug.Log("Invalid range of numbers for pirate day.");
-                            break;
-                        }
-
-                        for (int i = gridMinimum - 1; i < gridMaximum; i++) {
-                            pirateGridPercentsD[i] = pirateGridPercentsD[i] * multiplier;
-                        }
-                        break;
-                    default:
-                        Debug.Log("Invalid Entry for ship type in line: " + values[0]);
-                        canStart = false;
-                        break;
                 }
-                Debug.Log(values[0] + " " + values[1] + " " + values[2] + " " + values[3]);
-
             }
         }
 
-        Debug.Log("CAN START: " + canStart);
-        //For night values...
-        if (gridNightString != null && canStart) {
-            Debug.Log("Grid Night String Loop is Running");
-            string[] gridLinesNight = gridNightString.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
+        if (canStart) {
+            foreach (string line in nightGridPercentList) {
+                string[] values = line.Split(',');
 
-            Debug.Log(gridNightString);
-            foreach (string line in gridLinesNight)
-            {
-                
-                Debug.Log("Entered Night Loop Successfully");
-                values = line.Split(',');
+                int gridMinimum = Int32.Parse(values[1]);
+                int gridMaximum = Int32.Parse(values[2]);
+                double multiplier = Double.Parse(values[3]);
 
-                Debug.Log(values[0] + " " + values[1] + " " + values[2] + " " + values[3]);
-
-                canStart = GridRangeCheck(values[1], values[2], values[3]);
-
-                if (!canStart) {
-                    break;
+                if (values[0] == "cargo") {
+                    for (int i = gridMinimum; i <= gridMaximum; i++) {
+                        cargoGridPercentsN[i] = cargoGridPercentsN[i] * multiplier;
+                    }
+                }
+                else if (values[1] == "pirate") {
+                    for (int i = gridMinimum; i <= gridMaximum; i++) {
+                        pirateGridPercentsN[i] = pirateGridPercentsN[i] * multiplier;
+                    }
+                }
+                else if (values[2] == "patrol") {
+                    for (int i = gridMinimum; i <= gridMaximum; i++) {
+                        patrolGridPercentsN[i] = patrolGridPercentsN[i] * multiplier;
+                    }
                 }
                 else {
-                    gridMinimum = Int32.Parse(values[1]);
-                    gridMaximum = Int32.Parse(values[2]);
-                    multiplier = Int32.Parse(values[3]);
+                    errorPanel.SetActive(true);
+                    errorPanelText.text = "Error starting: A ship type in the Night Grid is not right!: \"" + values[0] + "\". Be careful using raw text editor!";
+                    canStart = false;
+                    break;
                 }
-
-                switch (values[0])
-                {
-                    case "cargo":
-                        if (gridMinimum < 1 || gridMaximum > 100) {
-                            canStart = false;
-                            Debug.Log("Invalid range of numbers for patrol night.");
-                            break;
-                        }
-
-                        for (int i = gridMinimum - 1; i < gridMaximum; i++) {
-                            cargoGridPercentsN[gridMinimum] = cargoGridPercentsN[gridMinimum] * multiplier;
-                        }
-                        break;
-                    case "patrol":
-                        if (gridMinimum < 1 || gridMaximum > 100) {
-                            canStart = false;
-                            Debug.Log("Invalid range of numbers for patrol night.");
-                            break;
-                        }
-
-                        for (int i = gridMinimum - 1; i < gridMaximum; i++) {
-                            patrolGridPercentsN[gridMinimum] = patrolGridPercentsN[gridMinimum] * multiplier;
-                        }
-                        break;
-                    case "pirate":
-                        if (gridMinimum < 1 || gridMaximum > 400) {
-                            canStart = false;
-                            Debug.Log("Invalid range of numbers for pirate night.");
-                            break;
-                        }
-
-                        for (int i = gridMinimum - 1; i < gridMaximum; i++) {
-                            pirateGridPercentsN[gridMinimum] = pirateGridPercentsN[gridMinimum] * multiplier;
-                        }
-                        break;
-                    default:
-                        Debug.Log("Invalid Entry for ship type in line: " + values[0]);
-                        canStart = false;
-                        break;
-                }
-                Debug.Log(values[0] + " " + values[1] + " " + values[2]);
             }
         }
-        
-        if (!canStart)
-        {
-            Debug.Log("Invalid text entry, please check again.");
-        }
-        else
-        {
+
+        if (canStart) {
             Debug.Log("SUCCESS!");
             Save();
             SceneManager.LoadScene(startSim);
@@ -408,16 +339,184 @@ public class UIControllerScript : MonoBehaviour
 
     //GRID PROBABILITY HANDLING FUNCTIONS
 
-    public void ReadStringInputGRIDDAYPERCENT(string s)
-    {
-        gridDayString = s;
-        Debug.Log(gridDayString);
+    //Input Strings on top
+
+    public void AddToBoxDay() {
+        string shipText = dayShipSelection.options[dayShipSelection.value].text;
+        int maxRange = 100;
+
+        if (shipText == "pirate")
+            maxRange = 400;
+
+        if (dayTimeMaximumRange > maxRange || dayTimeMaximumRange < 0) {
+            errorPanel.SetActive(true);
+            errorPanelText.text = "Error Adding: Max range is invalid. It must be an integer between 0 and " + maxRange + ".";
+        }
+        else if (dayTimeMinimumRange > maxRange || dayTimeMinimumRange < 0) {
+            errorPanel.SetActive(true);
+            errorPanelText.text = "Error Adding: Min range is invalid. It must be an integer between 0 and " + maxRange + ".";
+        }
+        else if (dayTimeMinimumRange > dayTimeMaximumRange) {
+            errorPanel.SetActive(true);
+            errorPanelText.text = "Error Adding: Please make min range equal to or smaller than your max range.";
+        }
+        else if (dayTimeMultiplier < 0) {
+            errorPanel.SetActive(true);
+            errorPanelText.text = "Error Adding: Ensure your multipler is a decimal zero or greater.";
+        }
+        else {
+            string lineText = shipText + "," + dayTimeMinimumRange + "," + dayTimeMaximumRange + "," + dayTimeMultiplier;
+            dayGridPercentagesPanel.text = dayGridPercentagesPanel.text + lineText + "\n";
+            dayGridPercentList.Add(lineText);
+
+            TMP_Dropdown.OptionData optionData = new TMP_Dropdown.OptionData(lineText);
+            removeOptionDay.options.Add(optionData);
+
+            removeOptionDay.RefreshShownValue();
+        }
     }
 
-    public void ReadStringInputGRIDNIGHTPERCENT(string s)
-    {
-        gridNightString = s;
-        Debug.Log(gridNightString);
+    public void RemoveFromDayBox() {
+        string currentSelectedText = removeOptionDay.options[removeOptionDay.value].text;
+        bool textFound = false;
+
+        for (int i = 0; i < dayGridPercentList.Count; i++)
+        {
+            Debug.Log(dayGridPercentList[i]);
+            Debug.Log(currentSelectedText);
+            if (textFound) {
+                dayGridPercentList[i - 1] = dayGridPercentList[i];
+            }
+            else if (currentSelectedText == dayGridPercentList[i]) {
+                textFound = true;
+            }
+        }
+
+        dayGridPercentList.RemoveAt(dayGridPercentList.Count - 1);
+        
+        dayGridPercentagesPanel.text = "";
+        removeOptionDay.ClearOptions();
+
+        for (int i = 0; i < dayGridPercentList.Count; i++) {
+            dayGridPercentagesPanel.text = dayGridPercentagesPanel.text + dayGridPercentList[i] + "\n";
+
+            TMP_Dropdown.OptionData optionData = new TMP_Dropdown.OptionData(dayGridPercentList[i]);
+            removeOptionDay.options.Add(optionData);
+        }
+
+        removeOptionDay.RefreshShownValue();
+    }
+
+    public void AddToBoxNight() {
+        string shipText = nightShipSelection.options[nightShipSelection.value].text;
+        int maxRange = 100;
+
+        if (shipText == "pirate")
+            maxRange = 400;
+
+        if (nightTimeMaximumRange > maxRange || nightTimeMaximumRange < 0) {
+            errorPanel.SetActive(true);
+            errorPanelText.text = "Error Adding: Max range is invalid. It must be an integer between 0 and 100.";
+        }
+        else if (nightTimeMinimumRange > maxRange || nightTimeMinimumRange < 0) {
+            errorPanel.SetActive(true);
+            errorPanelText.text = "Error Adding: Min range is invalid. It must be an integer between 0 and 100.";
+        }
+        else if (nightTimeMinimumRange > nightTimeMaximumRange) {
+            errorPanel.SetActive(true);
+            errorPanelText.text = "Error Adding: Please make min range equal to or smaller than your max range.";
+        }
+        else if (nightTimeMultiplier < 0) {
+            errorPanel.SetActive(true);
+            errorPanelText.text = "Error Adding: Ensure your multipler is a decimal zero or greater.";
+        }
+        else {
+            string lineText = shipText + "," + nightTimeMinimumRange + "," + nightTimeMaximumRange + "," + nightTimeMultiplier;
+            nightGridPercentagesPanel.text = nightGridPercentagesPanel.text + lineText + "\n";
+            nightGridPercentList.Add(lineText);
+
+            TMP_Dropdown.OptionData optionData = new TMP_Dropdown.OptionData(lineText);
+            removeOptionNight.options.Add(optionData);
+
+            removeOptionNight.RefreshShownValue();
+        }
+    }
+
+    public void RemoveFromNightBox() {
+        string currentSelectedText = removeOptionNight.options[removeOptionNight.value].text;
+        bool textFound = false;
+
+        for (int i = 0; i < nightGridPercentList.Count; i++)
+        {
+            if (textFound) {
+                nightGridPercentList[i - 1] = nightGridPercentList[i];
+            }
+            else if (currentSelectedText == nightGridPercentList[i]) {
+                textFound = true;
+            }
+        }
+
+        nightGridPercentList.RemoveAt(nightGridPercentList.Count - 1);
+        
+        nightGridPercentagesPanel.text = "";
+        removeOptionNight.ClearOptions();
+
+        for (int i = 0; i < nightGridPercentList.Count; i++) {
+            nightGridPercentagesPanel.text = nightGridPercentagesPanel.text + nightGridPercentList[i] + "\n";
+
+            TMP_Dropdown.OptionData optionData = new TMP_Dropdown.OptionData(nightGridPercentList[i]);
+            removeOptionNight.options.Add(optionData);
+        }
+
+        removeOptionDay.RefreshShownValue();
+    }
+
+    public void ReadMinimumStringDay(string s) {
+        isParsed = Int32.TryParse(s, out dayTimeMinimumRange);
+
+        if (!isParsed) {
+            dayTimeMinimumRange = -1;
+        }
+    }
+
+    public void ReadMaximumStringDay(string s) {
+        isParsed = Int32.TryParse(s, out dayTimeMaximumRange);
+
+        if (!isParsed) {
+            isParsed = Int32.TryParse(s, out dayTimeMaximumRange);
+        }
+    }
+
+    public void ReadMinimumStringNight(string s) {
+        isParsed = Int32.TryParse(s, out nightTimeMinimumRange);
+
+        if (!isParsed) {
+            nightTimeMinimumRange = -1;
+        }
+    }
+
+    public void ReadMaximumStringNight(string s) {
+        isParsed = Int32.TryParse(s, out nightTimeMaximumRange);
+
+        if (!isParsed) {
+            nightTimeMaximumRange = -1;
+        }
+    }
+
+    public void ReadMultiplierDay(string s) {
+        isParsed = Double.TryParse(s, out dayTimeMultiplier);
+
+        if (!isParsed) {
+            dayTimeMultiplier = -1;
+        }
+    }
+
+    public void ReadMultiplierNight(string s) {
+        isParsed = Double.TryParse(s, out nightTimeMultiplier);
+
+        if (!isParsed) {
+            dayTimeMultiplier = -1;
+        }
     }
 
     //ALL CARGO SET VALUES

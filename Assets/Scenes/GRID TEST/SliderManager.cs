@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using TMPro;
+using System.Linq;
 
 public class SliderManager : MonoBehaviour
 {
@@ -24,26 +26,35 @@ public class SliderManager : MonoBehaviour
         {
             GameObject sliderGO = Instantiate(sliderPrefab, contentParent);
             Slider slider = sliderGO.GetComponentInChildren<Slider>();
-            Text valueText = sliderGO.GetComponentInChildren<TMP_Text>();
+            TMP_Text valueText = sliderGO.GetComponentInChildren<TMP_Text>();
 
             slider.minValue = 0f;
             slider.maxValue = 1f;
-            slider.value = .01f; // default initial value
+            slider.value = 0.01f; // default initial value
 
-            valueText.text = slider.value.ToString("0.00");
+            valueText.text = slider.value.ToString("0.00%");
 
-            slider.onValueChanged.AddListener(val =>
+            TMP_Text capturedText = valueText;
+            Slider capturedSlider = slider;
+
+            slider.onValueChanged.AddListener((float newVal) =>
             {
-                valueText.text = val.ToString("0.00");
+                float total = sliders.Sum(s => s == capturedSlider ? 0f : s.value);
+                float remaining = 1.0f - total;
+
+                float finalValue = Mathf.Min(newVal, remaining);
+
+                if(finalValue != newVal) {
+                    capturedSlider.SetValueWithoutNotify(finalValue);
+                }
+
+                capturedText.text = finalValue.ToString("0.00");
             });
+
 
             sliders.Add(slider);
 
         }
-    }
-
-    void AlignSliders() {
-        
     }
 
     void SaveSliderValues()
