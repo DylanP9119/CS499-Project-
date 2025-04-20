@@ -241,11 +241,10 @@ public class UIControllerScript : MonoBehaviour
             paNight = patrolNightPercent,
             pNightCap = nightCaptureEnabled,
             };
-        
+        DataPersistence.Instance.path = path;
         string json = JsonUtility.ToJson(data, true);
         DownloadFile(path, json);
-        DataPersistence.Instance.path = path;
-        DataPersistence.Instance.fileNameString = path;
+
     }
 
     public void DownloadFile(string filename, string content)
