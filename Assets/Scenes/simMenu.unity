@@ -14294,11 +14294,6 @@ MonoBehaviour:
   removeOptionNight: {fileID: 1205977458}
   dayGridPercentList: []
   nightGridPercentList: []
-  graphImage: {fileID: 0}
-  barGraphPanel: {fileID: 0}
-  dayShipDisplay: {fileID: 0}
-  nightShipDisplay: {fileID: 0}
-  barWidth: 0
 --- !u!4 &1135158724
 Transform:
   m_ObjectHideFlags: 0
