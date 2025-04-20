@@ -155,8 +155,9 @@ public class ShipController : MonoBehaviour
                                 pirate.Step(true);
                         }
                     }
-                    ReplayManager.Instance.RecordSnapshotForTick(TimeStepCounter, allShips);
                     ShipInteractions.Instance.CheckForInteractions(allShips);
+                    ReplayManager.Instance.RecordSnapshotForTick(TimeStepCounter, allShips);
+                    //ShipInteractions.Instance.CheckForInteractions(allShips);
                     spawnTimer = 0f;
                 }
             }
