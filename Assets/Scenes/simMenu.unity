@@ -8173,7 +8173,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 762756855}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6b757466a8550d4bb4e88c136433e69, type: 3}
+  m_Script: {fileID: 11500000, guid: 1f8f5551d2340d540a9ac30aea2707a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cargoGridPercentsD:
@@ -14274,9 +14274,9 @@ MonoBehaviour:
   cargoDaySlider: {fileID: 1605017276}
   pirateDaySlider: {fileID: 1903691577}
   patrolDaySlider: {fileID: 1502280521}
-  cargoNightSlider: {fileID: 1299994780}
-  pirateNightSlider: {fileID: 1232956181}
-  patrolNightSlider: {fileID: 718993489}
+  cargoNightSlider: {fileID: 718993489}
+  pirateNightSlider: {fileID: 1903691577}
+  patrolNightSlider: {fileID: 1232956181}
   cargoDayText: {fileID: 222833805}
   pirateDayText: {fileID: 167718516}
   patrolDayText: {fileID: 487741844}
@@ -14297,11 +14297,6 @@ MonoBehaviour:
   removeOptionNight: {fileID: 1205977458}
   dayGridPercentList: []
   nightGridPercentList: []
-  graphImage: {fileID: 0}
-  barGraphPanel: {fileID: 0}
-  dayShipDisplay: {fileID: 0}
-  nightShipDisplay: {fileID: 0}
-  barWidth: 0
 --- !u!4 &1135158724
 Transform:
   m_ObjectHideFlags: 0
