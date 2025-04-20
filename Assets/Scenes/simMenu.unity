@@ -14274,9 +14274,9 @@ MonoBehaviour:
   cargoDaySlider: {fileID: 1605017276}
   pirateDaySlider: {fileID: 1903691577}
   patrolDaySlider: {fileID: 1502280521}
-  cargoNightSlider: {fileID: 718993489}
-  pirateNightSlider: {fileID: 1903691577}
-  patrolNightSlider: {fileID: 1232956181}
+  cargoNightSlider: {fileID: 1299994780}
+  pirateNightSlider: {fileID: 1232956181}
+  patrolNightSlider: {fileID: 718993489}
   cargoDayText: {fileID: 222833805}
   pirateDayText: {fileID: 167718516}
   patrolDayText: {fileID: 487741844}
