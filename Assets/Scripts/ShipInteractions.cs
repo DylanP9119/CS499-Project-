@@ -367,7 +367,6 @@ public class ShipInteractions : MonoBehaviour
             {
                 int shipId = ExtractShipId(cargoToRescue);
                 float simTime = ShipController.TimeStepCounter * 1f;
-                ReplayManager.Instance.RecordRescueEvent(shipId, cargoToRescue.transform.position, cargoToRescue.transform.rotation, simTime);
             }
         }
         textController.UpdateCaptures(false);

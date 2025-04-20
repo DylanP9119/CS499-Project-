@@ -155,6 +155,7 @@ public class ShipController : MonoBehaviour
                                 pirate.Step(true);
                         }
                     }
+                    ReplayManager.Instance.RecordSnapshotForTick(TimeStepCounter, allShips);
                     ShipInteractions.Instance.CheckForInteractions(allShips);
                     spawnTimer = 0f;
                 }
@@ -233,7 +234,6 @@ public class ShipController : MonoBehaviour
             Debug.Log(spawnPos);
             if (spawnPos != Vector3.zero)
             {
-                int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : cargoCounter;
                 string shipType = "Cargo";
                 GameObject cargo = Instantiate(cargoPrefab, spawnPos, GetSpawnRotation("Cargo"));
                 cargo.name = $"Cargo({cargoCounter++})";
@@ -242,8 +242,7 @@ public class ShipController : MonoBehaviour
                 textController.UpdateShipEnter("cargo");
                 if (ReplayManager.Instance != null && !ReplayManager.Instance.ReplayModeActive)
                 {
-                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, cargo.transform.rotation, simTime, ShipController.TimeStepCounter);
-                    Debug.Log($"[RECORD] Cargo({shipId}) spawned at tick {ShipController.TimeStepCounter}");                    
+                    Debug.Log($"[RECORD] Cargo({cargo}) spawned at tick {ShipController.TimeStepCounter}");                    
                 }
             }
         }
@@ -253,7 +252,6 @@ public class ShipController : MonoBehaviour
             Vector3 spawnPos = GetUniqueSpawnPosition("Cargo", occupiedPositions);
             if (spawnPos != Vector3.zero)
             {
-                int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : cargoCounter;
                 string shipType = "Cargo";
                 GameObject cargo = Instantiate(cargoPrefab, spawnPos, GetSpawnRotation("Cargo"));
                 cargo.name = $"Cargo({cargoCounter++})";
@@ -261,8 +259,7 @@ public class ShipController : MonoBehaviour
                 allShips.Add(cargo);
                 if (ReplayManager.Instance != null && !ReplayManager.Instance.ReplayModeActive)
                 {
-                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, cargo.transform.rotation, simTime, ShipController.TimeStepCounter);
-                    Debug.Log($"[RECORD] Spawned {shipType}({shipId}) at {spawnPos} on tick {ShipController.TimeStepCounter}");
+                    Debug.Log($"[RECORD] Spawned {shipType}({cargo}) at {spawnPos} on tick {ShipController.TimeStepCounter}");
                 }
             }
         }
@@ -272,7 +269,6 @@ public class ShipController : MonoBehaviour
             Vector3 spawnPos = GetUniqueSpawnPosition("Patrol", occupiedPositions);
             if (spawnPos != Vector3.zero)
             {
-                int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : patrolCounter;
                 string shipType = "Patrol";
                 GameObject patrol = Instantiate(patrolPrefab, spawnPos, GetSpawnRotation("Patrol"));
                 patrol.name = $"Patrol({patrolCounter++})";
@@ -281,8 +277,7 @@ public class ShipController : MonoBehaviour
                 textController.UpdateShipEnter("patrol");
                 if (ReplayManager.Instance != null && !ReplayManager.Instance.ReplayModeActive)
                 {
-                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, patrol.transform.rotation, simTime, ShipController.TimeStepCounter);
-                    Debug.Log($"[RECORD] Spawned {shipType}({shipId}) at {spawnPos} on tick {ShipController.TimeStepCounter}");
+                    Debug.Log($"[RECORD] Spawned {shipType}({patrol}) at {spawnPos} on tick {ShipController.TimeStepCounter}");
                 }
             }
         }
@@ -292,7 +287,6 @@ public class ShipController : MonoBehaviour
             Vector3 spawnPos = GetUniqueSpawnPosition("Patrol", occupiedPositions);
             if (spawnPos != Vector3.zero)
             {
-                int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : patrolCounter;
                 string shipType = "Patrol";
                 GameObject patrol = Instantiate(patrolPrefab, spawnPos, GetSpawnRotation("Patrol"));
                 patrol.name = $"Patrol({patrolCounter++})";
@@ -301,8 +295,7 @@ public class ShipController : MonoBehaviour
                 textController.UpdateShipEnter("patrol");
                 if (ReplayManager.Instance != null && !ReplayManager.Instance.ReplayModeActive)
                 {
-                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, patrol.transform.rotation, simTime, ShipController.TimeStepCounter);
-                    Debug.Log($"[RECORD] Spawned {shipType}({shipId}) at {spawnPos} on tick {ShipController.TimeStepCounter}");
+                    Debug.Log($"[RECORD] Spawned {shipType}({patrol}) at {spawnPos} on tick {ShipController.TimeStepCounter}");
                 }
             }
         }
@@ -313,7 +306,6 @@ public class ShipController : MonoBehaviour
             Vector3 spawnPos = GetUniqueSpawnPosition("Pirate", occupiedPositions);
             if (spawnPos != Vector3.zero)
             {
-                int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : pirateCounter;
                 string shipType = "Pirate";
                 GameObject pirate = Instantiate(piratePrefab, spawnPos, GetSpawnRotation("Pirate"));
                 pirate.name = $"Pirate({pirateCounter++})";
@@ -322,8 +314,7 @@ public class ShipController : MonoBehaviour
                 textController.UpdateShipEnter("pirate");
                 if (ReplayManager.Instance != null && !ReplayManager.Instance.ReplayModeActive)
                 {
-                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, pirate.transform.rotation, simTime, ShipController.TimeStepCounter);
-                    Debug.Log($"[RECORD] Spawned {shipType}({shipId}) at {spawnPos} on tick {ShipController.TimeStepCounter}");
+                    Debug.Log($"[RECORD] Spawned {shipType}({pirate}) at {spawnPos} on tick {ShipController.TimeStepCounter}");
                 }
             }
         }
@@ -333,7 +324,6 @@ public class ShipController : MonoBehaviour
             Vector3 spawnPos = GetUniqueSpawnPosition("Pirate", occupiedPositions);
             if (spawnPos != Vector3.zero)
             {
-                int shipId = ReplayManager.Instance != null ? ReplayManager.Instance.GetNextShipId() : pirateCounter;
                 string shipType = "Pirate";
                 GameObject pirate = Instantiate(piratePrefab, spawnPos, GetSpawnRotation("Pirate"));
                 pirate.name = $"Pirate({pirateCounter++})";
@@ -342,8 +332,7 @@ public class ShipController : MonoBehaviour
                 textController.UpdateShipEnter("pirate");
                 if (ReplayManager.Instance != null && !ReplayManager.Instance.ReplayModeActive)
                 {
-                    ReplayManager.Instance.RecordShipSpawn(shipId, shipType, spawnPos, pirate.transform.rotation, simTime, ShipController.TimeStepCounter);
-                    Debug.Log($"[RECORD] Spawned {shipType}({shipId}) at {spawnPos} on tick {ShipController.TimeStepCounter}");
+                    Debug.Log($"[RECORD] Spawned {shipType}({pirate}) at {spawnPos} on tick {ShipController.TimeStepCounter}");
                 }
             }
         }
