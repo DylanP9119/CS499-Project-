@@ -38,7 +38,6 @@ public class ShipInteractions : MonoBehaviour
     // Called each tick (or replay update) to process interactions.
     public void CheckForInteractions(List<GameObject> allShips)
     {
-
         List<GameObject> piratesToRemove = new(); // For pirates that need to be removed (like when reaching south edge)
         List<GameObject> shipsToRemove = new(); // For ships that leave the map
 
@@ -148,14 +147,7 @@ public class ShipInteractions : MonoBehaviour
         foreach (GameObject ship in shipsToRemove)
         {
             allShips.Remove(ship);
-            if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive && ReplayManager.Instance.replaySpeed < 0)
-            {
-                ship.SetActive(false); // Hide in reverse mode
-            }
-            else
-            {
-                Destroy(ship); // Normal destroy in forward mode
-            }
+            Destroy(ship);
         }
         //List<(GameObject, GameObject)> evasionCleanup = new();
         //foreach (var entry in evadeTimestamps)
@@ -235,7 +227,6 @@ public class ShipInteractions : MonoBehaviour
             }
             pirateToCapturedCargo.Remove(pirate);
         }
-
         List<(GameObject, GameObject)> resolved = new(); // since pirate dies, log success evade
         foreach (var pair in pendingEvasions)
         {
@@ -259,14 +250,7 @@ public class ShipInteractions : MonoBehaviour
         {
             shipCtrl.allShips.Remove(pirate); //remove from global list
         }
-        if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive && ReplayManager.Instance.replaySpeed < 0)
-        {
-            pirate.SetActive(false); // just hide it in reverse
-        }
-        else
-        {
-            Destroy(pirate); // forward sim: destroy as usual
-        }
+        Destroy(pirate); // defeat pirate
         Debug.Log($"[PIRATE DESTROYED]");
     }
 
@@ -427,59 +411,6 @@ public class ShipInteractions : MonoBehaviour
                 return id;
         }
         return 0;
-    }
-
-    public void ReviveCapturePair(GameObject pirate, GameObject cargo)
-    {
-        if (pirate != null && cargo != null)
-        {
-            if (!pirateToCapturedCargo.ContainsKey(pirate))
-                pirateToCapturedCargo[pirate] = cargo;
-
-            var pirateBehavior = pirate.GetComponent<PirateBehavior>();
-            var cargoBehavior = cargo.GetComponent<CargoBehavior>();
-
-            if (pirateBehavior != null)
-                pirateBehavior.hasCargo = true;
-            if (cargoBehavior != null)
-                cargoBehavior.isCaptured = true;
-        }
-    }
-
-    public void UnmarkCapturePair(GameObject pirate, GameObject cargo)
-    {
-        if (pirateToCapturedCargo.ContainsKey(pirate))
-            pirateToCapturedCargo.Remove(pirate);
-
-        var pirateBehavior = pirate.GetComponent<PirateBehavior>();
-        var cargoBehavior = cargo.GetComponent<CargoBehavior>();
-
-        if (pirateBehavior != null)
-            pirateBehavior.hasCargo = false;
-        if (cargoBehavior != null)
-            cargoBehavior.isCaptured = false;
-    }
-
-    public GameObject GetPirateForCargo(GameObject cargo)
-    {
-        return pirateToCapturedCargo.FirstOrDefault(pair => pair.Value == cargo).Key;
-    }
-
-    public void RemoveCapturedPair(GameObject pirate, GameObject cargo)
-    {
-        if (pirateToCapturedCargo.ContainsKey(pirate))
-            pirateToCapturedCargo.Remove(pirate);
-    }
-
-    public void ResetState()
-    {
-        pirateToCapturedCargo.Clear();
-        cargoEvadedPirates.Clear();
-        evasionOutcomeLogged.Clear();
-        pendingEvasions.Clear();
-        evadeTimestamps.Clear();
-        
-        // Add other interaction state resets if needed
     }
 }
 
