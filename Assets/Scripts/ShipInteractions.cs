@@ -92,8 +92,9 @@ public class ShipInteractions : MonoBehaviour
             }
         }
 
+        int currentTick = ShipController.TimeStepCounter;
         // Move captured pairs when the simulation tick has advanced.
-        if (ShipController.TimeStepCounter != lastDownMovementTick)
+        if (currentTick != lastDownMovementTick)
         {
             foreach (KeyValuePair<GameObject, GameObject> pair in pirateToCapturedCargo)
             {
@@ -113,10 +114,7 @@ public class ShipInteractions : MonoBehaviour
 
                 if (pirateBehavior != null && cargoBehavior != null)
                 {
-                    // Determine movement direction: normally move downward; if reversing in replay, move upward.
                     int direction = 1;
-                    if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive && ReplayManager.Instance.replaySpeed < 0)
-                        direction = -1;
                     // Move captured pair one grid cell vertically.
                     pirateBehavior.currentGridPosition += Vector2Int.down * direction;
                     // Update grid position for pirate
@@ -135,7 +133,7 @@ public class ShipInteractions : MonoBehaviour
                     piratesToRemove.Add(pirateShip);
                 }
             }
-            lastDownMovementTick = ShipController.TimeStepCounter;
+            lastDownMovementTick = currentTick;
         }
 
         // Remove the pirate-cargo mappings for destroyed pirates
@@ -246,7 +244,7 @@ public class ShipInteractions : MonoBehaviour
         }
         textController.PirateDestroyed();
 
-        pirate.SetActive(false); // disable object
+        //pirate.SetActive(false); // disable object
         ShipController shipCtrl = FindObjectOfType<ShipController>();
         if (shipCtrl != null)
         {
@@ -301,17 +299,12 @@ public class ShipInteractions : MonoBehaviour
         {
             pirateBehavior.currentGridPosition = cargoBehavior.currentGridPosition;
             pirate.transform.position = cargo.transform.position;
+
+            cargo.transform.rotation = Quaternion.Euler(0, 180, 0);
+            pirate.transform.rotation = Quaternion.Euler(0, 180, 0);
         }
 
         textController.UpdateCaptures(true);
-
-        // Record the capture event so that replay includes it.
-        if (ReplayManager.Instance != null)
-        {
-            int shipId = ExtractShipId(cargo);
-            float simTime = ShipController.TimeStepCounter * 1f; // using tick duration of 1f
-            ReplayManager.Instance.RecordCaptureEvent(shipId, cargo.transform.position, cargo.transform.rotation, simTime);
-        }
         }
     }
 
@@ -354,6 +347,7 @@ public class ShipInteractions : MonoBehaviour
             {
                 cargoBehavior.isCaptured = false;
                 cargoToRescue.tag = "Cargo";
+                cargoToRescue.transform.rotation = Quaternion.Euler(0, 90, 0);
             }
 
             // Record the rescue event so that replay includes it.
@@ -361,7 +355,6 @@ public class ShipInteractions : MonoBehaviour
             {
                 int shipId = ExtractShipId(cargoToRescue);
                 float simTime = ShipController.TimeStepCounter * 1f;
-                ReplayManager.Instance.RecordRescueEvent(shipId, cargoToRescue.transform.position, cargoToRescue.transform.rotation, simTime);
             }
         }
         textController.UpdateCaptures(false);
@@ -424,4 +417,3 @@ public class ShipInteractions : MonoBehaviour
         return 0;
     }
 }
-
