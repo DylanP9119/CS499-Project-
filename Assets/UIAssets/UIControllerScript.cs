@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class UIControllerScript : MonoBehaviour
 {
@@ -27,13 +28,13 @@ public class UIControllerScript : MonoBehaviour
     private string gridDayString;
     private string gridNightString;
 
-    public double[] cargoGridPercentsD = new double[101];
-    public double[] patrolGridPercentsD = new double[101];
-    public double[] pirateGridPercentsD = new double[401];
+    public double[] cargoGridPercentsD;
+    public double[] patrolGridPercentsD;
+    public double[] pirateGridPercentsD;
 
-    public double[] cargoGridPercentsN = new double[101];
-    public double[] patrolGridPercentsN = new double[101];
-    public double[] pirateGridPercentsN = new double[401];
+    public double[] cargoGridPercentsN;
+    public double[] patrolGridPercentsN;
+    public double[] pirateGridPercentsN;
 
     public int cargoDayPercent;
     public int cargoNightPercent;
@@ -130,18 +131,15 @@ public class UIControllerScript : MonoBehaviour
         errorPanel.SetActive(false);
 
         //fill grid spaces with default values
-        for (int gridSpace = 0; gridSpace < cargoGridPercentsD.Length; gridSpace++)
-        {
-            cargoGridPercentsD[gridSpace] = 1;
-            patrolGridPercentsD[gridSpace] = 1;
-            cargoGridPercentsN[gridSpace] = 1;
-            patrolGridPercentsN[gridSpace] = 1;
-        }
-        for (int gridSpace = 0; gridSpace < pirateGridPercentsD.Length; gridSpace++)
-        {
-            pirateGridPercentsD[gridSpace] = 1;
-            pirateGridPercentsN[gridSpace] = 1;
-        }
+
+        cargoGridPercentsD = new double[101];
+        patrolGridPercentsD = new double[101];
+        pirateGridPercentsD = new double[401];
+
+        cargoGridPercentsN = new double[101];
+        patrolGridPercentsN = new double[101];
+        pirateGridPercentsN = new double[401];
+        ResetGrids();
     }
 
     //back button
@@ -195,67 +193,8 @@ public class UIControllerScript : MonoBehaviour
         }
 
         if (canStart) {
-            foreach (string line in dayGridPercentList) {
-                string[] values = line.Split(',');
-
-                int gridMinimum = Int32.Parse(values[1]);
-                int gridMaximum = Int32.Parse(values[2]);
-                double multiplier = Double.Parse(values[3]);
-
-                if (values[0] == "cargo") {
-                    for (int i = gridMinimum; i <= gridMaximum; i++) {
-                        cargoGridPercentsD[i] = cargoGridPercentsD[i] * multiplier;
-                    }
-                }
-                else if (values[0] == "pirate") {
-                    for (int i = gridMinimum; i <= gridMaximum; i++) {
-                        pirateGridPercentsD[i] = pirateGridPercentsD[i] * multiplier;
-                    }
-                }
-                else if (values[0] == "patrol") {
-                    for (int i = gridMinimum; i <= gridMaximum; i++) {
-                        patrolGridPercentsD[i] = patrolGridPercentsD[i] * multiplier;
-                    }
-                }
-                else {
-                    errorPanel.SetActive(true);
-                    errorPanelText.text = "Error starting: A ship type in the Day Grid is not right!: \"" + values[0] + "\". Be careful using raw text editor!";
-                    canStart = false;
-                    break;
-                }
-            }
-        }
-
-        if (canStart) {
-            foreach (string line in nightGridPercentList) {
-                string[] values = line.Split(',');
-
-                int gridMinimum = Int32.Parse(values[1]);
-                int gridMaximum = Int32.Parse(values[2]);
-                double multiplier = Double.Parse(values[3]);
-
-                if (values[0] == "cargo") {
-                    for (int i = gridMinimum; i <= gridMaximum; i++) {
-                        cargoGridPercentsN[i] = cargoGridPercentsN[i] * multiplier;
-                    }
-                }
-                else if (values[1] == "pirate") {
-                    for (int i = gridMinimum; i <= gridMaximum; i++) {
-                        pirateGridPercentsN[i] = pirateGridPercentsN[i] * multiplier;
-                    }
-                }
-                else if (values[2] == "patrol") {
-                    for (int i = gridMinimum; i <= gridMaximum; i++) {
-                        patrolGridPercentsN[i] = patrolGridPercentsN[i] * multiplier;
-                    }
-                }
-                else {
-                    errorPanel.SetActive(true);
-                    errorPanelText.text = "Error starting: A ship type in the Night Grid is not right!: \"" + values[0] + "\". Be careful using raw text editor!";
-                    canStart = false;
-                    break;
-                }
-            }
+            InstantiateDayGridPercents();
+            InstantiateNightGridPercents();
         }
 
         if (canStart) {
@@ -581,5 +520,88 @@ public class UIControllerScript : MonoBehaviour
         //invalid entry
         if (!isParsed)
             hourCount = -1;
+    }
+
+    public void InstantiateDayGridPercents() {
+        foreach (string line in dayGridPercentList) {
+            string[] values = line.Split(',');
+
+            int gridMinimum = Int32.Parse(values[1]);
+            int gridMaximum = Int32.Parse(values[2]);
+            double multiplier = Double.Parse(values[3]);
+
+            if (values[0] == "cargo") {
+                for (int i = gridMinimum; i <= gridMaximum; i++) {
+                    cargoGridPercentsD[i] = cargoGridPercentsD[i] * multiplier;
+                    Debug.Log(cargoGridPercentsD[i] + " at " + i);
+                }
+            }
+            else if (values[0] == "pirate") {
+                for (int i = gridMinimum; i <= gridMaximum; i++) {
+                    pirateGridPercentsD[i] = pirateGridPercentsD[i] * multiplier;
+                }
+            }
+            else if (values[0] == "patrol") {
+                for (int i = gridMinimum; i <= gridMaximum; i++) {
+                    patrolGridPercentsD[i] = patrolGridPercentsD[i] * multiplier;
+                }
+            }
+            else {
+                errorPanel.SetActive(true);
+                errorPanelText.text = "Error starting: A ship type in the Day Grid is not right!: \"" + values[0] + "\". Be careful using raw text editor!";
+                canStart = false;
+                break;
+            }
+        }
+    }
+
+    public void InstantiateNightGridPercents() {
+        foreach (string line in nightGridPercentList) {
+            string[] values = line.Split(',');
+
+            int gridMinimum = Int32.Parse(values[1]);
+            int gridMaximum = Int32.Parse(values[2]);
+            double multiplier = Double.Parse(values[3]);
+
+            if (values[0] == "cargo") {
+                for (int i = gridMinimum; i <= gridMaximum; i++) {
+                    cargoGridPercentsN[i] = cargoGridPercentsN[i] * multiplier;
+                }
+            }
+            else if (values[0] == "pirate") {
+                for (int i = gridMinimum; i <= gridMaximum; i++) {
+                    pirateGridPercentsN[i] = pirateGridPercentsN[i] * multiplier;
+                }
+            }
+            else if (values[0] == "patrol") {
+                for (int i = gridMinimum; i <= gridMaximum; i++) {
+                    patrolGridPercentsN[i] = patrolGridPercentsN[i] * multiplier;
+                }
+            }
+            else {
+                errorPanel.SetActive(true);
+                errorPanelText.text = "Error starting: A ship type in the Night Grid is not right!: \"" + values[0] + "\". Be careful using raw text editor!";
+                canStart = false;
+                break;
+            }
+        }
+    }
+
+    public void ResetGrids() {
+
+        for (int i = 0; i < cargoGridPercentsD.Length; i++)
+        {   
+            cargoGridPercentsD[i] = 1;
+            patrolGridPercentsD[i] = 1;
+            cargoGridPercentsN[i] = 1;
+            patrolGridPercentsN[i] = 1;
+        }
+
+        for (int i = 0; i < pirateGridPercentsD.Length; i++)
+        {
+            pirateGridPercentsD[i] = 1;
+            pirateGridPercentsN[i] = 1;
+            i++;
+        }
     }
 }

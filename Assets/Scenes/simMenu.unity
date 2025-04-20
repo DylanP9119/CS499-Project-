@@ -14294,6 +14294,11 @@ MonoBehaviour:
   removeOptionNight: {fileID: 1205977458}
   dayGridPercentList: []
   nightGridPercentList: []
+  graphImage: {fileID: 0}
+  barGraphPanel: {fileID: 0}
+  dayShipDisplay: {fileID: 0}
+  nightShipDisplay: {fileID: 0}
+  barWidth: 0
 --- !u!4 &1135158724
 Transform:
   m_ObjectHideFlags: 0
@@ -17803,7 +17808,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.275, y: 0}
   m_AnchorMax: {x: 0.35, y: 1}
-  m_AnchoredPosition: {x: 5.0000153, y: -2.5}
+  m_AnchoredPosition: {x: 5.0000916, y: -2.5}
   m_SizeDelta: {x: -10, y: -5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1487798696
