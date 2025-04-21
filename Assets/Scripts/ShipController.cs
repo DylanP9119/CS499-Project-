@@ -216,6 +216,7 @@ public class ShipController : MonoBehaviour
         if (DataPersistence.Instance.nightCaptureEnabled)
         {
             ShipInteractions.Instance.isNight = isNight;
+            
         }
         else
         {
@@ -254,7 +255,7 @@ public class ShipController : MonoBehaviour
         }
 
         // Cargo Day spawn.
-        if (!isNight && Random.value <= cargoSpawnChance)
+        if (!ShipInteractions.Instance.isNight && Random.value <= cargoSpawnChance)
         {
             Vector3 spawnPos = GetUniqueSpawnPosition("Cargo", occupiedPositions);
             //Debug.Log(spawnPos);
@@ -272,7 +273,7 @@ public class ShipController : MonoBehaviour
             }
         }
         // Cargo Night spawn.
-        if (isNight && Random.value <= cargoNightChance)
+        if (ShipInteractions.Instance.isNight && Random.value <= cargoNightChance)
         {
             Vector3 spawnPos = GetUniqueSpawnPosition("Cargo", occupiedPositions);
             if (spawnPos != Vector3.zero)
@@ -289,7 +290,7 @@ public class ShipController : MonoBehaviour
             }
         }
         // Patrol spawn.
-        if (!isNight && Random.value <= patrolSpawnChance)
+        if (!ShipInteractions.Instance.isNight && Random.value <= patrolSpawnChance)
         {
             Vector3 spawnPos = GetUniqueSpawnPosition("Patrol", occupiedPositions);
             if (spawnPos != Vector3.zero)
@@ -307,7 +308,7 @@ public class ShipController : MonoBehaviour
             }
         }
         // Patrol Night spawn.
-        if (isNight && Random.value <= patrolNightChance)
+        if (ShipInteractions.Instance.isNight && Random.value <= patrolNightChance)
         {
             Vector3 spawnPos = GetUniqueSpawnPosition("Patrol", occupiedPositions);
             if (spawnPos != Vector3.zero)
@@ -326,7 +327,7 @@ public class ShipController : MonoBehaviour
         }
 
         // Pirate spawn.
-        if (!isNight && Random.value <= pirateSpawnChance)
+        if (!ShipInteractions.Instance.isNight && Random.value <= pirateSpawnChance)
         {
             Vector3 spawnPos = GetUniqueSpawnPosition("Pirate", occupiedPositions);
             if (spawnPos != Vector3.zero)
@@ -344,7 +345,7 @@ public class ShipController : MonoBehaviour
             }
         }
         // Pirate Night spawn.
-        if (isNight && Random.value <= pirateNightChance)
+        if (ShipInteractions.Instance.isNight && Random.value <= pirateNightChance)
         {
             Vector3 spawnPos = GetUniqueSpawnPosition("Pirate", occupiedPositions);
             if (spawnPos != Vector3.zero)
@@ -389,7 +390,7 @@ public class ShipController : MonoBehaviour
             {
                 int spawnX = 0;
 
-                if (!isNight)
+                if (!ShipInteractions.Instance.isNight)
                 {
                     spawnX = SelectIndexByWeight(DataPersistence.Instance.pirateGridPercentsD);
                     //Debug.Log("Pirate SpawnX = " + spawnX);
@@ -406,7 +407,7 @@ public class ShipController : MonoBehaviour
             {
                 int spawnZ = 0;
 
-                if (!isNight)
+                if (!ShipInteractions.Instance.isNight)
                 {
                     spawnZ = SelectIndexByWeight(DataPersistence.Instance.patrolGridPercentsD);
                     //Debug.Log("Patrol SpawnZ = " + spawnZ);
