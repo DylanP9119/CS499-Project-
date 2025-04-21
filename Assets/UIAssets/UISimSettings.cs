@@ -15,16 +15,27 @@ public class UISimSettings : MonoBehaviour
     public void BackButton()
     {
         popupPanel.SetActive(true);
+        //Pause simulation?
     }
 
     public void YesButton()
     {
         popupPanel.SetActive(false);
-        SceneManager.LoadScene(mainMenu);
+        SaveSimluation();
     }
 
     public void NoButton()
     {
+        SceneManager.LoadScene(mainMenu);
+    }
+
+    public void CancelButton()
+    {
         popupPanel.SetActive(false);
+        //Play simluation
+    }
+
+    public void SaveSimluation() {
+        //Save info goes here!
     }
 }

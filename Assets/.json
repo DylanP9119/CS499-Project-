@@ -1,0 +1,12 @@
+{
+    "saveName": "",
+    "days": 0,
+    "hours": 24,
+    "cDay": 50,
+    "cNight": 50,
+    "piDay": 25,
+    "piNight": 25,
+    "paDay": 40,
+    "paNight": 40,
+    "pNightCap": false
+}

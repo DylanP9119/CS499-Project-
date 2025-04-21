@@ -13,12 +13,10 @@ GameObject:
   - component: {fileID: 1471062540746897347}
   - component: {fileID: 1872301572966215893}
   - component: {fileID: 2673174533015931486}
-  - component: {fileID: -4601627278018361221}
-  - component: {fileID: -4221090822234409711}
-  - component: {fileID: -6763015756608745502}
+  - component: {fileID: -9032437966441476955}
   m_Layer: 0
   m_Name: Captured
-  m_TagString: Captured
+  m_TagString: Undefined
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -144,8 +142,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cc5d3756a1bb304eae59aaeb616a4c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  forwardButton: {fileID: 0}
-  speedLevels:
+  playPauseButton: {fileID: 0}
+  btnIncreaseSpeed: {fileID: 0}
+  btnDecreaseSpeed: {fileID: 0}
+  speeds:
   - 1
   - 0.5
   - 0.1

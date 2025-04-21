@@ -12,8 +12,16 @@ public class ReplayManager : MonoBehaviour
     public Button playPauseButton;
     public Button btnIncreaseSpeed;
     public Button btnDecreaseSpeed;
+    public Button btnStepFrame;
+    public Button btnStepBackFrame;
+
+
     public Text timeDisplay;
     public ShipController shipController;
+
+    public Sprite playSprite;
+    public Sprite pauseSprite;
+
 
     public TimeControl timeControl;
 
@@ -81,7 +89,6 @@ public class ReplayManager : MonoBehaviour
         }
     }
 
-
     }
     void HandleReplayInput()
     {
@@ -92,11 +99,14 @@ public class ReplayManager : MonoBehaviour
     }
     public void RecordTick(int currentTick)
     {
+
         // Clear previous tick's data if it exists
    //     recordedEvents.RemoveAll(e => e.tick == currentTick);
   
         foreach (GameObject ship in shipController.allShips)
         {
+            if (ship == null) continue; // Skip destroyed GameObjects
+
             int shipId = ExtractShipId(ship);
             if (shipId == -1) continue;
 
@@ -109,7 +119,6 @@ public class ReplayManager : MonoBehaviour
             ));
         }    
         if (currentTick > maxRecordedTick) maxRecordedTick = currentTick;
-        
     }
 
     private int ExtractShipId(GameObject ship)
@@ -216,6 +225,10 @@ void UpdateReplay()
     
     replayPaused = true;
     replayTime = 0;
+    if (playPauseButton != null && playSprite != null)
+    {
+        playPauseButton.image.sprite = playSprite;
+    }
     replayTick = -1;
     UIvisibility(true);
     }
@@ -227,8 +240,14 @@ void UpdateReplay()
         timeDisplay.text = $"Tick: {replayTick} | Speed: {replaySpeed}x | Time: {replayTime:0.0}s";
     }
 
-    void TogglePlayPause() => replayPaused = !replayPaused;
-
+    void TogglePlayPause()
+    {
+        replayPaused = !replayPaused;
+        if (playPauseButton != null)
+        {
+            playPauseButton.image.sprite = replayPaused ? playSprite : pauseSprite;
+        }
+    }
     void IncreaseSpeed()
     {
         if (currentSpeedIndex < speeds.Length - 1)
@@ -251,10 +270,11 @@ void UpdateReplay()
         }
     }
 
+
+
+
     public void SaveReplayToFile()
     {
-        ReplayData data = new ReplayData();
-        data.events = recordedEvents;
         var headerdata= new UILoadMenuController.MyData
         {
             saveName = DataPersistence.Instance.fileNameString,
@@ -267,12 +287,11 @@ void UpdateReplay()
             paDay = DataPersistence.Instance.patrolDayPercent,
             paNight = DataPersistence.Instance.patrolNightPercent,
             pNightCap = DataPersistence.Instance.nightCaptureEnabled,
-            events = data.events
+            events = recordedEvents
         };
-        data.header.Add(headerdata);
-        string json = JsonUtility.ToJson(data, true);
+      //  data.header.Add(headerdata);
+        string json = JsonUtility.ToJson(headerdata, true);
         File.WriteAllText(DataPersistence.Instance.path, json);
-        Debug.Log("EVENTS SAVED " + data.events.Count); 
     }
 
     public void LoadReplayFromFile()
@@ -318,6 +337,6 @@ public class ReplayEvent
 [System.Serializable]
 public class ReplayData
 {
-    public List<UILoadMenuController.MyData> header = new List<UILoadMenuController.MyData>();
+  //  public List<UILoadMenuController.MyData> header = new List<UILoadMenuController.MyData>();
     public List<ReplayEvent> events = new List<ReplayEvent>();
 }
