@@ -254,8 +254,6 @@ void UpdateReplay()
 
     public void SaveReplayToFile()
     {
-        ReplayData data = new ReplayData();
-        data.events = recordedEvents;
         var headerdata= new UILoadMenuController.MyData
         {
             saveName = DataPersistence.Instance.fileNameString,
@@ -268,12 +266,11 @@ void UpdateReplay()
             paDay = DataPersistence.Instance.patrolDayPercent,
             paNight = DataPersistence.Instance.patrolNightPercent,
             pNightCap = DataPersistence.Instance.nightCaptureEnabled,
-            events = data.events
+            events = recordedEvents
         };
-        data.header.Add(headerdata);
-        string json = JsonUtility.ToJson(data, false);
+      //  data.header.Add(headerdata);
+        string json = JsonUtility.ToJson(headerdata, true);
         File.WriteAllText(DataPersistence.Instance.path, json);
-        Debug.Log("EVENTS SAVED " + data.events.Count); 
     }
 
     public void LoadReplayFromFile()
@@ -319,6 +316,6 @@ public class ReplayEvent
 [System.Serializable]
 public class ReplayData
 {
-    public List<UILoadMenuController.MyData> header = new List<UILoadMenuController.MyData>();
+  //  public List<UILoadMenuController.MyData> header = new List<UILoadMenuController.MyData>();
     public List<ReplayEvent> events = new List<ReplayEvent>();
 }
