@@ -118,8 +118,6 @@ public void ApplyCountersFromString(string counterString)
         piratesDestroyed = int.Parse(values[8]);
         successfulEvasions = int.Parse(values[9]);
         failedEvasions = int.Parse(values[10]);
-
-        Debug.Log("cargo entered" + cargoEntered);
         
         UpdateAllText();
     }
