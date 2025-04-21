@@ -32,10 +32,11 @@ public class UILoadMenuController : MonoBehaviour
     public void OpenFileUpload()
     {
     #if UNITY_WEBGL && !UNITY_EDITOR
-        ShowFileUpload();
+    ShowFileUpload();
     #else
         Debug.Log("File upload only works in WebGL builds.");
     #endif
+
     }
     
 
@@ -44,7 +45,6 @@ public class UILoadMenuController : MonoBehaviour
     {
         string json = File.ReadAllText(path);
         MyData data = JsonUtility.FromJson<MyData>(json);
-
         // Save header data to DataPersistence
         DataPersistence.Instance.fileNameString = data.saveName;
         DataPersistence.Instance.dayCount = data.days;
