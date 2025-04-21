@@ -27,9 +27,7 @@ public class DataPersistence : MonoBehaviour
     public string fileNameString; 
     public string path;
     public bool wasEnteredfromLoadScene;
-
     public List<ReplayEvent> replayEvents = new List <ReplayEvent>(); 
-
     public static DataPersistence Instance;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
