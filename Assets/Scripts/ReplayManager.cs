@@ -140,7 +140,7 @@ public class ReplayManager : MonoBehaviour
     void ProcessLoadedEvents()
     {
         tickData = recordedEvents
-            .GroupBy(e => e.tick)
+            .GroupBy(e => e.t)
             .ToDictionary(g => g.Key, g => g.ToList());
         
         if (tickData.Count > 0)
@@ -183,13 +183,13 @@ void UpdateReplay()
             foreach (ReplayEvent e in events)
             {
                 GameObject ship = shipController.ReplaySpawn(
-                    e.shipType,
-                    e.position,
-                    e.rotation,
-                    $"{e.shipType}({e.shipId})",
-                    e.shipId
+                    e.sT,
+                    e.p,
+                    e.r,
+                    $"{e.sT}({e.sId})",
+                    e.sId
                 );
-                replayedShips[e.shipId] = ship;
+                replayedShips[e.sId] = ship;
             }
         }
     }
@@ -318,19 +318,19 @@ void UpdateReplay()
 [System.Serializable]
 public class ReplayEvent
 {
-    public int shipId;
-    public string shipType;
-    public Vector3 position;
-    public Quaternion rotation;
-    public int tick;
+    public int sId;
+    public string sT;
+    public Vector3 p;
+    public Quaternion r;
+    public int t;
 
     public ReplayEvent(int id, string type, Vector3 pos, Quaternion rot, int t)
     {
-        shipId = id;
-        shipType = type;
-        position = pos;
-        rotation = rot;
-        tick = t;
+        sId = id;
+        sT = type;
+        p = pos;
+        r = rot;
+        t = t;
     }
 }
 
