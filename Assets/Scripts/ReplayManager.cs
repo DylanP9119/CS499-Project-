@@ -12,8 +12,16 @@ public class ReplayManager : MonoBehaviour
     public Button playPauseButton;
     public Button btnIncreaseSpeed;
     public Button btnDecreaseSpeed;
+    public Button btnStepFrame;
+    public Button btnStepBackFrame;
+
+
     public Text timeDisplay;
     public ShipController shipController;
+
+    public Sprite playSprite;
+    public Sprite pauseSprite;
+
 
     public TimeControl timeControl;
 
@@ -217,6 +225,10 @@ void UpdateReplay()
     
     replayPaused = true;
     replayTime = 0;
+    if (playPauseButton != null && playSprite != null)
+    {
+        playPauseButton.image.sprite = playSprite;
+    }
     replayTick = -1;
     UIvisibility(true);
     }
@@ -228,8 +240,14 @@ void UpdateReplay()
         timeDisplay.text = $"Tick: {replayTick} | Speed: {replaySpeed}x | Time: {replayTime:0.0}s";
     }
 
-    void TogglePlayPause() => replayPaused = !replayPaused;
-
+    void TogglePlayPause()
+    {
+        replayPaused = !replayPaused;
+        if (playPauseButton != null)
+        {
+            playPauseButton.image.sprite = replayPaused ? playSprite : pauseSprite;
+        }
+    }
     void IncreaseSpeed()
     {
         if (currentSpeedIndex < speeds.Length - 1)
@@ -251,6 +269,9 @@ void UpdateReplay()
             UpdateDisplay();
         }
     }
+
+
+
 
     public void SaveReplayToFile()
     {
