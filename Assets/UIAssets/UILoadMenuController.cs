@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using TMPro;
 using System.IO;
 
+
 public class UILoadMenuController : MonoBehaviour
 {
     [SerializeField] private string mainMenu = "mainMenu";
@@ -31,19 +32,18 @@ public class UILoadMenuController : MonoBehaviour
 
     public void OpenFileUpload()
     {
-    #if UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
     ShowFileUpload();
-    #else
+#else
         Debug.Log("File upload only works in WebGL builds.");
-    #endif
+#endif
 
     }
-    
+
 
     // Called from JavaScript with the uploaded JSON
-    public void OnJsonFileLoaded(string path)
+    public void OnJsonFileLoaded(string json)
     {
-        string json = File.ReadAllText(path);
         MyData data = JsonUtility.FromJson<MyData>(json);
         // Save header data to DataPersistence
         DataPersistence.Instance.fileNameString = data.saveName;
@@ -82,17 +82,17 @@ public class UILoadMenuController : MonoBehaviour
     [System.Serializable]
     public class MyData
     {
-    public string saveName;
-    public int days;
-    public int hours;
-    public int cDay;
-    public int cNight;
-    public int piDay;
-    public int piNight;
-    public int paDay;
-    public int paNight;
-    public bool pNightCap;
-    public List<ReplayEvent> events;
+        public string saveName;
+        public int days;
+        public int hours;
+        public int cDay;
+        public int cNight;
+        public int piDay;
+        public int piNight;
+        public int paDay;
+        public int paNight;
+        public bool pNightCap;
+        public List<ReplayEvent> events;
     }
 
 
