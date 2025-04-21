@@ -620,7 +620,6 @@ public class UIControllerScript : MonoBehaviour
         {
             pirateGridPercentsD[i] = 1;
             pirateGridPercentsN[i] = 1;
-            i++;
         }
     }
 }
