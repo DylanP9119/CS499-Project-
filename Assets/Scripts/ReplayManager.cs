@@ -102,7 +102,19 @@ public class ReplayManager : MonoBehaviour
 
         // Clear previous tick's data if it exists
    //     recordedEvents.RemoveAll(e => e.tick == currentTick);
-  
+      string counters = string.Join(",",
+        textController.cargoEntered,
+        textController.cargoExited,
+        textController.patrolEntered,
+        textController.patrolExited,
+        textController.pirateEntered,
+        textController.pirateExited,
+        textController.captureCount,
+        textController.rescueCount,
+        textController.piratesDestroyed,
+        textController.successfulEvasions,
+        textController.failedEvasions
+    );
         foreach (GameObject ship in shipController.allShips)
         {
             if (ship == null) continue; // Skip destroyed GameObjects
@@ -115,7 +127,8 @@ public class ReplayManager : MonoBehaviour
                 ship.tag,
                 ship.transform.position,
                 ship.transform.rotation,
-                currentTick
+                currentTick,
+                counters
             ));
         }    
         if (currentTick > maxRecordedTick) maxRecordedTick = currentTick;
@@ -174,25 +187,7 @@ void UpdateReplay()
     UpdateDisplay();
 }
 
-    void ApplyTick(int tick)
-    {
-        ClearReplayedShips();
 
-        if (tickData.TryGetValue(tick, out List<ReplayEvent> events))
-        {
-            foreach (ReplayEvent e in events)
-            {
-                GameObject ship = shipController.ReplaySpawn(
-                    e.sT,
-                    e.p,
-                    e.r,
-                    $"{e.sT}({e.sId})",
-                    e.sId
-                );
-                replayedShips[e.sId] = ship;
-            }
-        }
-    }
 
     void ClearReplayedShips()
     {
@@ -301,6 +296,7 @@ void UpdateReplay()
             string json = File.ReadAllText(DataPersistence.Instance.path);
             ReplayData data = JsonUtility.FromJson<ReplayData>(json);
             recordedEvents = data.events;
+
             ProcessLoadedEvents();
             Debug.Log($"Loaded {recordedEvents.Count} events");
             StartReplay(); 
@@ -310,7 +306,25 @@ void UpdateReplay()
             Debug.LogWarning("No replay file found.");
         }
     }
-
+    void ApplyTick(int tick)
+    {
+        ClearReplayedShips();
+        if (tickData.TryGetValue(tick, out List<ReplayEvent> events))
+        {
+            foreach (ReplayEvent e in events)
+            {
+                GameObject ship = shipController.ReplaySpawn(
+                    e.sT,
+                    e.p,
+                    e.r,
+                    $"{e.sT}({e.sId})",
+                    e.sId
+                );
+                replayedShips[e.sId] = ship;
+                textController.ApplyCountersFromString(e.c);
+            }
+        }
+    }
     public void UIvisibility(bool visible) => replayBoxUI.SetActive(visible);
     public int GetNextShipId() => currentShipId++;
 }
@@ -323,14 +337,16 @@ public class ReplayEvent
     public Vector3 p;
     public Quaternion r;
     public int t;
+    public string c;
 
-    public ReplayEvent(int id, string type, Vector3 pos, Quaternion rot, int t)
+    public ReplayEvent(int id, string type, Vector3 pos, Quaternion rot, int tick, string counters)
     {
         sId = id;
         sT = type;
         p = pos;
         r = rot;
-        t = t;
+        t = tick;
+        c = counters;
     }
 }
 

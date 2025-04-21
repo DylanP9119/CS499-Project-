@@ -432,7 +432,6 @@ public class ShipController : MonoBehaviour
             ship.tag = shipType;
             allShips.Add(ship);
             replayedShips[shipId] = ship;
-            textController.UpdateShipEnter(shipType);
             return ship;
             //Debug.Log($"[ReplaySpawn] Spawned {shipType}({shipId}) at {position}");
         }
