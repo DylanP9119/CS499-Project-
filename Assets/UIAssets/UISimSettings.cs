@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using TMPro;
+using System.Linq;
 
 public class UISimSettings : MonoBehaviour
 {
@@ -19,6 +20,16 @@ public class UISimSettings : MonoBehaviour
     private List<GameObject> spawnedCubes = new List<GameObject>();
 
     public static DataPersistence Instance;
+    public UIControllerScript uiControllerScript;
+
+    public TMP_Text cargoDayPercentList;
+    public TMP_Text pirateDayPercentList;
+    public TMP_Text patrolDayPercentList;
+
+    public TMP_Text cargoNightPercentList;
+    public TMP_Text pirateNightPercentList;
+    public TMP_Text patrolNightPercentList;
+    
 
     void Awake() {
         //instantiate grid
@@ -84,6 +95,35 @@ public class UISimSettings : MonoBehaviour
                                     + DataPersistence.Instance.nightCaptureEnabled + "\n\nCargo Percents:\n" + DataPersistence.Instance.cargoDayPercent + "% Day, " + DataPersistence.Instance.cargoNightPercent + "% Night\nPirate Percents:\n"
                                     + DataPersistence.Instance.pirateDayPercent + "% Day, " + DataPersistence.Instance.pirateNightPercent + "% Night\nPatrol Percents:\n" + DataPersistence.Instance.patrolDayPercent + "% Day, " 
                                     + DataPersistence.Instance.patrolNightPercent + "% Night";
+        
+        cargoDayPercentList.text = "Cargo Day %s:\n";
+        pirateDayPercentList.text = "Pirate Day %s:\n";
+        patrolDayPercentList.text = "Patrol Day %s:\n";
+
+        cargoNightPercentList.text = "Cargo Night %s:\n";
+        pirateNightPercentList.text = "Pirate Night %s:\n";
+        patrolNightPercentList.text = "Patrol Night %s:\n";
+
+        List<string> values1 = uiControllerScript.ReturnGridPercents(DataPersistence.Instance.cargoGridPercentsD);
+        List<string> values2 = uiControllerScript.ReturnGridPercents(DataPersistence.Instance.pirateGridPercentsD);
+        List<string> values3 = uiControllerScript.ReturnGridPercents(DataPersistence.Instance.patrolGridPercentsD);
+        List<string> values4 = uiControllerScript.ReturnGridPercents(DataPersistence.Instance.cargoGridPercentsN);
+        List<string> values5 = uiControllerScript.ReturnGridPercents(DataPersistence.Instance.pirateGridPercentsN);
+        List<string> values6 = uiControllerScript.ReturnGridPercents(DataPersistence.Instance.patrolGridPercentsN);
+
+        for (int i = 0; i < values2.Count; i++) {
+            if (i < values1.Count) {
+                cargoDayPercentList.text = cargoDayPercentList.text + values1[i];
+                patrolDayPercentList.text = patrolDayPercentList.text + values3[i];
+
+                cargoNightPercentList.text = cargoNightPercentList.text + values4[i];
+                patrolNightPercentList.text = patrolNightPercentList.text + values6[i];
+            }
+            pirateDayPercentList.text = pirateDayPercentList.text + values2[i];
+            pirateNightPercentList.text = pirateNightPercentList.text + values5[i];
+        }
+
+
     }
 
     public void ExitInfoButton() {

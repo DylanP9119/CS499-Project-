@@ -5,13 +5,13 @@ using System.IO;
 using System.Linq;
 public class DataPersistence : MonoBehaviour
 {
-    public double[] cargoGridPercentsD = new double[101];
-    public double[] patrolGridPercentsD = new double[101];
-    public double[] pirateGridPercentsD = new double[401];
+    public double[] cargoGridPercentsD;
+    public double[] patrolGridPercentsD;
+    public double[] pirateGridPercentsD;
 
-    public double[] cargoGridPercentsN = new double[101];
-    public double[] patrolGridPercentsN = new double[101];
-    public double[] pirateGridPercentsN = new double[401];
+    public double[] cargoGridPercentsN;
+    public double[] patrolGridPercentsN;
+    public double[] pirateGridPercentsN;
 
     public int cargoDayPercent;
     public int cargoNightPercent;
@@ -44,6 +44,14 @@ public class DataPersistence : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        cargoGridPercentsD = new double[101];
+        patrolGridPercentsD = new double[101];
+        pirateGridPercentsD = new double[401];
+
+        cargoGridPercentsN = new double[101];
+        patrolGridPercentsN = new double[101];
+        pirateGridPercentsN = new double[401];
     }
 
     // Update is called once per frame
@@ -51,14 +59,14 @@ public class DataPersistence : MonoBehaviour
     {
         if (UIControllerScript.Instance)
         {
-            for (int i = 0; i < 100; i++){
+            for (int i = 0; i < 101; i++){
                 cargoGridPercentsD[i] = UIControllerScript.Instance.cargoGridPercentsD[i];
                 patrolGridPercentsD[i] = UIControllerScript.Instance.patrolGridPercentsD[i];
                 cargoGridPercentsN[i] = UIControllerScript.Instance.cargoGridPercentsN[i];
                 patrolGridPercentsN[i] = UIControllerScript.Instance.patrolGridPercentsN[i];
             }
 
-            for (int i = 0; i < 400; i++){
+            for (int i = 0; i < 401; i++){
                 pirateGridPercentsD[i] = UIControllerScript.Instance.pirateGridPercentsD[i];
                 pirateGridPercentsN[i] = UIControllerScript.Instance.pirateGridPercentsN[i];
             }

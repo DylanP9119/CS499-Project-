@@ -23,7 +23,6 @@ public class UIControllerScript : MonoBehaviour
 
     public bool rawTextEditor;
 
-    public Button saveFileName;
     public string fileNameString;
 
     //input fields
@@ -693,5 +692,21 @@ public class UIControllerScript : MonoBehaviour
             }
             presentedPiratePercentsForPanel.text = presentedPiratePercentsForPanel.text + "Space " + i + ": " + (Math.Round(((pirateGridPercentsN[i] / sumOfPirates) * 100), 4)) + "%\n";
         }
+    }
+
+    public List<string> ReturnGridPercents(double[] values) {
+        double sumOfValues = 0.0;
+        List<string> stringList = new List<string>();
+        
+        for (int i = 0; i < values.Length; i++) {
+            sumOfValues = sumOfValues + values[i];
+        }
+
+        for (int i = 0; i < values.Length; i++) {
+            double roundedPercent = Math.Round(((values[i] / sumOfValues) * 100) , 3);
+            stringList.Add("Space " + i + ": " + roundedPercent  + "%\n");
+        }
+
+        return stringList;
     }
 }
