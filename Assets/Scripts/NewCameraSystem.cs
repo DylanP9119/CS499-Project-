@@ -16,7 +16,8 @@ public class CameraSystem : MonoBehaviour
     public Material bigMaterial;
     public Material medMaterial;
     public Material smallMaterial;
-    public GameObject grid;
+
+    public UISimSettings uiSimSettings;
 
     private void Update()
     {
@@ -79,7 +80,6 @@ public class CameraSystem : MonoBehaviour
 
     private void HandleCameraZoom()
     {
-        MeshRenderer gridRenderer = grid.GetComponent<MeshRenderer>();
 
         if (Input.mouseScrollDelta.y > 0)
         {
@@ -94,13 +94,16 @@ public class CameraSystem : MonoBehaviour
         targetFieldOfView = Mathf.Clamp(targetFieldOfView, fovMin, fovMax);
 
         if (targetFieldOfView > 35) {
-            gridRenderer.sharedMaterial = bigMaterial;
+            uiSimSettings.DeleteGrid();
+            uiSimSettings.UpdateGrid(bigMaterial);
         }
         else if (targetFieldOfView > 10) {
-            gridRenderer.sharedMaterial = medMaterial;
+            uiSimSettings.DeleteGrid();
+            uiSimSettings.UpdateGrid(medMaterial);
         }
         else {
-            gridRenderer.sharedMaterial = smallMaterial;
+            uiSimSettings.DeleteGrid();
+            uiSimSettings.UpdateGrid(smallMaterial);
         }
 
         float zoomSpeed = 5f;
