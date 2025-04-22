@@ -42,7 +42,7 @@ public class UILoadMenuController : MonoBehaviour
 
 
     // Called from JavaScript with the uploaded JSON
-    public void OnJsonFileLoaded(string path)
+    public void OnJsonFileLoaded(string json)
     {
         MyData data = JsonUtility.FromJson<MyData>(json);
         // Save header data to DataPersistence

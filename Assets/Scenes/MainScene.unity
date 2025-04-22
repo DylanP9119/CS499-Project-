@@ -981,9 +981,9 @@ MonoBehaviour:
   cinemachineVirtualCamera: {fileID: 510840361}
   fovMax: 115
   fovMin: 3
-  bigMaterial: {fileID: 2100000, guid: 3d58634d9103d8a48b4a9dca5f5b334e, type: 2}
-  medMaterial: {fileID: 2100000, guid: f3a21049c7164cf478398a8e664d18dd, type: 2}
-  smallMaterial: {fileID: 2100000, guid: 328b62427a01ed44390f04ab089c7af5, type: 2}
+  bigMaterial: {fileID: 2100000, guid: 738a46834f05d224d85769f0a5f7f82a, type: 2}
+  medMaterial: {fileID: 2100000, guid: 818e4c0a54212a14f8bdce670dd011bd, type: 2}
+  smallMaterial: {fileID: 2100000, guid: 0e65b3774af7d4b4996366cb5b7090ba, type: 2}
   uiSimSettings: {fileID: 1206188199}
 --- !u!1 &511711247
 GameObject:
@@ -1700,6 +1700,17 @@ MonoBehaviour:
   pirateDestroyedText: {fileID: 673881891}
   successfulEvasionText: {fileID: 1998928949}
   failedEvasionText: {fileID: 1009817246}
+  cargoEntered: 0
+  cargoExited: 0
+  patrolEntered: 0
+  patrolExited: 0
+  pirateEntered: 0
+  pirateExited: 0
+  captureCount: 0
+  rescueCount: 0
+  piratesDestroyed: 0
+  successfulEvasions: 0
+  failedEvasions: 0
 --- !u!4 &806475743
 Transform:
   m_ObjectHideFlags: 0
@@ -2422,8 +2433,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainMenu: mainMenu
   popupPanel: {fileID: 1466133244}
-  cubePrefab: {fileID: 5027235169069252502, guid: c17fff03e50ef524898b0dda6297e2b3, type: 3}
-  startingMaterial: {fileID: 2100000, guid: f3a21049c7164cf478398a8e664d18dd, type: 2}
+  cubePrefab: {fileID: 5027235169069252502, guid: 4f08f1aa049179d4ea2f9ec65be1ea44, type: 3}
+  startingMaterial: {fileID: 2100000, guid: 818e4c0a54212a14f8bdce670dd011bd, type: 2}
   startPosition: {x: 25, y: 0, z: 25}
 --- !u!4 &1206188200
 Transform:
@@ -4483,7 +4494,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e6e23c1bb80044440975d0717b79732c, type: 2}
+  - {fileID: 2100000, guid: 569ffc58d6b31e447b78a469333e2275, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -82,9 +82,7 @@ public class ShipInteractions : MonoBehaviour
                 }
                 else if (ship.CompareTag("Cargo") && otherShip.CompareTag("Pirate"))
                 {
-                    bool inOuterRange = IsWithinRange(shipPos, otherShip.transform.position, 4);
-                    bool inInnerRange = IsWithinRange(shipPos, otherShip.transform.position, 3);
-                    if (inOuterRange && !inInnerRange)
+                    if (IsWithinRange(shipPos, otherShip.transform.position, 4) && !IsWithinRange(shipPos, otherShip.transform.position, 3))
                     {
                         Debug.Log($"[EVADE TRIGGER] {ship.name} sees {otherShip.name} in 4x4, not in 3x3 at tick {ShipController.TimeStepCounter}");
                         HandleEvasion(ship, otherShip);
@@ -242,6 +240,8 @@ public class ShipInteractions : MonoBehaviour
 
     private void HandleCapture(GameObject pirate, GameObject cargo)
     {
+        Debug.Log($"[CAPTURE CHECK] {pirate.name} checking {cargo.name} @ tick {ShipController.TimeStepCounter}");
+
         if (pirateToCapturedCargo.ContainsValue(cargo))  // avoid dups
             return;
         if (pirateToCapturedCargo.ContainsKey(pirate))
@@ -260,38 +260,31 @@ public class ShipInteractions : MonoBehaviour
                 textController.UpdateEvasion(false, false);
                 evasionOutcomeLogged[(cargo, pirate)] = false; // mark that we’ve handled this pair
             }
-            else
-            {
-                //Debug.Log($"[SKIPPED LOGGING] {cargo.name} already marked failed for {pirate.name}");
-            }
             pendingEvasions.Remove((cargo, pirate));
-            if (evadeTimestamps.ContainsKey((cargo, pirate)))
-            {
-                textController.UpdateEvasion(false, false);
-                evadeTimestamps.Remove((cargo, pirate));
-            }
-
-            if (cargoBehavior != null)  // marks cargo as captured
-                cargoBehavior.isCaptured = true;
-
-            pirateToCapturedCargo[pirate] = cargo; //record as a pair
-
-            PirateBehavior pirateBehavior = pirate.GetComponent<PirateBehavior>(); //mark pirate as has cargo
-            if (pirateBehavior != null)
-                pirateBehavior.hasCargo = true;
-
-            // Align pirate with cargo, same cell
-            if (pirateBehavior != null && cargoBehavior != null)
-            {
-                pirateBehavior.currentGridPosition = cargoBehavior.currentGridPosition;
-                pirate.transform.position = cargo.transform.position;
-
-                cargo.transform.rotation = Quaternion.Euler(0, 180, 0);
-                pirate.transform.rotation = Quaternion.Euler(0, 180, 0);
-            }
-            textController.UpdateCaptures(true);
+            evadeTimestamps.Remove((cargo, pirate));
+            //if (evadeTimestamps.ContainsKey((cargo, pirate)))
+            //{
+            //    textController.UpdateEvasion(false, false);
+            //    evadeTimestamps.Remove((cargo, pirate));
+            //}
         }
+        if (cargoBehavior != null)  // marks cargo as captured
+            cargoBehavior.isCaptured = true;
+        pirateToCapturedCargo[pirate] = cargo; //record as a pair
+        PirateBehavior pirateBehavior = pirate.GetComponent<PirateBehavior>(); //mark pirate as has cargo
+        if (pirateBehavior != null)
+            pirateBehavior.hasCargo = true;
+        // Align pirate with cargo, same cell
+        if (pirateBehavior != null && cargoBehavior != null)
+        {
+            pirateBehavior.currentGridPosition = cargoBehavior.currentGridPosition;
+            pirate.transform.position = cargo.transform.position;
+            cargo.transform.rotation = Quaternion.Euler(0, 180, 0);
+            pirate.transform.rotation = Quaternion.Euler(0, 180, 0);
+        }
+        textController.UpdateCaptures(true);
     }
+
 
     private void HandleRescue(GameObject patrol)
     {
@@ -347,6 +340,8 @@ public class ShipInteractions : MonoBehaviour
 
     private void HandleEvasion(GameObject cargo, GameObject pirate)
     {
+        Debug.Log($"[EVADE CHECK] {cargo.name} checking {pirate.name} @ tick {ShipController.TimeStepCounter}");
+
         if (pirateToCapturedCargo.ContainsKey(pirate)) // No evasions if pirate already has a cargo
             return;
         CargoBehavior cargoBehavior = cargo.GetComponent<CargoBehavior>();
