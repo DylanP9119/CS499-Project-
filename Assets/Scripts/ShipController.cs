@@ -96,10 +96,10 @@ public class ShipController : MonoBehaviour
             return; // exit early if replay is active
         }
             // Simulation mode:
-            if (!timeControl.IsPaused)
+            if (!timeControl.IsPaused || timeControl.singleStepTriggered)
             {
                 spawnTimer += Time.deltaTime;
-                if (spawnTimer >= timeControl.GetSpeed())
+                if (spawnTimer >= timeControl.GetSpeed() || timeControl.singleStepTriggered)
                 {
                     // Advance simulation tick.
                     TimeStepCounter++;
@@ -148,6 +148,13 @@ public class ShipController : MonoBehaviour
              //       ReplayManager.Instance.RecordTick();
                     //ShipInteractions.Instance.CheckForInteractions(allShips);
                     spawnTimer = 0f;
+                    if (timeControl.singleStepTriggered)
+                    {
+                        timeControl.singleStepTriggered = false;
+                        timeControl.ToggleMovement(true); // Re-enter paused state
+                        Debug.Log("[SingleStep] Simulation stepped and re-paused.");
+
+                    }
                 }
             }
         

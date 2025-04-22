@@ -251,6 +251,9 @@ public class ShipInteractions : MonoBehaviour
         if (cargoBehavior != null && cargoBehavior.isCaptured)
             return;
 
+        if (cargoBehavior != null && cargoBehavior.isEvadingThisStep)
+            return; // Let the evasion finish first
+
         if (pendingEvasions.ContainsKey((cargo, pirate))) // handle failed evasion log
         {
             //Debug.Log($"[CAPTURE] {cargo.name} was previously evaded from {pirate.name}");
@@ -359,6 +362,7 @@ public class ShipInteractions : MonoBehaviour
         //Debug.Log($"[EVADE] {cargo.name} evaded {pirate.name} at tick {ShipController.TimeStepCounter}");
         evadeTimestamps[(cargo, pirate)] = ShipController.TimeStepCounter;
 
+        cargoBehavior.isEvadingThisStep = true;
         cargoBehavior.currentGridPosition += new Vector2Int(1, 1); //actually evade northeast. 
         cargo.transform.position = cargoBehavior.GridToWorld(cargoBehavior.currentGridPosition);
     }

@@ -12,6 +12,8 @@ public class TimeControl : MonoBehaviour
     private float moveTimer = 0f;
     private bool movementPaused = false;
     private float moveSpeed = 1f;
+    public bool singleStepTriggered = false;
+
 
     void Start()
     {
@@ -47,7 +49,12 @@ public class TimeControl : MonoBehaviour
             moveSpeed = speeds[currentSpeedIndex];
         }
     }
-
+    public void TriggerSingleStep()
+    {
+        if (IsPaused)
+            singleStepTriggered = true;
+            Debug.Log("[SingleStep] Triggered single step.");
+    }
     public float GetSpeed() => moveSpeed;
     void UpdateMoveTimer() { if (!movementPaused) moveTimer += Time.deltaTime; }
     public bool ShouldMove() => (moveTimer >= moveSpeed && !movementPaused);

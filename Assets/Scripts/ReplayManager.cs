@@ -64,6 +64,12 @@ public class ReplayManager : MonoBehaviour
         playPauseButton?.onClick.AddListener(TogglePlayPause);
         btnIncreaseSpeed?.onClick.AddListener(IncreaseSpeed);
         btnDecreaseSpeed?.onClick.AddListener(DecreaseSpeed);
+        btnStepFrame?.onClick.AddListener(() => {
+        Debug.Log("[SingleStep] Button Clicked");
+        if (!ReplayModeActive) {
+            TimeControl.Instance.TriggerSingleStep();
+        }
+    });
         UIvisibility(true);
         ReplayModeActive = false;
     }
@@ -226,6 +232,7 @@ void UpdateReplay()
     }
     replayTick = -1;
     UIvisibility(true);
+    UpdateDisplay();
     }
 
     // Rest of the original methods remain unchanged...
@@ -233,6 +240,32 @@ void UpdateReplay()
     {
         float timeLeft = (maxRecordedTick * timeControl.GetSpeed()) - replayTime;
         timeDisplay.text = $"Tick: {replayTick} | Speed: {replaySpeed}x | Time: {replayTime:0.0}s";
+        // Update sim-style clock UI in replay
+        if (shipController != null && shipController.timeDisplayRun != null)
+        {
+            float totalMinutes = replayTick * 5f;
+            int day = Mathf.FloorToInt(totalMinutes / 1440f) + 1;
+            int hour = Mathf.FloorToInt((totalMinutes / 60f) % 24);
+            int minute = Mathf.FloorToInt(totalMinutes % 60);
+            bool isNight = (hour >= 12);
+            string phase = isNight ? "Night" : "Day";
+
+            shipController.timeDisplayRun.text = $"{phase} {day} — {hour:D2}:{minute:D2}";
+        }
+
+        if (shipController != null && shipController.timeDisplayRemaining != null)
+        {
+            float totalSimMinutes = maxRecordedTick * 5f;
+            float minutesPassed = replayTick * 5f;
+            float remainingMinutes = totalSimMinutes - minutesPassed;
+            if (remainingMinutes < 0) remainingMinutes = 0;
+
+            int remainingDays = Mathf.FloorToInt(remainingMinutes / 1440f);
+            int remainingHours = Mathf.FloorToInt((remainingMinutes % 1440f) / 60f);
+            int remainingMins = Mathf.FloorToInt(remainingMinutes % 60f);
+
+            shipController.timeDisplayRemaining.text = $"Remaining: {remainingDays}d {remainingHours}h {remainingMins}m";
+        }
     }
 
     void TogglePlayPause()
