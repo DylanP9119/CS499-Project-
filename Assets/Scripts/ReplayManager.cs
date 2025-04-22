@@ -215,7 +215,7 @@ void UpdateReplay()
     ReplayModeActive = true;
     if (ShipController.Instance != null)
         ShipController.Instance.ClearAllShips();
-    if (textController != null)
+    if (textController != null) 
         textController.ResetCounters();
     
     replayPaused = true;
@@ -285,7 +285,7 @@ void UpdateReplay()
             events = recordedEvents
         };
       //  data.header.Add(headerdata);
-        string json = JsonUtility.ToJson(headerdata, true);
+        string json = JsonUtility.ToJson(headerdata, false);
         File.WriteAllText(DataPersistence.Instance.path, json);
     }
 

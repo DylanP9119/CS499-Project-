@@ -86,6 +86,7 @@ public class ShipInteractions : MonoBehaviour
                     bool inInnerRange = IsWithinRange(shipPos, otherShip.transform.position, 3);
                     if (inOuterRange && !inInnerRange)
                     {
+                        Debug.Log($"[EVADE TRIGGER] {ship.name} sees {otherShip.name} in 4x4, not in 3x3 at tick {ShipController.TimeStepCounter}");
                         HandleEvasion(ship, otherShip);
                     }
                 }
