@@ -28,7 +28,14 @@ public class TimeControl : MonoBehaviour
 
     void Update() => UpdateMoveTimer();
 
-    void TogglePlayPause() => movementPaused = !movementPaused;
+    public void TogglePlayPause()
+    {
+        movementPaused = !movementPaused;
+    } 
+    public bool getPauseStatus()
+    {
+        return movementPaused;
+    }
 
     void IncreaseSpeed()
     {
@@ -47,11 +54,14 @@ public class TimeControl : MonoBehaviour
             moveSpeed = speeds[currentSpeedIndex];
         }
     }
-
+public void ForceTick()
+{
+    TogglePlayPause();
+    ShipController.Instance.Update();
+    TogglePlayPause();
+}
     public float GetSpeed() => moveSpeed;
     void UpdateMoveTimer() { if (!movementPaused) moveTimer += Time.deltaTime; }
     public bool ShouldMove() => (moveTimer >= moveSpeed && !movementPaused);
     public void ResetMoveTimer() => moveTimer = 0f;
-    public void ToggleMovement(bool pause) => movementPaused = pause;
-    public bool IsPaused => movementPaused;
 }

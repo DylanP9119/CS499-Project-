@@ -13,7 +13,6 @@ public class ReplayManager : MonoBehaviour
     public Button btnIncreaseSpeed;
     public Button btnDecreaseSpeed;
     public Button btnStepFrame;
-    public Button btnStepBackFrame;
 
 
     public Text timeDisplay;
@@ -36,14 +35,14 @@ public class ReplayManager : MonoBehaviour
     private int lastRecordedTick = -1;
     // Replay state
     public float replayTime;
-    private bool replayPaused;
+    private bool replayPaused = false;
     private int replayTick = -1;
     private Dictionary<int, GameObject> replayedShips = new Dictionary<int, GameObject>();
     private int currentShipId;
 
     public bool ReplayModeActive = false;
     public bool ReplayPaused => replayPaused;
-    public readonly float[] speeds = { -1f, 1f, 2f, 10f, 20f };
+    public readonly float[] speeds = { -1.0f, 1.0f, 2.0f, 10.0f, 20.0f };
     private int currentSpeedIndex = 1;
     public float replaySpeed { get; private set; } = 1f;
 
@@ -64,11 +63,12 @@ public class ReplayManager : MonoBehaviour
         playPauseButton?.onClick.AddListener(TogglePlayPause);
         btnIncreaseSpeed?.onClick.AddListener(IncreaseSpeed);
         btnDecreaseSpeed?.onClick.AddListener(DecreaseSpeed);
+        btnStepFrame?.onClick.AddListener(StepFrame); // LISTENER FOR STEP FRAME 
         UIvisibility(true);
         ReplayModeActive = false;
     }
 
-    void Update()
+    void Update()   // ADD STEP FRAME HERE???
     {
      HandleReplayInput();
     
@@ -76,9 +76,8 @@ public class ReplayManager : MonoBehaviour
     {
         UpdateReplay();
     }
-    else if (!ReplayModeActive && !timeControl.IsPaused)
+    else if (!ReplayModeActive && !timeControl.getPauseStatus())
     {
-        // Use the actual simulation time for recording ticks
         float simTime = ShipController.TimeStepCounter * timeControl.GetSpeed();
         int currentSimTick = Mathf.FloorToInt(simTime / timeControl.GetSpeed());
         
@@ -223,7 +222,6 @@ void UpdateReplay()
     UIvisibility(true);
     }
 
-    // Rest of the original methods remain unchanged...
     void UpdateDisplay()
     {
         float timeLeft = (maxRecordedTick * timeControl.GetSpeed()) - replayTime;
@@ -251,15 +249,28 @@ void UpdateReplay()
 
     void DecreaseSpeed()
     {
-        if (currentSpeedIndex > 0)
+        if (currentSpeedIndex > 0  )
         {
+            if(replaySpeed == -1.0f && !ReplayModeActive)
+            {
+                currentSpeedIndex++;
+            }
             currentSpeedIndex--;
             replaySpeed = speeds[currentSpeedIndex];
             Debug.Log($"Replay speed set to {replaySpeed}x");
             UpdateDisplay();
         }
     }
+void StepFrame()
+{
+    if (!ReplayModeActive && timeControl.getPauseStatus()) // ADD STEP FRAME LOGIC
+    {
 
+        ApplyTick(targetTick); // ADD STEP FRAME LOGIC
+
+        UpdateDisplay(); // ADD STEP FRAME LOGIC
+    }
+}
 
     public void SaveReplayToFile()
     {
@@ -302,8 +313,11 @@ void UpdateReplay()
     void ApplyTick(int tick)
     {
         ClearReplayedShips();
+        string countersToApply = "";
+        
         if (tickData.TryGetValue(tick, out List<ReplayEvent> events))
         {
+            // Spawn ships and find latest counters in this tick
             foreach (ReplayEvent e in events)
             {
                 GameObject ship = shipController.ReplaySpawn(
@@ -314,8 +328,23 @@ void UpdateReplay()
                     e.sId
                 );
                 replayedShips[e.sId] = ship;
-                textController.ApplyCountersFromString(e.c);
+                countersToApply = e.c; // Get last counter in tick
             }
+        }
+
+        // Fallback to find nearest counters if none in this tick
+        if (string.IsNullOrEmpty(countersToApply))
+        {
+            var previousEvent = recordedEvents
+                .LastOrDefault(e => e.t <= tick);
+            
+            countersToApply = previousEvent?.c ?? "";
+        }
+
+        // Apply counters if valid
+        if (!string.IsNullOrEmpty(countersToApply))
+        {
+            textController.ApplyCountersFromString(countersToApply);
         }
     }
     public void UIvisibility(bool visible) => replayBoxUI.SetActive(visible);

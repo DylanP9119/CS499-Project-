@@ -6,7 +6,7 @@ using System.Linq;
 public class ShipController : MonoBehaviour
 {
     // Static simulation tick counter.
-    public static int TimeStepCounter { get; private set; } = 0;
+  //  public static int TimeStepCounter { get; private set; } = 0;
     // For simulation testing, we use a shorter tick duration.
 
     public GameObject cargoPrefab;
@@ -24,7 +24,7 @@ public class ShipController : MonoBehaviour
     public float patrolNightChance = 0.25f;
     public float pirateNightChance = 0.40f;
     float spawnTimer = 0.0f;
-    private TimeControl timeControl;
+    public TimeControl timeControl;
     private int cargoCounter = 1, patrolCounter = 1, pirateCounter = 1;
     public float simulationLengthHours = 24f;
     private float simMinutesPassed = 0f;
@@ -65,7 +65,7 @@ public class ShipController : MonoBehaviour
         UpdateTimeDisplays();
     }
 
-    void Update()
+    public void Update()
     {
         // Replay mode (when active)
         if (ReplayManager.Instance != null && ReplayManager.Instance.ReplayModeActive)
@@ -96,7 +96,7 @@ public class ShipController : MonoBehaviour
             return; // exit early if replay is active
         }
             // Simulation mode:
-            if (!timeControl.IsPaused)
+            if (!timeControl.getPauseStatus())
             {
                 spawnTimer += Time.deltaTime;
                 if (spawnTimer >= timeControl.GetSpeed())
@@ -129,7 +129,7 @@ public class ShipController : MonoBehaviour
                     if (simMinutesPassed >= simulationLengthHours * 60f)
                     {
                         Debug.Log("[SIM END] Reached simulation limit.");
-                        timeControl.ToggleMovement(true); // Pause simulation
+                        timeControl.TogglePlayPause(); // Pause simulation
                         return;
                     }
 
@@ -453,7 +453,10 @@ public class ShipController : MonoBehaviour
         }
         return null;
     }
-
+public static void IncrementTimeStep()
+{
+    TimeStepCounter++;
+}
     public void ClearAllShips()
     {
         foreach (GameObject ship in allShips)
@@ -465,10 +468,14 @@ public class ShipController : MonoBehaviour
     }
 
     // Public helper to update the simulation tick (used in replay mode).
-    public static void SetTimeStepCounter(int newTick)
+   public static void SetTimeStepCounter(int newTick)
     {
-        TimeStepCounter = newTick;
+       TimeStepCounter = newTick;
     }
-
-
+private static int _timeStepCounter;
+public static int TimeStepCounter 
+{ 
+    get => _timeStepCounter;
+    private set => _timeStepCounter = value; 
+}
 }

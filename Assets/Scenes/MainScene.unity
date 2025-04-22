@@ -1885,6 +1885,17 @@ MonoBehaviour:
   pirateDestroyedText: {fileID: 673881891}
   successfulEvasionText: {fileID: 1998928949}
   failedEvasionText: {fileID: 1009817246}
+  cargoEntered: 0
+  cargoExited: 0
+  patrolEntered: 0
+  patrolExited: 0
+  pirateEntered: 0
+  pirateExited: 0
+  captureCount: 0
+  rescueCount: 0
+  piratesDestroyed: 0
+  successfulEvasions: 0
+  failedEvasions: 0
 --- !u!4 &806475743
 Transform:
   m_ObjectHideFlags: 0
@@ -2458,7 +2469,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1104514150
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4346,7 +4357,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1969099160
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5147,6 +5158,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 646576067}
     - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+      propertyPath: btnStepFrame
+      value: 
+      objectReference: {fileID: 1104514151}
+    - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
       propertyPath: uiController
       value: 
       objectReference: {fileID: 0}
@@ -5178,6 +5193,10 @@ PrefabInstance:
       propertyPath: btnIncreaseSpeed
       value: 
       objectReference: {fileID: 590388215}
+    - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+      propertyPath: btnStepBackFrame
+      value: 
+      objectReference: {fileID: 1969099161}
     - target: {fileID: 2809413419116962255, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
       propertyPath: m_RootOrder
       value: 4
