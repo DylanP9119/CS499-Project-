@@ -70,7 +70,7 @@ public class ReplayManager : MonoBehaviour
 
     void Update()
     {
-   HandleReplayInput();
+     HandleReplayInput();
     
     if (ReplayModeActive && !replayPaused)
     {
@@ -164,11 +164,6 @@ public class ReplayManager : MonoBehaviour
 
 void UpdateReplay()
 {
-    if (timeControl == null)
-    {
-        Debug.LogError("TimeControl reference is missing!");
-        return;
-    }
 
     replayTime += Time.unscaledDeltaTime * replaySpeed;
     replayTime = Mathf.Clamp(replayTime, 0, maxRecordedTick);
@@ -240,7 +235,7 @@ void UpdateReplay()
         replayPaused = !replayPaused;
         if (playPauseButton != null)
         {
-            playPauseButton.image.sprite = replayPaused ? playSprite : pauseSprite;
+            playPauseButton.image.sprite = replayPaused ? pauseSprite : playSprite;
         }
     }
     void IncreaseSpeed()
@@ -264,8 +259,6 @@ void UpdateReplay()
             UpdateDisplay();
         }
     }
-
-
 
 
     public void SaveReplayToFile()
