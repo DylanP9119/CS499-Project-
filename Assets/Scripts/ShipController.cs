@@ -35,7 +35,9 @@ public class ShipController : MonoBehaviour
     private Dictionary<int, GameObject> replayedShips = new();
     public Text stepCounterText;
 
-
+    public Material dayMapMaterial;
+    public Material nightMapMaterial;
+    public GameObject mapBackground;
 
     private void Awake()
     {
@@ -108,6 +110,7 @@ public class ShipController : MonoBehaviour
                     //Debug.Log($"Processing Tick: {TimeStepCounter}");
                     simMinutesPassed += 5f;
                     UpdateDayNightCycle();
+                    UpdateMapForNight();
                     int totalMinutes = Mathf.FloorToInt(simMinutesPassed);
                     int day = (totalMinutes / 1440) + 1;
                     int hour = (totalMinutes / 60) % 24;
@@ -476,11 +479,21 @@ public class ShipController : MonoBehaviour
         allShips.Clear();
     }
 
+    public void UpdateMapForNight() {
+        Renderer mapRenderer = mapBackground.GetComponent<Renderer>();
+        if (isNight) mapRenderer.material = nightMapMaterial;
+        else mapRenderer.material = dayMapMaterial;
+    }
+
     // Public helper to update the simulation tick (used in replay mode).
     public static void SetTimeStepCounter(int newTick)
     {
         TimeStepCounter = newTick;
     }
 
+    public bool CheckIfNight() {
+        if (isNight) return true;
+        return false;
+    }
 
 }

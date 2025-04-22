@@ -14,11 +14,16 @@ public class CameraSystem : MonoBehaviour
     private Vector2 lastMousePos;
     private float targetFieldOfView = 50;
 
-    public Material bigMaterial;
-    public Material medMaterial;
-    public Material smallMaterial;
+    public Material bigMaterialDay;
+    public Material medMaterialDay;
+    public Material smallMaterialDay;
+
+    public Material bigMaterialNight;
+    public Material medMaterialNight;
+    public Material smallMaterialNight;
 
     public UISimSettings uiSimSettings;
+    public ShipController shipController;
 
     public float cameraSpeed;
     public TMP_Text cameraSpeedText;
@@ -114,15 +119,19 @@ public class CameraSystem : MonoBehaviour
 
         if (targetFieldOfView > 35) {
             uiSimSettings.DeleteGrid();
-            uiSimSettings.UpdateGrid(bigMaterial);
+            if (shipController.CheckIfNight()) uiSimSettings.UpdateGrid(bigMaterialNight);
+            else uiSimSettings.UpdateGrid(bigMaterialDay);
+            
         }
         else if (targetFieldOfView > 10) {
             uiSimSettings.DeleteGrid();
-            uiSimSettings.UpdateGrid(medMaterial);
+            if (shipController.CheckIfNight()) uiSimSettings.UpdateGrid(medMaterialNight);
+            else uiSimSettings.UpdateGrid(medMaterialDay);
         }
         else {
             uiSimSettings.DeleteGrid();
-            uiSimSettings.UpdateGrid(smallMaterial);
+            if (shipController.CheckIfNight()) uiSimSettings.UpdateGrid(smallMaterialNight);
+            else uiSimSettings.UpdateGrid(smallMaterialDay);
         }
 
         float zoomSpeed = 5f;
