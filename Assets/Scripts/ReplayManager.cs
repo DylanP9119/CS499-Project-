@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using System.Linq;
+using TMPro;
 
 public class ReplayManager : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class ReplayManager : MonoBehaviour
     public Button btnDecreaseSpeed;
     public Text timeDisplay;
     public ShipController shipController;
+    public TMP_Text speedText;
 
     public TimeControl timeControl;
 
@@ -238,6 +240,7 @@ void UpdateReplay()
             replaySpeed = speeds[currentSpeedIndex];
             Debug.Log($"Replay speed set to {replaySpeed}x");
             UpdateDisplay();
+            speedText.text = replaySpeed + "X SPEED";
         }
     }
 
@@ -249,6 +252,7 @@ void UpdateReplay()
             replaySpeed = speeds[currentSpeedIndex];
             Debug.Log($"Replay speed set to {replaySpeed}x");
             UpdateDisplay();
+            speedText.text = replaySpeed + "X SPEED";
         }
     }
 
