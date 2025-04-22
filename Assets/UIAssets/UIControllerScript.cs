@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+
+
 public class UIControllerScript : MonoBehaviour
 {
 
@@ -92,6 +94,11 @@ public class UIControllerScript : MonoBehaviour
 
     public static UIControllerScript Instance;
 
+    public GameObject percentPanel;
+    public TMP_Text presentedCargoPercentsForPanel;
+    public TMP_Text presentedPiratePercentsForPanel;
+    public TMP_Text presentedPatrolPercentsForPanel;
+
     // THINGS TO DO ON PROGRAM START
     public void Start()
     {
@@ -143,6 +150,7 @@ public class UIControllerScript : MonoBehaviour
         pirateNightSlider.interactable = false;
 
         errorPanel.SetActive(false);
+        percentPanel.SetActive(false);
 
         //fill grid spaces with default values
 
@@ -154,6 +162,7 @@ public class UIControllerScript : MonoBehaviour
         patrolGridPercentsN = new double[101];
         pirateGridPercentsN = new double[401];
         ResetGrids();
+        
     }
 
     //back button
@@ -164,6 +173,11 @@ public class UIControllerScript : MonoBehaviour
 
     public void ErrorOKButton() {
         errorPanel.SetActive(false);
+    }
+    
+    public void PercentsOKButton() {
+        ResetGrids();
+        percentPanel.SetActive(false);
     }
 
     // TOGGLE DECREASED NIGHT TIME CAPTURE, ONLY WHEN CERTAIN BUTTON IS PRESSED.
@@ -620,6 +634,64 @@ public class UIControllerScript : MonoBehaviour
         {
             pirateGridPercentsD[i] = 1;
             pirateGridPercentsN[i] = 1;
+        }
+    }
+
+    public void ShowDayPercentsToUser() {
+        InstantiateDayGridPercents();
+        presentedCargoPercentsForPanel.text = "";
+        presentedPiratePercentsForPanel.text = "";
+        presentedPatrolPercentsForPanel.text = "";
+
+        double sumOfCargos = 0.0;
+        double sumOfPirates = 0.0;
+        double sumOfPatrols = 0.0;
+
+        percentPanel.SetActive(true);
+
+        for (int i = 0; i < pirateGridPercentsD.Length; i++) {
+            if (i < cargoGridPercentsD.Length) {
+                sumOfCargos = sumOfCargos + cargoGridPercentsD[i];
+                sumOfPatrols = sumOfPatrols + patrolGridPercentsD[i];
+            }
+            sumOfPirates = sumOfPirates + pirateGridPercentsD[i];
+        }
+
+        for (int i = 0; i < pirateGridPercentsD.Length; i++) {
+            if (i < cargoGridPercentsD.Length) {
+                presentedCargoPercentsForPanel.text = presentedCargoPercentsForPanel.text + "Space " + i + ": " + (Math.Round((cargoGridPercentsD[i] / sumOfCargos) * 100), 2) + "%\n";
+                presentedPatrolPercentsForPanel.text = presentedPiratePercentsForPanel.text + "Space " + i + ": " + (Math.Round((patrolGridPercentsD[i] / sumOfPatrols) * 100), 2) + "%\n";
+            }
+            presentedPiratePercentsForPanel.text = presentedPiratePercentsForPanel.text + "Space " + i + ": " + (Math.Round((pirateGridPercentsD[i] / sumOfPirates) * 100), 2) + "%\n";
+        }
+    }
+
+    public void ShowNightPercentsToUser() {
+        InstantiateNightGridPercents();
+        presentedCargoPercentsForPanel.text = "";
+        presentedPiratePercentsForPanel.text = "";
+        presentedPatrolPercentsForPanel.text = "";
+
+        double sumOfCargos = 0.0;
+        double sumOfPirates = 0.0;
+        double sumOfPatrols = 0.0;
+
+        percentPanel.SetActive(true);
+
+        for (int i = 0; i < pirateGridPercentsN.Length; i++) {
+            if (i < cargoGridPercentsN.Length) {
+                sumOfCargos = sumOfCargos + cargoGridPercentsN[i];
+                sumOfPatrols = sumOfPatrols + patrolGridPercentsN[i];
+            }
+            sumOfPirates = sumOfPirates + pirateGridPercentsN[i];
+        }
+
+        for (int i = 0; i < pirateGridPercentsN.Length; i++) {
+            if (i < cargoGridPercentsN.Length) {
+                presentedCargoPercentsForPanel.text = presentedCargoPercentsForPanel.text + "Space " + i + ": " + (Math.Round((cargoGridPercentsN[i] / sumOfCargos) * 100), 2) + "%\n";
+                presentedPatrolPercentsForPanel.text = presentedPatrolPercentsForPanel.text + "Space " + i + ": " + (Math.Round((patrolGridPercentsN[i] / sumOfPatrols) * 100), 2) + "%\n";
+            }
+            presentedPiratePercentsForPanel.text = presentedPiratePercentsForPanel.text + "Space " + i + ": " + (Math.Round((pirateGridPercentsN[i] / sumOfPirates) * 100), 2) + "%\n";
         }
     }
 }
