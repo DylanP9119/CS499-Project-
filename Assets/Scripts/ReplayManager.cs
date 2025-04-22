@@ -70,7 +70,7 @@ public class ReplayManager : MonoBehaviour
 
     void Update()   // ADD STEP FRAME HERE???
     {
-     HandleReplayInput();
+   HandleReplayInput();
     
     if (ReplayModeActive && !replayPaused)
     {
@@ -163,6 +163,11 @@ public class ReplayManager : MonoBehaviour
 
 void UpdateReplay()
 {
+    if (timeControl == null)
+    {
+        Debug.LogError("TimeControl reference is missing!");
+        return;
+    }
 
     replayTime += Time.unscaledDeltaTime * replaySpeed;
     replayTime = Mathf.Clamp(replayTime, 0, maxRecordedTick);
@@ -233,7 +238,7 @@ void UpdateReplay()
         replayPaused = !replayPaused;
         if (playPauseButton != null)
         {
-            playPauseButton.image.sprite = replayPaused ? pauseSprite : playSprite;
+            playPauseButton.image.sprite = replayPaused ? playSprite : pauseSprite;
         }
     }
     void IncreaseSpeed()
@@ -271,6 +276,8 @@ void StepFrame()
         UpdateDisplay(); // ADD STEP FRAME LOGIC
     }
 }
+
+
 
     public void SaveReplayToFile()
     {
