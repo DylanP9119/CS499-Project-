@@ -21074,7 +21074,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1135158723}
         m_TargetAssemblyTypeName: UIControllerScript, Assembly-CSharp
-        m_MethodName: ShowDayPercentsToUser
+        m_MethodName: ShowNightPercentsToUser
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

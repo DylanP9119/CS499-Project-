@@ -639,9 +639,9 @@ public class UIControllerScript : MonoBehaviour
 
     public void ShowDayPercentsToUser() {
         InstantiateDayGridPercents();
-        presentedCargoPercentsForPanel.text = "";
-        presentedPiratePercentsForPanel.text = "";
-        presentedPatrolPercentsForPanel.text = "";
+        presentedCargoPercentsForPanel.text = "Cargo Spawn Percents per Space:\n";
+        presentedPiratePercentsForPanel.text = "Pirate Spawn Percents per Space:\n";
+        presentedPatrolPercentsForPanel.text = "Patrol Spawn Percents per Space:\n";
 
         double sumOfCargos = 0.0;
         double sumOfPirates = 0.0;
@@ -659,10 +659,10 @@ public class UIControllerScript : MonoBehaviour
 
         for (int i = 0; i < pirateGridPercentsD.Length; i++) {
             if (i < cargoGridPercentsD.Length) {
-                presentedCargoPercentsForPanel.text = presentedCargoPercentsForPanel.text + "Space " + i + ": " + (Math.Round((cargoGridPercentsD[i] / sumOfCargos) * 100), 2) + "%\n";
-                presentedPatrolPercentsForPanel.text = presentedPiratePercentsForPanel.text + "Space " + i + ": " + (Math.Round((patrolGridPercentsD[i] / sumOfPatrols) * 100), 2) + "%\n";
+                presentedCargoPercentsForPanel.text = presentedCargoPercentsForPanel.text + "Space " + i + ": " + Math.Round(((cargoGridPercentsD[i] / sumOfCargos) * 100), 4) + "%\n";
+                presentedPatrolPercentsForPanel.text = presentedPatrolPercentsForPanel.text + "Space " + i + ": " + Math.Round(((patrolGridPercentsD[i] / sumOfPatrols) * 100), 4) + "%\n";
             }
-            presentedPiratePercentsForPanel.text = presentedPiratePercentsForPanel.text + "Space " + i + ": " + (Math.Round((pirateGridPercentsD[i] / sumOfPirates) * 100), 2) + "%\n";
+            presentedPiratePercentsForPanel.text = presentedPiratePercentsForPanel.text + "Space " + i + ": " + Math.Round(((pirateGridPercentsD[i] / sumOfPirates) * 100), 4) + "%\n";
         }
     }
 
@@ -688,10 +688,10 @@ public class UIControllerScript : MonoBehaviour
 
         for (int i = 0; i < pirateGridPercentsN.Length; i++) {
             if (i < cargoGridPercentsN.Length) {
-                presentedCargoPercentsForPanel.text = presentedCargoPercentsForPanel.text + "Space " + i + ": " + (Math.Round((cargoGridPercentsN[i] / sumOfCargos) * 100), 2) + "%\n";
-                presentedPatrolPercentsForPanel.text = presentedPatrolPercentsForPanel.text + "Space " + i + ": " + (Math.Round((patrolGridPercentsN[i] / sumOfPatrols) * 100), 2) + "%\n";
+                presentedCargoPercentsForPanel.text = presentedCargoPercentsForPanel.text + "Space " + i + ": " + (Math.Round(((cargoGridPercentsN[i] / sumOfCargos) * 100), 4)) + "%\n";
+                presentedPatrolPercentsForPanel.text = presentedPatrolPercentsForPanel.text + "Space " + i + ": " + (Math.Round(((patrolGridPercentsN[i] / sumOfPatrols) * 100), 4)) + "%\n";
             }
-            presentedPiratePercentsForPanel.text = presentedPiratePercentsForPanel.text + "Space " + i + ": " + (Math.Round((pirateGridPercentsN[i] / sumOfPirates) * 100), 2) + "%\n";
+            presentedPiratePercentsForPanel.text = presentedPiratePercentsForPanel.text + "Space " + i + ": " + (Math.Round(((pirateGridPercentsN[i] / sumOfPirates) * 100), 4)) + "%\n";
         }
     }
 }
