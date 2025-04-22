@@ -5,13 +5,13 @@ using System.IO;
 using System.Linq;
 public class DataPersistence : MonoBehaviour
 {
-    public double[] cargoGridPercentsD = new double[100];
-    public double[] patrolGridPercentsD = new double[100];
-    public double[] pirateGridPercentsD = new double[400];
+    public double[] cargoGridPercentsD = new double[101];
+    public double[] patrolGridPercentsD = new double[101];
+    public double[] pirateGridPercentsD = new double[401];
 
-    public double[] cargoGridPercentsN = new double[100];
-    public double[] patrolGridPercentsN = new double[100];
-    public double[] pirateGridPercentsN = new double[400];
+    public double[] cargoGridPercentsN = new double[101];
+    public double[] patrolGridPercentsN = new double[101];
+    public double[] pirateGridPercentsN = new double[401];
 
     public int cargoDayPercent;
     public int cargoNightPercent;

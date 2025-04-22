@@ -2,25 +2,28 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using TMPro;
 
 public class UISimSettings : MonoBehaviour
 {
     [SerializeField] private string mainMenu = "mainMenu";
 
     public GameObject popupPanel;
+    public GameObject infoPanel;
     public GameObject cubePrefab;
     public Material startingMaterial;
+
+    public TMP_Text instantiatedStatsInfo;
 
     public Vector3 startPosition = new Vector3(25f, 0f, 25f);
     private List<GameObject> spawnedCubes = new List<GameObject>();
 
-    void Start() {
-        popupPanel.SetActive(false);
-    }
+    public static DataPersistence Instance;
 
     void Awake() {
         //instantiate grid
         popupPanel.SetActive(false);
+        infoPanel.SetActive(false);
         UpdateGrid(startingMaterial);
     }
 
@@ -72,5 +75,18 @@ public class UISimSettings : MonoBehaviour
 
     public void SaveSimluation() {
         //Save info goes here!
+    }
+
+    public void InfoButton() {
+        infoPanel.SetActive(true);
+
+        instantiatedStatsInfo.text = "File Name:\n" + DataPersistence.Instance.fileNameString + "\n\nTotal Sim Time:\n" + DataPersistence.Instance.dayCount + " Days, " + DataPersistence.Instance.hourCount + " Hours\n\nNight Values: "
+                                    + DataPersistence.Instance.nightCaptureEnabled + "\n\nCargo Percents:\n" + DataPersistence.Instance.cargoDayPercent + "% Day, " + DataPersistence.Instance.cargoNightPercent + "% Night\nPirate Percents:\n"
+                                    + DataPersistence.Instance.pirateDayPercent + "% Day, " + DataPersistence.Instance.pirateNightPercent + "% Night\nPatrol Percents:\n" + DataPersistence.Instance.patrolDayPercent + "% Day, " 
+                                    + DataPersistence.Instance.patrolNightPercent + "% Night";
+    }
+
+    public void ExitInfoButton() {
+        infoPanel.SetActive(false);
     }
 }
