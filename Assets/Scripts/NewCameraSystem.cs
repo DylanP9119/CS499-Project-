@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using TMPro;
 
 public class CameraSystem : MonoBehaviour
 {
@@ -19,6 +20,24 @@ public class CameraSystem : MonoBehaviour
 
     public UISimSettings uiSimSettings;
 
+    public float cameraSpeed;
+    public TMP_Text cameraSpeedText;
+
+    public void Awake() {
+        cameraSpeed = 1;
+        cameraSpeedText.text = $"{cameraSpeed}";
+    }
+
+    public void IsIncreased(bool isIncreased) {
+        if (isIncreased) cameraSpeed++;
+        else cameraSpeed--;
+
+        if (cameraSpeed > 10) cameraSpeed = 10;
+        else if (cameraSpeed < 1) cameraSpeed = 1;
+
+        cameraSpeedText.text = $"{cameraSpeed}";
+    }
+
     private void Update()
     {
         HandleCameraMovement();
@@ -33,10 +52,10 @@ public class CameraSystem : MonoBehaviour
     {
         Vector3 inputDir = new Vector3(0, 0, 0);
 
-        if (Input.GetKey(KeyCode.W) && (transform.position.z < 100) == true) inputDir.y = +1f;
-        if (Input.GetKey(KeyCode.S) && (transform.position.z > 0) == true) inputDir.y = -1f;
-        if (Input.GetKey(KeyCode.A) && (transform.position.x > 0) == true) inputDir.x = -1f;
-        if (Input.GetKey(KeyCode.D) && (transform.position.x < 400) == true) inputDir.x = +1f;
+        if (Input.GetKey(KeyCode.W) && (transform.position.z < 100) == true) inputDir.y = cameraSpeed;
+        if (Input.GetKey(KeyCode.S) && (transform.position.z > 0) == true) inputDir.y = -cameraSpeed;
+        if (Input.GetKey(KeyCode.A) && (transform.position.x > 0) == true) inputDir.x = -cameraSpeed;
+        if (Input.GetKey(KeyCode.D) && (transform.position.x < 400) == true) inputDir.x = cameraSpeed;
 
 
         /* if (Input.GetMouseButtonDown(1))

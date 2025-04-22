@@ -668,9 +668,9 @@ public class UIControllerScript : MonoBehaviour
 
     public void ShowNightPercentsToUser() {
         InstantiateNightGridPercents();
-        presentedCargoPercentsForPanel.text = "";
-        presentedPiratePercentsForPanel.text = "";
-        presentedPatrolPercentsForPanel.text = "";
+        presentedCargoPercentsForPanel.text = "Cargo Spawn Percents per Space:\n";
+        presentedPiratePercentsForPanel.text = "Pirate Spawn Percents per Space:\n";
+        presentedPatrolPercentsForPanel.text = "Patrol Spawn Percents per Space:\n";
 
         double sumOfCargos = 0.0;
         double sumOfPirates = 0.0;

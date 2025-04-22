@@ -20,7 +20,7 @@ public class UISimSettings : MonoBehaviour
 
     void Awake() {
         //instantiate grid
-
+        popupPanel.SetActive(false);
         UpdateGrid(startingMaterial);
     }
 
