@@ -28,7 +28,7 @@ public class TimeControl : MonoBehaviour
 
     void Update() => UpdateMoveTimer();
 
-    void TogglePlayPause() => movementPaused = !movementPaused;
+    public void TogglePlayPause() => movementPaused = !movementPaused;
 
     void IncreaseSpeed()
     {

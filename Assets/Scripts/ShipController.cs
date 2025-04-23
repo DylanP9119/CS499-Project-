@@ -64,7 +64,13 @@ public class ShipController : MonoBehaviour
 
         UpdateTimeDisplays();
     }
-
+    public void ManualAdvanceTick()
+    {
+        if (timeControl.IsPaused)
+        {
+            ProcessSimulationTick();
+        }
+    }
     void Update()
     {
         // Replay mode (when active)
@@ -168,7 +174,44 @@ public class ShipController : MonoBehaviour
             }
         
     }
+   private void ProcessSimulationTick()
+    {
+        // Advance simulation tick.
+        TimeStepCounter++;
+        if (stepCounterText != null)
+            stepCounterText.text = $"Step: {TimeStepCounter}";
+        simMinutesPassed += 5f;
+        UpdateDayNightCycle();
+        UpdateTimeDisplays();
 
+        float simTime = TimeStepCounter * 1f;
+        SpawnShip(simTime);
+        
+        // Step each ship's behavior.
+        foreach (GameObject ship in allShips)
+        {
+            if (ship == null) continue;
+            if (ship.CompareTag("Cargo"))
+            {
+                var cargo = ship.GetComponent<CargoBehavior>();
+                if (cargo != null)
+                    cargo.Step(true);
+            }
+            else if (ship.CompareTag("Patrol"))
+            {
+                var patrol = ship.GetComponent<PatrolBehavior>();
+                if (patrol != null)
+                    patrol.Step(true);
+            }
+            else if (ship.CompareTag("Pirate"))
+            {
+                var pirate = ship.GetComponent<PirateBehavior>();
+                if (pirate != null)
+                    pirate.Step(true);
+            }
+        }
+        ShipInteractions.Instance.CheckForInteractions(allShips);
+    }
     public static int SelectIndexByWeight(double[] weights)
     {
         // Step 1: Calculate the sum of all weights

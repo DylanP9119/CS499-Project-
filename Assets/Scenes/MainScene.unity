@@ -1885,6 +1885,17 @@ MonoBehaviour:
   pirateDestroyedText: {fileID: 673881891}
   successfulEvasionText: {fileID: 1998928949}
   failedEvasionText: {fileID: 1009817246}
+  cargoEntered: 0
+  cargoExited: 0
+  patrolEntered: 0
+  patrolExited: 0
+  pirateEntered: 0
+  pirateExited: 0
+  captureCount: 0
+  rescueCount: 0
+  piratesDestroyed: 0
+  successfulEvasions: 0
+  failedEvasions: 0
 --- !u!4 &806475743
 Transform:
   m_ObjectHideFlags: 0
@@ -2458,7 +2469,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1104514150
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2475,7 +2486,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 68, y: -19}
+  m_AnchoredPosition: {x: 126.4, y: -19}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1104514151
@@ -5118,6 +5129,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2809413418428824835, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -4.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2809413419106048476, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -68.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2809413419109804146, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 62.1
+      objectReference: {fileID: 0}
     - target: {fileID: 2809413419116962253, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
       propertyPath: m_Name
       value: ReplayManager
@@ -5146,6 +5169,10 @@ PrefabInstance:
       propertyPath: timeDisplay
       value: 
       objectReference: {fileID: 646576067}
+    - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+      propertyPath: btnStepFrame
+      value: 
+      objectReference: {fileID: 1104514151}
     - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
       propertyPath: uiController
       value: 

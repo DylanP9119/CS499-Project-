@@ -40,7 +40,6 @@ public class ReplayManager : MonoBehaviour
     private int replayTick = -1;
     private Dictionary<int, GameObject> replayedShips = new Dictionary<int, GameObject>();
     private int currentShipId;
-
     public bool ReplayModeActive = false;
     public bool ReplayPaused => replayPaused;
     public readonly float[] speeds = { -1f, 1f, 2f, 10f, 20f };
@@ -64,6 +63,7 @@ public class ReplayManager : MonoBehaviour
         playPauseButton?.onClick.AddListener(TogglePlayPause);
         btnIncreaseSpeed?.onClick.AddListener(IncreaseSpeed);
         btnDecreaseSpeed?.onClick.AddListener(DecreaseSpeed);
+        btnStepFrame?.onClick.AddListener(AdvanceSimulationTick);
         UIvisibility(true);
         ReplayModeActive = false;
     }
@@ -76,9 +76,8 @@ public class ReplayManager : MonoBehaviour
     {
         UpdateReplay();
     }
-    else if (!ReplayModeActive && !timeControl.IsPaused)
+    if (!ReplayModeActive && timeControl.IsPaused)
     {
-        // Use the actual simulation time for recording ticks
         float simTime = ShipController.TimeStepCounter * timeControl.GetSpeed();
         int currentSimTick = Mathf.FloorToInt(simTime / timeControl.GetSpeed());
         
@@ -88,8 +87,8 @@ public class ReplayManager : MonoBehaviour
             lastRecordedTick = currentSimTick;
         }
     }
-
     }
+
     void HandleReplayInput()
     {
         if (Input.GetKeyDown(KeyCode.R))
@@ -161,7 +160,14 @@ public class ReplayManager : MonoBehaviour
             maxRecordedTick = tickData.Keys.Max();
         }
     }
-
+    void AdvanceSimulationTick()
+    {
+        // Only advance simulation tick if we're not in replay mode and simulation is paused.
+        if (!ReplayModeActive && timeControl.IsPaused)
+        {
+            ShipController.Instance.ManualAdvanceTick();
+        }
+    }
 void UpdateReplay()
 {
 
@@ -206,7 +212,7 @@ void UpdateReplay()
         Debug.LogWarning("No replay data to play");
         return;
     }
-   // replaySpeed = speeds[1];
+    replaySpeed = speeds[1];
     ReplayModeActive = true;
     if (ShipController.Instance != null)
         ShipController.Instance.ClearAllShips();
@@ -223,7 +229,6 @@ void UpdateReplay()
     UIvisibility(true);
     }
 
-    // Rest of the original methods remain unchanged...
     void UpdateDisplay()
     {
         float timeLeft = (maxRecordedTick * timeControl.GetSpeed()) - replayTime;
@@ -259,7 +264,6 @@ void UpdateReplay()
             UpdateDisplay();
         }
     }
-
 
     public void SaveReplayToFile()
     {
