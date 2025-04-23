@@ -16,7 +16,6 @@ public class ReplayManager : MonoBehaviour
     public Button btnStepFrame;
     public Button btnStepBackFrame;
 
-
     public Text timeDisplay;
     public ShipController shipController;
 
@@ -212,7 +211,8 @@ void UpdateReplay()
         Debug.LogWarning("No replay data to play");
         return;
     }
-   // replaySpeed = speeds[1];
+    //replaySpeed = speeds[1]; // breaks
+    UpdateDisplay();
     ReplayModeActive = true;
     if (ShipController.Instance != null)
         ShipController.Instance.ClearAllShips();
@@ -279,6 +279,7 @@ void UpdateReplay()
             replaySpeed = speeds[currentSpeedIndex];
             Debug.Log($"Replay speed set to {replaySpeed}x");
             UpdateDisplay();
+            speedText.text = replaySpeed + "X SPEED";
         }
     }
 
@@ -290,6 +291,7 @@ void UpdateReplay()
             replaySpeed = speeds[currentSpeedIndex];
             Debug.Log($"Replay speed set to {replaySpeed}x");
             UpdateDisplay();
+            speedText.text = replaySpeed + "X SPEED";
         }
     }
 

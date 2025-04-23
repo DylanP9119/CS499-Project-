@@ -61,35 +61,6 @@ public class UISimSettings : MonoBehaviour
         }
     }
 
-    void Awake() {
-        //instantiate grid
-
-        UpdateGrid(startingMaterial);
-    }
-
-    public void UpdateGrid(Material importedMaterial) {
-        for (int x = 0; x < 8; x++) {
-            for (int y = 0; y < 2; y++) {
-                Vector3 updatedPosition = new Vector3(x * 50, 0, y * 50);
-                Vector3 spawnPosition = startPosition + updatedPosition;
-    
-                GameObject newCube = Instantiate(cubePrefab, spawnPosition, Quaternion.identity);
-
-                newCube.name = $"Cube_{x}_{y}";
-
-                Renderer cubeRenderer = newCube.GetComponent<Renderer>();
-                cubeRenderer.material = importedMaterial;
-                spawnedCubes.Add(newCube);
-            }
-        }
-    }
-
-    public void DeleteGrid() {
-        foreach (GameObject cube in spawnedCubes) {
-            Destroy(cube);
-        }
-    }
-
     public void BackButton()
     {
         popupPanel.SetActive(true);

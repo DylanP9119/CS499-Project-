@@ -182,12 +182,9 @@ MonoBehaviour:
   simulationLengthHours: 48
   allShips: []
   stepCounterText: {fileID: 1772882706}
-<<<<<<< HEAD
-=======
-  dayMapMaterial: {fileID: 2100000, guid: e6e23c1bb80044440975d0717b79732c, type: 2}
-  nightMapMaterial: {fileID: 2100000, guid: 69f95e772eeffb64b8987b8100d4c0ce, type: 2}
+  dayMapMaterial: {fileID: 2100000, guid: 885ad8db994272649abb25a2bb532bd1, type: 2}
+  nightMapMaterial: {fileID: 2100000, guid: 9502926aa380bf8439a1f34b39f26197, type: 2}
   mapBackground: {fileID: 2028625575}
->>>>>>> Jacob2
 --- !u!114 &18849723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,7 +205,6 @@ MonoBehaviour:
   - 0.5
   - 0.1
   - 0.05
-  singleStepTriggered: 0
 --- !u!114 &18849724
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2576,23 +2572,16 @@ MonoBehaviour:
   cinemachineVirtualCamera: {fileID: 510840361}
   fovMax: 115
   fovMin: 3
-<<<<<<< HEAD
-  bigMaterial: {fileID: 2100000, guid: 738a46834f05d224d85769f0a5f7f82a, type: 2}
-  medMaterial: {fileID: 2100000, guid: 818e4c0a54212a14f8bdce670dd011bd, type: 2}
-  smallMaterial: {fileID: 2100000, guid: 0e65b3774af7d4b4996366cb5b7090ba, type: 2}
-  uiSimSettings: {fileID: 1206188199}
-=======
-  bigMaterialDay: {fileID: 2100000, guid: 328b62427a01ed44390f04ab089c7af5, type: 2}
-  medMaterialDay: {fileID: 2100000, guid: f3a21049c7164cf478398a8e664d18dd, type: 2}
-  smallMaterialDay: {fileID: 2100000, guid: 3d58634d9103d8a48b4a9dca5f5b334e, type: 2}
-  bigMaterialNight: {fileID: 2100000, guid: ab68e6cb8d2af1548a7837eb3c8e04de, type: 2}
-  medMaterialNight: {fileID: 2100000, guid: f9667dc65e8d49a4d8b1949f5ae304f1, type: 2}
-  smallMaterialNight: {fileID: 2100000, guid: ba53f2876e7a4a0488f9cfdc92aaae6a, type: 2}
+  bigMaterialDay: {fileID: 2100000, guid: 844a2e5f8c959b543bbbfc0469af2f63, type: 2}
+  medMaterialDay: {fileID: 2100000, guid: 47cc34aea0761b547b8063dcdff153c7, type: 2}
+  smallMaterialDay: {fileID: 2100000, guid: 93e8d58672adf0343a523d610f0b17cd, type: 2}
+  bigMaterialNight: {fileID: 2100000, guid: da80363ce49ee0744a4e5a244f03ebad, type: 2}
+  medMaterialNight: {fileID: 2100000, guid: e2a85a60814e2334586927b955cb843c, type: 2}
+  smallMaterialNight: {fileID: 2100000, guid: 367f0ba512efde6449282e27279c033e, type: 2}
   uiSimSettings: {fileID: 1206188199}
   shipController: {fileID: 18849722}
   cameraSpeed: 0
   cameraSpeedText: {fileID: 1317097399}
->>>>>>> Jacob2
 --- !u!1 &511711247
 GameObject:
   m_ObjectHideFlags: 0
@@ -3405,11 +3394,7 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
-<<<<<<< HEAD
---- !u!1 &646576065
-=======
 --- !u!1 &616724664
->>>>>>> Jacob2
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3417,50 +3402,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-<<<<<<< HEAD
-  - component: {fileID: 646576066}
-  - component: {fileID: 646576068}
-  - component: {fileID: 646576067}
-  m_Layer: 5
-  m_Name: Time
-=======
   - component: {fileID: 616724665}
   - component: {fileID: 616724667}
   - component: {fileID: 616724666}
   m_Layer: 5
   m_Name: Content
->>>>>>> Jacob2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
-<<<<<<< HEAD
---- !u!224 &646576066
-=======
 --- !u!224 &616724665
->>>>>>> Jacob2
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-<<<<<<< HEAD
-  m_GameObject: {fileID: 646576065}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 23.2}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1345659947}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.2, y: 0}
-  m_AnchorMax: {x: 0.4, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -20, y: -20}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &646576067
-=======
   m_GameObject: {fileID: 616724664}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -3490,7 +3447,6 @@ MonoBehaviour:
   m_HorizontalFit: 0
   m_VerticalFit: 2
 --- !u!114 &616724667
->>>>>>> Jacob2
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6152,14 +6108,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainMenu: mainMenu
   popupPanel: {fileID: 1466133244}
-<<<<<<< HEAD
-  cubePrefab: {fileID: 5027235169069252502, guid: 4f08f1aa049179d4ea2f9ec65be1ea44, type: 3}
-  startingMaterial: {fileID: 2100000, guid: 818e4c0a54212a14f8bdce670dd011bd, type: 2}
-  startPosition: {x: 25, y: 0, z: 25}
-=======
   infoPanel: {fileID: 1752329259}
-  cubePrefab: {fileID: 5027235169069252502, guid: c17fff03e50ef524898b0dda6297e2b3, type: 3}
-  startingMaterial: {fileID: 2100000, guid: f3a21049c7164cf478398a8e664d18dd, type: 2}
+  cubePrefab: {fileID: 6707743475538790086, guid: 27a6bb0336907354981bcca5d2cc7dd2, type: 3}
+  startingMaterial: {fileID: 2100000, guid: 47cc34aea0761b547b8063dcdff153c7, type: 2}
   instantiatedStatsInfo: {fileID: 119645500}
   startPosition: {x: 25, y: 0, z: 25}
   uiControllerScript: {fileID: 908744083}
@@ -6169,7 +6120,6 @@ MonoBehaviour:
   cargoNightPercentList: {fileID: 22949395}
   pirateNightPercentList: {fileID: 1082511930}
   patrolNightPercentList: {fileID: 1487698465}
->>>>>>> Jacob2
 --- !u!4 &1206188200
 Transform:
   m_ObjectHideFlags: 0
@@ -7856,7 +7806,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 44a6a357762890c4a93a77d5114c2f3a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2be57bd1ea4c9db43b9cd20a814b2e75, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8560,8 +8510,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1763656558}
   m_CullTransparentMesh: 1
-<<<<<<< HEAD
-=======
 --- !u!1 &1770450335
 GameObject:
   m_ObjectHideFlags: 0
@@ -8698,7 +8646,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1770450335}
   m_CullTransparentMesh: 1
->>>>>>> Jacob2
 --- !u!1 &1772882704
 GameObject:
   m_ObjectHideFlags: 0
@@ -8731,15 +8678,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1345659947}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-<<<<<<< HEAD
-  m_AnchorMin: {x: 0.75, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -1329, y: 4}
-=======
   m_AnchorMin: {x: 0.3, y: 0}
   m_AnchorMax: {x: 0.4, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
->>>>>>> Jacob2
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1772882706
@@ -10028,11 +9969,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-<<<<<<< HEAD
-  - {fileID: 2100000, guid: 569ffc58d6b31e447b78a469333e2275, type: 2}
-=======
-  - {fileID: 2100000, guid: e6e23c1bb80044440975d0717b79732c, type: 2}
->>>>>>> Jacob2
+  - {fileID: 2100000, guid: 885ad8db994272649abb25a2bb532bd1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10585,13 +10522,10 @@ PrefabInstance:
       value: ReplayManager
       objectReference: {fileID: 0}
     - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
-<<<<<<< HEAD
-=======
       propertyPath: speedText
       value: 
       objectReference: {fileID: 706887575}
     - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
->>>>>>> Jacob2
       propertyPath: timeControl
       value: 
       objectReference: {fileID: 18849723}
@@ -10599,10 +10533,6 @@ PrefabInstance:
       propertyPath: timeDisplay
       value: 
       objectReference: {fileID: 1848105937}
-    - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
-      propertyPath: uiController
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
       propertyPath: btnStepFrame
       value: 
