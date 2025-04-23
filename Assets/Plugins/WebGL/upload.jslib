@@ -12,7 +12,7 @@ mergeInto(LibraryManager.library, {
         var json = e.target.result;
 
         // Send the JSON string to Unity
-        SendMessage('UILoadMenuController', 'OnJsonFileLoaded', json);
+        SendMessage('UIController', 'OnJsonFileLoaded', json);
       };
 
       reader.readAsText(file);

@@ -1222,7 +1222,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8926282705164461501, guid: 980a3a9bd251f4945b427c88cc43583c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000018537316
+      value: -0.00003396329
       objectReference: {fileID: 0}
     - target: {fileID: 9066495854440640668, guid: 980a3a9bd251f4945b427c88cc43583c, type: 3}
       propertyPath: m_Size
@@ -1441,6 +1441,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainMenu: mainMenu
   simMenu: MainScene
+  UI: {fileID: 0}
   LoadPanel: {fileID: 1630867386}
   scrollContent: {fileID: 1630867385}
 --- !u!1 &1853490915
