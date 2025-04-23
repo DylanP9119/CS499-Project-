@@ -23,6 +23,7 @@ public class UILoadMenuController : MonoBehaviour
     public void PlayButton()
     {
         DataPersistence.Instance.wasEnteredfromLoadScene = true;
+        ReplayManager.Instance.getLoadStatus(true);
         SceneManager.LoadScene(simMenu);
         
     }
@@ -87,7 +88,6 @@ public class UILoadMenuController : MonoBehaviour
                                         $"Patrol: {values[8]}% Day, {values[9]}% Night\n" +
                                         $"Pirate: {values[6]}% Day, {values[7]}% Night";
         gridPercentsText.text = gridText;
-        
     }
 
     [System.Serializable]

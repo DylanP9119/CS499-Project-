@@ -23,7 +23,7 @@ public class ReplayManager : MonoBehaviour
     public TimeControl timeControl;
 
     public GameObject replayBoxUI;
-
+    
     public TextController textController;
     // Recording system
     private List<ReplayEvent> recordedEvents = new List<ReplayEvent>();
@@ -42,16 +42,20 @@ public class ReplayManager : MonoBehaviour
     public readonly float[] speeds = { -1.0f, 1.0f, 2.0f, 10.0f, 20.0f };
     private int currentSpeedIndex = 1;
     public float replaySpeed { get; private set; } = 1f;
+    public bool wasLoaded = false; 
 
     void Awake()
     {
         Instance = this;
         currentShipId = 1;
     }
-
+    public void getLoadStatus(bool wasLoadedvalue)
+    {
+        wasLoaded = wasLoadedvalue;
+    }
     void Start()
     {
-        if (DataPersistence.Instance.wasEnteredfromLoadScene)
+        if (wasLoaded == true)
         {
             LoadReplayFromFile();
             ProcessLoadedEvents();
@@ -67,11 +71,11 @@ public class ReplayManager : MonoBehaviour
     void Update()
     {
     
-    if (ReplayModeActive && !replayPaused )
+    if (ReplayModeActive && !replayPaused && wasLoaded == true)
     {
         UpdateReplay();
     }
-    if (!ReplayModeActive && timeControl.IsPaused && DataPersistence.Instance.wasEnteredfromLoadScene == false)
+    if (!ReplayModeActive && timeControl.IsPaused && wasLoaded == false)
     {
         float simTime = ShipController.TimeStepCounter * timeControl.GetSpeed();
         int currentSimTick = Mathf.FloorToInt(simTime / timeControl.GetSpeed());
