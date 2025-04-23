@@ -233,6 +233,7 @@ public class UIControllerScript : MonoBehaviour
             Debug.Log("SUCCESS!");
             Save();
             DataPersistence.Instance.wasEnteredfromLoadScene = false;
+            ShipController.SetTimeStepCounter(0);
             SceneManager.LoadScene(startSim);
         }
 
