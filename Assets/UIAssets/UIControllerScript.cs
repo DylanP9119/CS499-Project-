@@ -91,6 +91,8 @@ public class UIControllerScript : MonoBehaviour
     public List<string> nightGridPercentList = new List<string>();
 
     public static UIControllerScript Instance;
+        public static UIControllerScript Instance2;
+
 
     public GameObject percentPanel;
     public TMP_Text presentedCargoPercentsForPanel;
@@ -230,7 +232,6 @@ public class UIControllerScript : MonoBehaviour
         if (canStart)
         {
             Debug.Log("SUCCESS!");
-            Save();
             DataPersistence.Instance.wasEnteredfromLoadScene = false;
             ShipController.SetTimeStepCounter(0);
             SceneManager.LoadScene(startSim);
@@ -238,33 +239,7 @@ public class UIControllerScript : MonoBehaviour
 
     }
 
-    public class MyData
-    {
-        public string saveName;
-        public int days, hours, cDay, cNight, piDay, piNight, paDay, paNight;
-        public bool pNightCap;
-    }
 
-    public void Save()
-    {
-        MyData data = new MyData
-        {
-            saveName = fileNameString,
-            days = dayCount,
-            hours = hourCount,
-            cDay = cargoDayPercent,
-            cNight = cargoNightPercent,
-            piDay = pirateDayPercent,
-            piNight = pirateNightPercent,
-            paDay = patrolDayPercent,
-            paNight = patrolNightPercent,
-            pNightCap = nightCaptureEnabled,
-        };
-        path = DataPersistence.Instance.fileNameString;
-      //  string json = JsonUtility.ToJson(data, true);
-     //   DownloadFile(path + ".json", json);
-
-    }
 
     public void DownloadFile(string filename, string content)
     {
@@ -311,13 +286,7 @@ public class UIControllerScript : MonoBehaviour
         return true;
     }
 
-    //FILE HANDLER
 
-    public void SaveFileName(string s)
-    {
-        fileNameString = s;
-        DataPersistence.Instance.fileNameString = fileNameString;
-    }
 
     //GRID PROBABILITY HANDLING FUNCTIONS
 

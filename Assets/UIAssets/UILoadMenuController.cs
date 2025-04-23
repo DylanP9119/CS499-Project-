@@ -41,10 +41,29 @@ public class UILoadMenuController : MonoBehaviour
 
     }
 
+    public void DownloadFile(string filename, string content)
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        DownloadFileWebGL(filename, content);
+#else
+        // In Editor or standalone builds, save locally for testing
+      //  path = Path.Combine(Application.persistentDataPath, DataPersistence.Instance.fileNameString + ".json");
+     //   DataPersistence.Instance.path = path;
+    //    System.IO.File.WriteAllText(path, content);
+        Debug.Log("Not Saved locally");
+#endif
+    }
+
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern void DownloadFileWebGL(string filename, string content);
+
+
+
+
     public void DownloadFileWithName(string fileName, string data)
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        UI.DownloadFile(fileName, data);
+        UIControllerScript.Instance2.DownloadFile(fileName, data);
 #else
     //    string path = Path.Combine(Application.dataPath, fileName);
    //     File.WriteAllText(path, data);
