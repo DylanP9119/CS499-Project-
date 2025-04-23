@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using System.Linq;
+using TMPro;
 
 public class ReplayManager : MonoBehaviour
 {
@@ -13,12 +14,16 @@ public class ReplayManager : MonoBehaviour
     public Button btnIncreaseSpeed;
     public Button btnDecreaseSpeed;
     public Button btnStepFrame;
+    public Button btnStepBackFrame;
 
     public Text timeDisplay;
     public ShipController shipController;
 
     public Sprite playSprite;
     public Sprite pauseSprite;
+
+
+    public TMP_Text speedText;
 
     public TimeControl timeControl;
 
@@ -65,7 +70,8 @@ public class ReplayManager : MonoBehaviour
 
     void Update()
     {
-  //  HandleReplayInput();
+     HandleReplayInput();
+    
     if (ReplayModeActive && !replayPaused)
     {
         UpdateReplay();
@@ -207,14 +213,15 @@ void UpdateReplay()
         return;
     }
     replaySpeed = speeds[1];
+    //replaySpeed = speeds[1]; // breaks
+    UpdateDisplay();
     ReplayModeActive = true;
     if (ShipController.Instance != null)
         ShipController.Instance.ClearAllShips();
-    if (textController != null)
+    if (textController != null) 
         textController.ResetCounters();
     
     replayPaused = true;
-
     replayTime = 0;
     if (playPauseButton != null && playSprite != null)
     {
@@ -222,12 +229,39 @@ void UpdateReplay()
     }
     replayTick = -1;
     UIvisibility(true);
+    UpdateDisplay();
     }
 
     void UpdateDisplay()
     {
         float timeLeft = (maxRecordedTick * timeControl.GetSpeed()) - replayTime;
         timeDisplay.text = $"Tick: {replayTick} | Speed: {replaySpeed}x | Time: {replayTime:0.0}s";
+        // Update sim-style clock UI in replay
+        if (shipController != null && shipController.timeDisplayRun != null)
+        {
+            float totalMinutes = replayTick * 5f;
+            int day = Mathf.FloorToInt(totalMinutes / 1440f) + 1;
+            int hour = Mathf.FloorToInt((totalMinutes / 60f) % 24);
+            int minute = Mathf.FloorToInt(totalMinutes % 60);
+            bool isNight = (hour >= 12);
+            string phase = isNight ? "Night" : "Day";
+
+            shipController.timeDisplayRun.text = $"{phase} {day} — {hour:D2}:{minute:D2}";
+        }
+
+        if (shipController != null && shipController.timeDisplayRemaining != null)
+        {
+            float totalSimMinutes = maxRecordedTick * 5f;
+            float minutesPassed = replayTick * 5f;
+            float remainingMinutes = totalSimMinutes - minutesPassed;
+            if (remainingMinutes < 0) remainingMinutes = 0;
+
+            int remainingDays = Mathf.FloorToInt(remainingMinutes / 1440f);
+            int remainingHours = Mathf.FloorToInt((remainingMinutes % 1440f) / 60f);
+            int remainingMins = Mathf.FloorToInt(remainingMinutes % 60f);
+
+            shipController.timeDisplayRemaining.text = $"Remaining: {remainingDays}d {remainingHours}h {remainingMins}m";
+        }
     }
 
     void TogglePlayPause()
@@ -247,6 +281,7 @@ void UpdateReplay()
             replaySpeed = speeds[currentSpeedIndex];
             Debug.Log($"Replay speed set to {replaySpeed}x");
             UpdateDisplay();
+            speedText.text = replaySpeed + "X SPEED";
         }
     }
 
@@ -263,8 +298,12 @@ void UpdateReplay()
             }
             Debug.Log($"Replay speed set to {replaySpeed}x");
             UpdateDisplay();
+            speedText.text = replaySpeed + "X SPEED";
         }
     }
+
+
+
 
     public void SaveReplayToFile()
     {

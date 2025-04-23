@@ -47,7 +47,7 @@ public class TimeControl : MonoBehaviour
             moveSpeed = speeds[currentSpeedIndex];
         }
     }
-
+    
     public float GetSpeed() => moveSpeed;
     void UpdateMoveTimer() { if (!movementPaused) moveTimer += Time.deltaTime; }
     public bool ShouldMove() => (moveTimer >= moveSpeed && !movementPaused);
