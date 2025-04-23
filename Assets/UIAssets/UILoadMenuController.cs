@@ -12,7 +12,7 @@ public class UILoadMenuController : MonoBehaviour
 {
     [SerializeField] private string mainMenu = "mainMenu";
     [SerializeField] private string simMenu = "MainScene";
-
+    public UIControllerScript UI;
     public GameObject LoadPanel;
     public GameObject scrollContent;
     public void BackButton()
@@ -43,7 +43,7 @@ public class UILoadMenuController : MonoBehaviour
     public void DownloadFileWithName(string fileName, string data)
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        DownloadFile(fileName, data);
+        UI.DownloadFile(fileName, data);
 #else
         string path = Path.Combine(Application.dataPath, fileName);
         File.WriteAllText(path, data);
