@@ -46,9 +46,9 @@ public class UILoadMenuController : MonoBehaviour
 #if UNITY_WEBGL && !UNITY_EDITOR
         UI.DownloadFile(fileName, data);
 #else
-        string path = Path.Combine(Application.dataPath, fileName);
-        File.WriteAllText(path, data);
-        Debug.Log($"File saved to: {path}");
+    //    string path = Path.Combine(Application.dataPath, fileName);
+   //     File.WriteAllText(path, data);
+        Debug.Log($"Not saved with WebGL");
 #endif
     }
     // Called from JavaScript with the uploaded JSON

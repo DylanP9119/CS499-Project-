@@ -298,20 +298,10 @@ void UpdateReplay()
 
  public void LoadReplayFromFile()
 {
-    if (File.Exists(DataPersistence.Instance.path))
-    {
-        // Existing file loading logic
-        string json = File.ReadAllText(DataPersistence.Instance.path);
-        ReplayData data = JsonUtility.FromJson<ReplayData>(json);
-        recordedEvents = data.events;
+        recordedEvents = DataPersistence.Instance.replayEvents;
         ProcessLoadedEvents();
         Debug.Log($"Loaded {recordedEvents.Count} events from file");
         StartReplay();
-    }
-    else
-    {
-        Debug.LogWarning("No replay data found.");
-    }
 }
 
     void ApplyTick(int tick)

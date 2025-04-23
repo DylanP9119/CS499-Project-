@@ -259,10 +259,10 @@ public class UIControllerScript : MonoBehaviour
         DownloadFileWebGL(filename, content);
 #else
         // In Editor or standalone builds, save locally for testing
-        path = Path.Combine(Application.persistentDataPath, DataPersistence.Instance.fileNameString + ".json");
-        DataPersistence.Instance.path = path;
-        System.IO.File.WriteAllText(path, content);
-        Debug.Log("Saved locally: " + path);
+      //  path = Path.Combine(Application.persistentDataPath, DataPersistence.Instance.fileNameString + ".json");
+     //   DataPersistence.Instance.path = path;
+    //    System.IO.File.WriteAllText(path, content);
+        Debug.Log("Not Saved locally");
 #endif
     }
 
