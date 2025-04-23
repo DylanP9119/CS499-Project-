@@ -232,6 +232,7 @@ void UpdateReplay()
     void TogglePlayPause()
     {
         replayPaused = !replayPaused;
+        timeControl.TogglePlayPause();
         if (playPauseButton != null)
         {
             playPauseButton.image.sprite = replayPaused ? pauseSprite : playSprite;
