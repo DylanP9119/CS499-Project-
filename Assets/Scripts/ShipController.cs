@@ -83,7 +83,7 @@ public class ShipController : MonoBehaviour
                     {
                     lastReplayTick = currentTick;
                     SetTimeStepCounter(currentTick);
-                    ShipInteractions.Instance.CheckForInteractions(allShips);
+           //         ShipInteractions.Instance.CheckForInteractions(allShips);
 
                     foreach (GameObject ship in allShips)
                     {
@@ -102,7 +102,7 @@ public class ShipController : MonoBehaviour
             return; // exit early if replay is active
         }
             // Simulation mode:
-            if (!timeControl.IsPaused)
+            if (!timeControl.IsPaused && !ReplayManager.Instance.ReplayModeActive)
             {
                 spawnTimer += Time.deltaTime;
                 if (spawnTimer >= timeControl.GetSpeed())
