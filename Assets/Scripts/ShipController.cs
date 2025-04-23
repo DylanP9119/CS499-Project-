@@ -35,7 +35,9 @@ public class ShipController : MonoBehaviour
     private Dictionary<int, GameObject> replayedShips = new();
     public Text stepCounterText;
 
-
+    public Material dayMapMaterial;
+    public Material nightMapMaterial;
+    public GameObject mapBackground;
 
     private void Awake()
     {
@@ -109,6 +111,24 @@ public class ShipController : MonoBehaviour
                     simMinutesPassed += 5f;
                     UpdateDayNightCycle();
                     UpdateTimeDisplays();
+                    UpdateMapForNight();
+                    int totalMinutes = Mathf.FloorToInt(simMinutesPassed);
+                    int day = (totalMinutes / 1440) + 1;
+                    int hour = (totalMinutes / 60) % 24;
+                    int minute = totalMinutes % 60;
+
+                    // Current time display
+                    string phase = isNight ? "Night" : "Day";
+                    timeDisplayRun.text = $"{phase} {day} — {hour:D2}:{minute:D2}";
+
+                    // Calculate remaining time
+                    float remainingMinutes = simulationLengthHours * 60f - simMinutesPassed;
+                    if (remainingMinutes < 0) remainingMinutes = 0;
+                    int remainingDays = Mathf.FloorToInt(remainingMinutes / 1440f);
+                    int remainingHours = Mathf.FloorToInt((remainingMinutes % 1440) / 60f);
+                    int remainingMins = Mathf.FloorToInt(remainingMinutes % 60f);
+
+                    timeDisplayRemaining.text = $"Remaining: {remainingDays}d {remainingHours}h {remainingMins}m";
 
                     if (simMinutesPassed >= simulationLengthHours * 60f)
                     {
@@ -448,11 +468,21 @@ public class ShipController : MonoBehaviour
         allShips.Clear();
     }
 
+    public void UpdateMapForNight() {
+        Renderer mapRenderer = mapBackground.GetComponent<Renderer>();
+        if (isNight) mapRenderer.material = nightMapMaterial;
+        else mapRenderer.material = dayMapMaterial;
+    }
+
     // Public helper to update the simulation tick (used in replay mode).
     public static void SetTimeStepCounter(int newTick)
     {
         TimeStepCounter = newTick;
     }
 
+    public bool CheckIfNight() {
+        if (isNight) return true;
+        return false;
+    }
 
 }

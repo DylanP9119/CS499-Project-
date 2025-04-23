@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 using TMPro;
 using System.IO;
 
-
 public class UILoadMenuController : MonoBehaviour
 {
     [SerializeField] private string mainMenu = "mainMenu";
@@ -42,7 +41,7 @@ public class UILoadMenuController : MonoBehaviour
 
 
     // Called from JavaScript with the uploaded JSON
-    public void OnJsonFileLoaded(string json)
+    public void OnJsonFileLoaded(string path)
     {
         MyData data = JsonUtility.FromJson<MyData>(json);
         // Save header data to DataPersistence

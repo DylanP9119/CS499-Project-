@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using TMPro;
 
 public class CameraSystem : MonoBehaviour
 {
@@ -13,11 +14,34 @@ public class CameraSystem : MonoBehaviour
     private Vector2 lastMousePos;
     private float targetFieldOfView = 50;
 
-    public Material bigMaterial;
-    public Material medMaterial;
-    public Material smallMaterial;
+    public Material bigMaterialDay;
+    public Material medMaterialDay;
+    public Material smallMaterialDay;
+
+    public Material bigMaterialNight;
+    public Material medMaterialNight;
+    public Material smallMaterialNight;
 
     public UISimSettings uiSimSettings;
+    public ShipController shipController;
+
+    public float cameraSpeed;
+    public TMP_Text cameraSpeedText;
+
+    public void Awake() {
+        cameraSpeed = 1;
+        cameraSpeedText.text = $"{cameraSpeed}";
+    }
+
+    public void IsIncreased(bool isIncreased) {
+        if (isIncreased) cameraSpeed++;
+        else cameraSpeed--;
+
+        if (cameraSpeed > 10) cameraSpeed = 10;
+        else if (cameraSpeed < 1) cameraSpeed = 1;
+
+        cameraSpeedText.text = $"{cameraSpeed}";
+    }
 
     private void Update()
     {
@@ -33,10 +57,10 @@ public class CameraSystem : MonoBehaviour
     {
         Vector3 inputDir = new Vector3(0, 0, 0);
 
-        if (Input.GetKey(KeyCode.W) && (transform.position.z < 100) == true) inputDir.y = +1f;
-        if (Input.GetKey(KeyCode.S) && (transform.position.z > 0) == true) inputDir.y = -1f;
-        if (Input.GetKey(KeyCode.A) && (transform.position.x > 0) == true) inputDir.x = -1f;
-        if (Input.GetKey(KeyCode.D) && (transform.position.x < 400) == true) inputDir.x = +1f;
+        if (Input.GetKey(KeyCode.W) && (transform.position.z < 100) == true) inputDir.y = cameraSpeed;
+        if (Input.GetKey(KeyCode.S) && (transform.position.z > 0) == true) inputDir.y = -cameraSpeed;
+        if (Input.GetKey(KeyCode.A) && (transform.position.x > 0) == true) inputDir.x = -cameraSpeed;
+        if (Input.GetKey(KeyCode.D) && (transform.position.x < 400) == true) inputDir.x = cameraSpeed;
 
 
         /* if (Input.GetMouseButtonDown(1))
@@ -95,15 +119,19 @@ public class CameraSystem : MonoBehaviour
 
         if (targetFieldOfView > 35) {
             uiSimSettings.DeleteGrid();
-            uiSimSettings.UpdateGrid(bigMaterial);
+            if (shipController.CheckIfNight()) uiSimSettings.UpdateGrid(bigMaterialNight);
+            else uiSimSettings.UpdateGrid(bigMaterialDay);
+            
         }
         else if (targetFieldOfView > 10) {
             uiSimSettings.DeleteGrid();
-            uiSimSettings.UpdateGrid(medMaterial);
+            if (shipController.CheckIfNight()) uiSimSettings.UpdateGrid(medMaterialNight);
+            else uiSimSettings.UpdateGrid(medMaterialDay);
         }
         else {
             uiSimSettings.DeleteGrid();
-            uiSimSettings.UpdateGrid(smallMaterial);
+            if (shipController.CheckIfNight()) uiSimSettings.UpdateGrid(smallMaterialNight);
+            else uiSimSettings.UpdateGrid(smallMaterialDay);
         }
 
         float zoomSpeed = 5f;

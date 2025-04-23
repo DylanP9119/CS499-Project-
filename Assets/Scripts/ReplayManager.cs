@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using System.Linq;
+using TMPro;
 
 public class ReplayManager : MonoBehaviour
 {
@@ -22,6 +23,8 @@ public class ReplayManager : MonoBehaviour
     public Sprite playSprite;
     public Sprite pauseSprite;
 
+
+    public TMP_Text speedText;
 
     public TimeControl timeControl;
 
@@ -187,8 +190,6 @@ void UpdateReplay()
     UpdateDisplay();
 }
 
-
-
     void ClearReplayedShips()
     {
         foreach (GameObject ship in replayedShips.Values)
@@ -323,7 +324,6 @@ void UpdateReplay()
             string json = File.ReadAllText(DataPersistence.Instance.path);
             ReplayData data = JsonUtility.FromJson<ReplayData>(json);
             recordedEvents = data.events;
-
             ProcessLoadedEvents();
             Debug.Log($"Loaded {recordedEvents.Count} events");
             StartReplay(); 

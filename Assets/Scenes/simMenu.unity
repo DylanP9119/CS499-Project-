@@ -5610,7 +5610,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
+<<<<<<< HEAD
   m_text: REMOVE
+=======
+  m_text: DISPLAY
+>>>>>>> Jacob2
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6085,7 +6089,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Adjust ship location spawning probability. Each grid space has a x1 default
     multiplier. Select ship, enter range, and a multiplier. Multipliers stack on
-    previously entered ones. Grid locations are shown to the right.
+    previously entered ones. Grid locations are shown to the right. Click respective
+    "DISPLAY" buttons to see each grid space's chance of spawn.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -9008,7 +9013,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 762756855}
   m_Enabled: 1
   m_EditorHideFlags: 0
+<<<<<<< HEAD
   m_Script: {fileID: 11500000, guid: e1bec5c6de2b0a14ba21ae0b33984539, type: 3}
+=======
+  m_Script: {fileID: 11500000, guid: 4a3f5deca801db24b8fc3979cf338afb, type: 3}
+>>>>>>> Jacob2
   m_Name: 
   m_EditorClassIdentifier: 
   cargoGridPercentsD:
@@ -12791,7 +12800,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
+<<<<<<< HEAD
   m_text: REMOVE
+=======
+  m_text: DISPLAY
+>>>>>>> Jacob2
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -15726,9 +15739,9 @@ MonoBehaviour:
   cargoDaySlider: {fileID: 1605017276}
   pirateDaySlider: {fileID: 1903691577}
   patrolDaySlider: {fileID: 1502280521}
-  cargoNightSlider: {fileID: 1299994780}
-  pirateNightSlider: {fileID: 1232956181}
-  patrolNightSlider: {fileID: 718993489}
+  cargoNightSlider: {fileID: 718993489}
+  pirateNightSlider: {fileID: 1903691577}
+  patrolNightSlider: {fileID: 1232956181}
   cargoDayText: {fileID: 222833805}
   pirateDayText: {fileID: 167718516}
   patrolDayText: {fileID: 487741844}
@@ -25913,7 +25926,11 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 779253602}
   m_HandleRect: {fileID: 779253601}
   m_Direction: 2
+<<<<<<< HEAD
   m_Value: 1
+=======
+  m_Value: 0
+>>>>>>> Jacob2
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
