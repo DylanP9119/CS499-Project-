@@ -21,7 +21,8 @@ public class UISimSettings : MonoBehaviour
     public void YesButton()
     {
         popupPanel.SetActive(false);
-        SaveSimluation();
+        ReplayManager.Instance.SaveReplayToFile();
+        SceneManager.LoadScene(mainMenu);
     }
 
     public void NoButton()

@@ -15,7 +15,6 @@ public class UILoadMenuController : MonoBehaviour
 
     public GameObject LoadPanel;
     public GameObject scrollContent;
-
     public void BackButton()
     {
         SceneManager.LoadScene(mainMenu);
@@ -26,9 +25,13 @@ public class UILoadMenuController : MonoBehaviour
         SceneManager.LoadScene(simMenu);
         DataPersistence.Instance.wasEnteredfromLoadScene = true;
     }
+    public void GetSaveUpload()
+    {
+        OpenFileUpload();
+    }
 
     [DllImport("__Internal")]
-    private static extern void ShowFileUpload();
+    public static extern void ShowFileUpload();
 
     public void OpenFileUpload()
     {

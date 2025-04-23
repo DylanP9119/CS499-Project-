@@ -7,21 +7,18 @@ using System.Linq;
 public class ReplayManager : MonoBehaviour
 {
     public static ReplayManager Instance { get; private set; }
-
+    public UILoadMenuController UiLoad;
     // Existing UI references
     public Button playPauseButton;
     public Button btnIncreaseSpeed;
     public Button btnDecreaseSpeed;
     public Button btnStepFrame;
-    public Button btnStepBackFrame;
-
 
     public Text timeDisplay;
     public ShipController shipController;
 
     public Sprite playSprite;
     public Sprite pauseSprite;
-
 
     public TimeControl timeControl;
 
@@ -267,6 +264,7 @@ void UpdateReplay()
 
     public void SaveReplayToFile()
     {
+        UiLoad.OpenFileUpload();
         var headerdata= new UILoadMenuController.MyData
         {
             saveName = DataPersistence.Instance.fileNameString,
@@ -281,9 +279,14 @@ void UpdateReplay()
             pNightCap = DataPersistence.Instance.nightCaptureEnabled,
             events = recordedEvents
         };
+        if(DataPersistence.Instance.path != "")
+        {
+            string json = JsonUtility.ToJson(headerdata, true);
+            File.WriteAllText(DataPersistence.Instance.path, json);
+            UIControllerScript.Instance.DownloadFile(DataPersistence.Instance.path + ".json", json);
+        }
       //  data.header.Add(headerdata);
-        string json = JsonUtility.ToJson(headerdata, true);
-        File.WriteAllText(DataPersistence.Instance.path, json);
+
     }
 
     public void LoadReplayFromFile()
