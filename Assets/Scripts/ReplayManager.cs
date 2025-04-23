@@ -60,7 +60,6 @@ public class ReplayManager : MonoBehaviour
             LoadReplayFromFile();
             ProcessLoadedEvents();
         }
-        
         playPauseButton?.onClick.AddListener(TogglePlayPause);
         btnIncreaseSpeed?.onClick.AddListener(IncreaseSpeed);
         btnDecreaseSpeed?.onClick.AddListener(DecreaseSpeed);
