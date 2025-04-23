@@ -54,6 +54,7 @@ public class ReplayManager : MonoBehaviour
         if (DataPersistence.Instance.wasEnteredfromLoadScene == true)
         {
             LoadReplayFromFile();
+            ProcessLoadedEvents();
         }
         playPauseButton?.onClick.AddListener(TogglePlayPause);
         btnIncreaseSpeed?.onClick.AddListener(IncreaseSpeed);
