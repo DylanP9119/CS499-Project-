@@ -3,16 +3,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using System.Linq;
+using UnityEngine.SceneManagement;
 public class DataPersistence : MonoBehaviour
 {
-    public double[] cargoGridPercentsD;
-    public double[] patrolGridPercentsD;
-    public double[] pirateGridPercentsD;
-
-    public double[] cargoGridPercentsN;
-    public double[] patrolGridPercentsN;
-    public double[] pirateGridPercentsN;
-
     public int cargoDayPercent;
     public int cargoNightPercent;
     public int pirateDayPercent;
@@ -27,13 +20,30 @@ public class DataPersistence : MonoBehaviour
     public string fileNameString; 
     public string path;
     public bool wasEnteredfromLoadScene;
-    public List<ReplayEvent> replayEvents = new List <ReplayEvent>(); 
+    public List<ReplayEvent> replayEvents = new List <ReplayEvent>();
+
+    public double[] cargoGridPercentsD;
+    public double[] patrolGridPercentsD;
+    public double[] pirateGridPercentsD;
+
+    public double[] cargoGridPercentsN;
+    public double[] patrolGridPercentsN;
+    public double[] pirateGridPercentsN;
+
     public static DataPersistence Instance;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
-        
+        cargoGridPercentsD = new double[101];
+        patrolGridPercentsD = new double[101];
+        pirateGridPercentsD = new double[401];
+
+        cargoGridPercentsN = new double[101];
+        patrolGridPercentsN = new double[101];
+        pirateGridPercentsN = new double[401];
+        ResetGrids();
+
         if (Instance != null)
         {
             Destroy(gameObject);
@@ -43,28 +53,31 @@ public class DataPersistence : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        cargoGridPercentsD = new double[101];
-        patrolGridPercentsD = new double[101];
-        pirateGridPercentsD = new double[401];
 
-        cargoGridPercentsN = new double[101];
-        patrolGridPercentsN = new double[101];
-        pirateGridPercentsN = new double[401];
+
     }
 
-    // Update is called once per frame
-    void Update()
+// Update is called once per frame
+void Update()
     {
-        if (UIControllerScript.Instance)
+        Scene m_Scene;
+        string sceneName;
+
+        m_Scene = SceneManager.GetActiveScene();
+        sceneName = m_Scene.name;
+
+        if (!(sceneName == "MainScene") && (UIControllerScript.Instance != null))
         {
-            for (int i = 0; i < 101; i++){
+            for (int i = 0; i < 101; i++)
+            {
                 cargoGridPercentsD[i] = UIControllerScript.Instance.cargoGridPercentsD[i];
                 patrolGridPercentsD[i] = UIControllerScript.Instance.patrolGridPercentsD[i];
                 cargoGridPercentsN[i] = UIControllerScript.Instance.cargoGridPercentsN[i];
                 patrolGridPercentsN[i] = UIControllerScript.Instance.patrolGridPercentsN[i];
             }
 
-            for (int i = 0; i < 401; i++){
+            for (int i = 0; i < 401; i++)
+            {
                 pirateGridPercentsD[i] = UIControllerScript.Instance.pirateGridPercentsD[i];
                 pirateGridPercentsN[i] = UIControllerScript.Instance.pirateGridPercentsN[i];
             }
@@ -82,8 +95,24 @@ public class DataPersistence : MonoBehaviour
 
             nightCaptureEnabled = UIControllerScript.Instance.nightCaptureEnabled;
             fileNameString = UIControllerScript.Instance.fileNameString;
+        }
+        else { }
+    }
+    public void ResetGrids()
+    {
 
-}
+        for (int i = 0; i < cargoGridPercentsD.Length; i++)
+        {
+            cargoGridPercentsD[i] = 1;
+            patrolGridPercentsD[i] = 1;
+            cargoGridPercentsN[i] = 1;
+            patrolGridPercentsN[i] = 1;
+        }
 
+        for (int i = 0; i < pirateGridPercentsD.Length; i++)
+        {
+            pirateGridPercentsD[i] = 1;
+            pirateGridPercentsN[i] = 1;
+        }
     }
 }

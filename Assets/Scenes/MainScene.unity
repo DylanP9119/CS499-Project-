@@ -170,7 +170,7 @@ MonoBehaviour:
   piratePrefab: {fileID: 2945873473625126443, guid: ca70039599911434cb90b21854d3c217, type: 3}
   textController: {fileID: 806475742}
   timeDisplayRun: {fileID: 1848105937}
-  timeDisplayRunReplay: {fileID: 0}
+  timeDisplayRunReplay: {fileID: 301303803}
   timeDisplayRemaining: {fileID: 301303803}
   isNight: 0
   cargoSpawnChance: 1
@@ -182,8 +182,8 @@ MonoBehaviour:
   simulationLengthHours: 48
   allShips: []
   stepCounterText: {fileID: 1772882706}
-  dayMapMaterial: {fileID: 2100000, guid: 885ad8db994272649abb25a2bb532bd1, type: 2}
-  nightMapMaterial: {fileID: 2100000, guid: 9502926aa380bf8439a1f34b39f26197, type: 2}
+  dayMapMaterial: {fileID: 2100000, guid: 5bd7544175f20604db1bfc4d7ec5b091, type: 2}
+  nightMapMaterial: {fileID: 2100000, guid: 869f2472e16793c46b743e44a7a735cb, type: 2}
   mapBackground: {fileID: 2028625575}
 --- !u!114 &18849723
 MonoBehaviour:
@@ -2572,12 +2572,12 @@ MonoBehaviour:
   cinemachineVirtualCamera: {fileID: 510840361}
   fovMax: 115
   fovMin: 3
-  bigMaterialDay: {fileID: 2100000, guid: 844a2e5f8c959b543bbbfc0469af2f63, type: 2}
-  medMaterialDay: {fileID: 2100000, guid: 47cc34aea0761b547b8063dcdff153c7, type: 2}
-  smallMaterialDay: {fileID: 2100000, guid: 93e8d58672adf0343a523d610f0b17cd, type: 2}
-  bigMaterialNight: {fileID: 2100000, guid: da80363ce49ee0744a4e5a244f03ebad, type: 2}
-  medMaterialNight: {fileID: 2100000, guid: e2a85a60814e2334586927b955cb843c, type: 2}
-  smallMaterialNight: {fileID: 2100000, guid: 367f0ba512efde6449282e27279c033e, type: 2}
+  bigMaterialDay: {fileID: 2100000, guid: 3696d276756e40a45b2c26009e8b68a9, type: 2}
+  medMaterialDay: {fileID: 2100000, guid: f7d19240366c9d4488776e0581ccc8b8, type: 2}
+  smallMaterialDay: {fileID: 2100000, guid: 67fa73042fa4777428c8d9da1ccdd85e, type: 2}
+  bigMaterialNight: {fileID: 2100000, guid: 93be726e4a520c74ea4128ecf14fac4b, type: 2}
+  medMaterialNight: {fileID: 2100000, guid: 0f88cb183efc26046bb5dd02eea05482, type: 2}
+  smallMaterialNight: {fileID: 2100000, guid: 4cf39bbb87993aa43bf1e17fe47244e2, type: 2}
   uiSimSettings: {fileID: 1206188199}
   shipController: {fileID: 18849722}
   cameraSpeed: 0
@@ -4695,107 +4695,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 883921198}
   m_CullTransparentMesh: 1
---- !u!1 &908744082
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 908744084}
-  - component: {fileID: 908744083}
-  m_Layer: 0
-  m_Name: uicontrollerscript
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &908744083
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 908744082}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d48e4a888c1395e40a1198bf695c59c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainMenu: mainMenu
-  startSim: MainScene
-  nightCaptureButton: {fileID: 5849048168602493889, guid: 9739a0ac66c6318419b543987e8ea005, type: 3}
-  buttonText: {fileID: 0}
-  nightCaptureEnabled: 0
-  beginButton: {fileID: 0}
-  canStart: 0
-  rawTextEditor: 0
-  saveFileName: {fileID: 0}
-  fileNameString: 
-  cargoGridPercentsD: []
-  patrolGridPercentsD: []
-  pirateGridPercentsD: []
-  cargoGridPercentsN: []
-  patrolGridPercentsN: []
-  pirateGridPercentsN: []
-  cargoDayPercent: 0
-  cargoNightPercent: 0
-  pirateDayPercent: 0
-  pirateNightPercent: 0
-  patrolDayPercent: 0
-  patrolNightPercent: 0
-  dayCount: 0
-  hourCount: 0
-  minuteCount: 0
-  errorPanel: {fileID: 0}
-  errorPanelText: {fileID: 0}
-  cargoDaySlider: {fileID: 0}
-  pirateDaySlider: {fileID: 0}
-  patrolDaySlider: {fileID: 0}
-  cargoNightSlider: {fileID: 0}
-  pirateNightSlider: {fileID: 0}
-  patrolNightSlider: {fileID: 0}
-  cargoDayText: {fileID: 0}
-  pirateDayText: {fileID: 0}
-  patrolDayText: {fileID: 0}
-  cargoNightText: {fileID: 0}
-  pirateNightText: {fileID: 0}
-  patrolNightText: {fileID: 0}
-  dayTimeMinimumRange: 0
-  dayTimeMaximumRange: 0
-  dayTimeMultiplier: 0
-  nightTimeMinimumRange: 0
-  nightTimeMaximumRange: 0
-  nightTimeMultiplier: 0
-  dayGridPercentagesPanel: {fileID: 0}
-  nightGridPercentagesPanel: {fileID: 0}
-  dayShipSelection: {fileID: 0}
-  nightShipSelection: {fileID: 0}
-  removeOptionDay: {fileID: 0}
-  removeOptionNight: {fileID: 0}
-  dayGridPercentList: []
-  nightGridPercentList: []
-  percentPanel: {fileID: 0}
-  presentedCargoPercentsForPanel: {fileID: 0}
-  presentedPiratePercentsForPanel: {fileID: 0}
-  presentedPatrolPercentsForPanel: {fileID: 0}
---- !u!4 &908744084
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 908744082}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 552.3361, y: 2.7026095, z: 7608.7563}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &908981038
 GameObject:
   m_ObjectHideFlags: 0
@@ -6110,11 +6009,11 @@ MonoBehaviour:
   mainMenu: mainMenu
   popupPanel: {fileID: 1466133244}
   infoPanel: {fileID: 1752329259}
-  cubePrefab: {fileID: 6707743475538790086, guid: 27a6bb0336907354981bcca5d2cc7dd2, type: 3}
-  startingMaterial: {fileID: 2100000, guid: 47cc34aea0761b547b8063dcdff153c7, type: 2}
+  cubePrefab: {fileID: 6707743475538790086, guid: dd0b5a32e83597b429baae5616f4e068, type: 3}
+  startingMaterial: {fileID: 2100000, guid: f7d19240366c9d4488776e0581ccc8b8, type: 2}
   instantiatedStatsInfo: {fileID: 119645500}
   startPosition: {x: 25, y: 0, z: 25}
-  uiControllerScript: {fileID: 908744083}
+  uiControllerScript: {fileID: 0}
   cargoDayPercentList: {fileID: 1770450337}
   pirateDayPercentList: {fileID: 883921200}
   patrolDayPercentList: {fileID: 2076817743}
@@ -9970,7 +9869,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 885ad8db994272649abb25a2bb532bd1, type: 2}
+  - {fileID: 2100000, guid: 5bd7544175f20604db1bfc4d7ec5b091, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10641,4 +10540,3 @@ SceneRoots:
   - {fileID: 806475743}
   - {fileID: 2028625579}
   - {fileID: 1206188200}
-  - {fileID: 908744084}

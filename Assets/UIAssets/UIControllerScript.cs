@@ -758,19 +758,5 @@ public class UIControllerScript : MonoBehaviour
         }
     }
 
-    public List<string> ReturnGridPercents(double[] values) {
-        double sumOfValues = 0.0;
-        List<string> stringList = new List<string>();
-        
-        for (int i = 0; i < values.Length; i++) {
-            sumOfValues = sumOfValues + values[i];
-        }
 
-        for (int i = 0; i < values.Length; i++) {
-            double roundedPercent = Math.Round(((values[i] / sumOfValues) * 100) , 3);
-            stringList.Add("Space " + i + ": " + roundedPercent  + "%\n");
-        }
-
-        return stringList;
-    }
 }
