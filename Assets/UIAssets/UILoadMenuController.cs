@@ -22,8 +22,8 @@ public class UILoadMenuController : MonoBehaviour
 
     public void PlayButton()
     {
-        SceneManager.LoadScene(simMenu);
         DataPersistence.Instance.wasEnteredfromLoadScene = true;
+        SceneManager.LoadScene(simMenu);
     }
 
 
