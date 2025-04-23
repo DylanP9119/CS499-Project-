@@ -2572,12 +2572,12 @@ MonoBehaviour:
   cinemachineVirtualCamera: {fileID: 510840361}
   fovMax: 115
   fovMin: 3
-  bigMaterialDay: {fileID: 2100000, guid: 328b62427a01ed44390f04ab089c7af5, type: 2}
+  bigMaterialDay: {fileID: 2100000, guid: 3d58634d9103d8a48b4a9dca5f5b334e, type: 2}
   medMaterialDay: {fileID: 2100000, guid: f3a21049c7164cf478398a8e664d18dd, type: 2}
-  smallMaterialDay: {fileID: 2100000, guid: 3d58634d9103d8a48b4a9dca5f5b334e, type: 2}
-  bigMaterialNight: {fileID: 2100000, guid: ab68e6cb8d2af1548a7837eb3c8e04de, type: 2}
+  smallMaterialDay: {fileID: 2100000, guid: 328b62427a01ed44390f04ab089c7af5, type: 2}
+  bigMaterialNight: {fileID: 2100000, guid: ba53f2876e7a4a0488f9cfdc92aaae6a, type: 2}
   medMaterialNight: {fileID: 2100000, guid: f9667dc65e8d49a4d8b1949f5ae304f1, type: 2}
-  smallMaterialNight: {fileID: 2100000, guid: ba53f2876e7a4a0488f9cfdc92aaae6a, type: 2}
+  smallMaterialNight: {fileID: 2100000, guid: ab68e6cb8d2af1548a7837eb3c8e04de, type: 2}
   uiSimSettings: {fileID: 1206188199}
   shipController: {fileID: 18849722}
   cameraSpeed: 0

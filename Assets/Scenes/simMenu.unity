@@ -14505,7 +14505,6 @@ MonoBehaviour:
   beginButton: {fileID: 903701176}
   canStart: 0
   rawTextEditor: 0
-  saveFileName: {fileID: 0}
   fileNameString: 
   cargoGridPercentsD:
   - 0
@@ -15727,9 +15726,9 @@ MonoBehaviour:
   cargoDaySlider: {fileID: 1605017276}
   pirateDaySlider: {fileID: 1903691577}
   patrolDaySlider: {fileID: 1502280521}
-  cargoNightSlider: {fileID: 718993489}
-  pirateNightSlider: {fileID: 1903691577}
-  patrolNightSlider: {fileID: 1232956181}
+  cargoNightSlider: {fileID: 1299994780}
+  pirateNightSlider: {fileID: 1232956181}
+  patrolNightSlider: {fileID: 718993489}
   cargoDayText: {fileID: 222833805}
   pirateDayText: {fileID: 167718516}
   patrolDayText: {fileID: 487741844}
@@ -21994,7 +21993,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ae667766c91c32943a9130ebbbfef694, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 328db642fda014b4ea8a821ce25ad774, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

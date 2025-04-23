@@ -33,6 +33,16 @@ public class DataPersistence : MonoBehaviour
     public static DataPersistence Instance;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start() {
+        cargoGridPercentsD = new double[101];
+        patrolGridPercentsD = new double[101];
+        pirateGridPercentsD = new double[401];
+
+        cargoGridPercentsN = new double[101];
+        patrolGridPercentsN = new double[101];
+        pirateGridPercentsN = new double[401];
+    }
+    
     void Awake()
     {
         
@@ -45,13 +55,6 @@ public class DataPersistence : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        cargoGridPercentsD = new double[101];
-        patrolGridPercentsD = new double[101];
-        pirateGridPercentsD = new double[401];
-
-        cargoGridPercentsN = new double[101];
-        patrolGridPercentsN = new double[101];
-        pirateGridPercentsN = new double[401];
     }
 
     // Update is called once per frame
@@ -85,7 +88,7 @@ public class DataPersistence : MonoBehaviour
             nightCaptureEnabled = UIControllerScript.Instance.nightCaptureEnabled;
             fileNameString = UIControllerScript.Instance.fileNameString;
 
-}
+        }
 
     }
 }
