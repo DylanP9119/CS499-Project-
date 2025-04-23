@@ -214,7 +214,6 @@ void UpdateReplay()
         textController.ResetCounters();
     
     replayPaused = true;
-    timeControl.setPause(true);
     replayTime = 0;
     if (playPauseButton != null && playSprite != null)
     {
