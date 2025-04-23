@@ -16,7 +16,7 @@ public class ReplayManager : MonoBehaviour
     public Button btnStepFrame;
     public Button btnStepBackFrame;
 
-    public Text timeDisplay;
+    //public Text timeDisplay;
     public ShipController shipController;
 
     public Sprite playSprite;
@@ -235,7 +235,7 @@ void UpdateReplay()
     void UpdateDisplay()
     {
         float timeLeft = (maxRecordedTick * timeControl.GetSpeed()) - replayTime;
-        timeDisplay.text = $"Tick: {replayTick} | Speed: {replaySpeed}x | Time: {replayTime:0.0}s";
+        //timeDisplay.text = $"Tick: {replayTick} | Speed: {replaySpeed}x | Time: {replayTime:0.0}s";
         // Update sim-style clock UI in replay
         if (shipController != null && shipController.timeDisplayRun != null)
         {
@@ -255,7 +255,6 @@ void UpdateReplay()
             float minutesPassed = replayTick * 5f;
             float remainingMinutes = totalSimMinutes - minutesPassed;
             if (remainingMinutes < 0) remainingMinutes = 0;
-
             int remainingDays = Mathf.FloorToInt(remainingMinutes / 1440f);
             int remainingHours = Mathf.FloorToInt((remainingMinutes % 1440f) / 60f);
             int remainingMins = Mathf.FloorToInt(remainingMinutes % 60f);

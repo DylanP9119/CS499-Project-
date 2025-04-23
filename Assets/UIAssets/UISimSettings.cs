@@ -21,7 +21,6 @@ public class UISimSettings : MonoBehaviour
     private List<GameObject> spawnedCubes = new List<GameObject>();
 
     public static DataPersistence Instance;
-    public UIControllerScript uiControllerScript;
 
     public TMP_Text cargoDayPercentList;
     public TMP_Text pirateDayPercentList;
