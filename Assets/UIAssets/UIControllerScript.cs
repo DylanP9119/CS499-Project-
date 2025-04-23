@@ -23,6 +23,7 @@ public class UIControllerScript : MonoBehaviour
 
     public bool rawTextEditor;
 
+    public Button saveFileName;
     public string fileNameString;
 
     //input fields

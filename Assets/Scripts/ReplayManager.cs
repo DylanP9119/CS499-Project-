@@ -42,7 +42,6 @@ public class ReplayManager : MonoBehaviour
     private int replayTick = -1;
     private Dictionary<int, GameObject> replayedShips = new Dictionary<int, GameObject>();
     private int currentShipId;
-
     public bool ReplayModeActive = false;
     public bool ReplayPaused => replayPaused;
     public readonly float[] speeds = { -1f, 1f, 2f, 10f, 20f };
@@ -66,21 +65,21 @@ public class ReplayManager : MonoBehaviour
         playPauseButton?.onClick.AddListener(TogglePlayPause);
         btnIncreaseSpeed?.onClick.AddListener(IncreaseSpeed);
         btnDecreaseSpeed?.onClick.AddListener(DecreaseSpeed);
+        btnStepFrame?.onClick.AddListener(AdvanceSimulationTick);
         UIvisibility(true);
         ReplayModeActive = false;
     }
 
     void Update()
     {
-   HandleReplayInput();
+     HandleReplayInput();
     
     if (ReplayModeActive && !replayPaused)
     {
         UpdateReplay();
     }
-    else if (!ReplayModeActive && !timeControl.IsPaused)
+    if (!ReplayModeActive && timeControl.IsPaused)
     {
-        // Use the actual simulation time for recording ticks
         float simTime = ShipController.TimeStepCounter * timeControl.GetSpeed();
         int currentSimTick = Mathf.FloorToInt(simTime / timeControl.GetSpeed());
         
@@ -92,6 +91,7 @@ public class ReplayManager : MonoBehaviour
     }
 
     }
+
     void HandleReplayInput()
     {
         if (Input.GetKeyDown(KeyCode.R))
@@ -163,14 +163,16 @@ public class ReplayManager : MonoBehaviour
             maxRecordedTick = tickData.Keys.Max();
         }
     }
-
+    void AdvanceSimulationTick()
+    {
+        // Only advance simulation tick if we're not in replay mode and simulation is paused.
+        if (!ReplayModeActive && timeControl.IsPaused)
+        {
+            ShipController.Instance.ManualAdvanceTick();
+        }
+    }
 void UpdateReplay()
 {
-    if (timeControl == null)
-    {
-        Debug.LogError("TimeControl reference is missing!");
-        return;
-    }
 
     replayTime += Time.unscaledDeltaTime * replaySpeed;
     replayTime = Mathf.Clamp(replayTime, 0, maxRecordedTick);
@@ -188,6 +190,8 @@ void UpdateReplay()
 
     UpdateDisplay();
 }
+
+
 
     void ClearReplayedShips()
     {
@@ -230,7 +234,6 @@ void UpdateReplay()
     UpdateDisplay();
     }
 
-    // Rest of the original methods remain unchanged...
     void UpdateDisplay()
     {
         float timeLeft = (maxRecordedTick * timeControl.GetSpeed()) - replayTime;
@@ -268,7 +271,7 @@ void UpdateReplay()
         replayPaused = !replayPaused;
         if (playPauseButton != null)
         {
-            playPauseButton.image.sprite = replayPaused ? playSprite : pauseSprite;
+            playPauseButton.image.sprite = replayPaused ? pauseSprite : playSprite;
         }
     }
     void IncreaseSpeed()
@@ -326,6 +329,7 @@ void UpdateReplay()
             string json = File.ReadAllText(DataPersistence.Instance.path);
             ReplayData data = JsonUtility.FromJson<ReplayData>(json);
             recordedEvents = data.events;
+
             ProcessLoadedEvents();
             Debug.Log($"Loaded {recordedEvents.Count} events");
             StartReplay(); 
