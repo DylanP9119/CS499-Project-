@@ -198,27 +198,29 @@ void UpdateReplay()
     }
     
 
- public void StartReplay()
-{
+    public void StartReplay()
+    {
     if (recordedEvents.Count == 0)
     {
         Debug.LogWarning("No replay data to play");
         return;
     }
-
+    replaySpeed = speeds[1];
     ReplayModeActive = true;
-    replayPaused = true; // Start paused but show first frame
-    ShipController.Instance.ClearAllShips();
-    textController.ResetCounters();
+    if (ShipController.Instance != null)
+        ShipController.Instance.ClearAllShips();
+    if (textController != null)
+        textController.ResetCounters();
     
-    // Apply the initial tick immediately
+    replayPaused = true;
     replayTime = 0;
+    if (playPauseButton != null && playSprite != null)
+    {
+        playPauseButton.image.sprite = playSprite;
+    }
     replayTick = -1;
-    ApplyTick(0); // Force apply the first tick
-    UpdateDisplay();
-    
     UIvisibility(true);
-}
+    }
 
     void UpdateDisplay()
     {
