@@ -39,7 +39,7 @@ public class ReplayManager : MonoBehaviour
     private int currentShipId;
     public bool ReplayModeActive = false;
     public bool ReplayPaused => replayPaused;
-    public readonly float[] speeds = { -1f, 1f, 2f, 10f, 20f };
+    public readonly float[] speeds = { -1.0f, 1.0f, 2.0f, 10.0f, 20.0f };
     private int currentSpeedIndex = 1;
     public float replaySpeed { get; private set; } = 1f;
 
@@ -257,6 +257,11 @@ void UpdateReplay()
         {
             currentSpeedIndex--;
             replaySpeed = speeds[currentSpeedIndex];
+            if(!ReplayModeActive && replaySpeed == -1.0f)
+            {
+                replaySpeed = 1.0f;
+                currentSpeedIndex++;
+            }
             Debug.Log($"Replay speed set to {replaySpeed}x");
             UpdateDisplay();
         }
