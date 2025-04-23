@@ -51,7 +51,6 @@ public class ReplayManager : MonoBehaviour
 
     void Start()
     {
-        ReplayModeActive = false;
         if (DataPersistence.Instance.wasEnteredfromLoadScene)
         {
             LoadReplayFromFile();
@@ -67,13 +66,12 @@ public class ReplayManager : MonoBehaviour
 
     void Update()
     {
-     HandleReplayInput();
     
-    if (ReplayModeActive && !replayPaused)
+    if (ReplayModeActive && !replayPaused )
     {
         UpdateReplay();
     }
-    if (!ReplayModeActive && timeControl.IsPaused)
+    if (!ReplayModeActive && timeControl.IsPaused && DataPersistence.Instance.wasEnteredfromLoadScene == false)
     {
         float simTime = ShipController.TimeStepCounter * timeControl.GetSpeed();
         int currentSimTick = Mathf.FloorToInt(simTime / timeControl.GetSpeed());
