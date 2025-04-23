@@ -203,29 +203,27 @@ void UpdateReplay()
     }
     
 
-    public void StartReplay()
-    {
+ public void StartReplay()
+{
     if (recordedEvents.Count == 0)
     {
         Debug.LogWarning("No replay data to play");
         return;
     }
-    replaySpeed = speeds[1];
+
     ReplayModeActive = true;
-    if (ShipController.Instance != null)
-        ShipController.Instance.ClearAllShips();
-    if (textController != null)
-        textController.ResetCounters();
+    replayPaused = true; // Start paused but show first frame
+    ShipController.Instance.ClearAllShips();
+    textController.ResetCounters();
     
-    replayPaused = true;
+    // Apply the initial tick immediately
     replayTime = 0;
-    if (playPauseButton != null && playSprite != null)
-    {
-        playPauseButton.image.sprite = playSprite;
-    }
     replayTick = -1;
+    ApplyTick(0); // Force apply the first tick
+    UpdateDisplay();
+    
     UIvisibility(true);
-    }
+}
 
     void UpdateDisplay()
     {
@@ -300,24 +298,32 @@ void UpdateReplay()
 
     
 
-    public void LoadReplayFromFile()
+ public void LoadReplayFromFile()
+{
+    if (DataPersistence.Instance.replayEvents != null && DataPersistence.Instance.replayEvents.Count > 0)
     {
-        if (File.Exists(DataPersistence.Instance.path))
-        {
-            ReplayModeActive = true;
-            string json = File.ReadAllText(DataPersistence.Instance.path);
-            ReplayData data = JsonUtility.FromJson<ReplayData>(json);
-            recordedEvents = data.events;
-
-            ProcessLoadedEvents();
-            Debug.Log($"Loaded {recordedEvents.Count} events");
-            StartReplay(); 
-        }
-        else
-        {
-            Debug.LogWarning("No replay file found.");
-        }
+        // Load from DataPersistence if events are present (UI load)
+        recordedEvents = DataPersistence.Instance.replayEvents;
+        ProcessLoadedEvents();
+        Debug.Log($"Loaded {recordedEvents.Count} events from DataPersistence");
+        StartReplay();
     }
+    else if (File.Exists(DataPersistence.Instance.path))
+    {
+        // Existing file loading logic
+        string json = File.ReadAllText(DataPersistence.Instance.path);
+        ReplayData data = JsonUtility.FromJson<ReplayData>(json);
+        recordedEvents = data.events;
+        ProcessLoadedEvents();
+        Debug.Log($"Loaded {recordedEvents.Count} events from file");
+        StartReplay();
+    }
+    else
+    {
+        Debug.LogWarning("No replay data found.");
+    }
+}
+
     void ApplyTick(int tick)
     {
         ClearReplayedShips();
