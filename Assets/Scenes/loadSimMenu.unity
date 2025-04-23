@@ -1166,6 +1166,13 @@ PrefabInstance:
       propertyPath: m_fontSizeBase
       value: 100
       objectReference: {fileID: 0}
+    - target: {fileID: 7304701429536133287, guid: 980a3a9bd251f4945b427c88cc43583c, type: 3}
+      propertyPath: m_text
+      value: 'Inputted Percentages:
+
+        [import all the fuckin text from both
+        day% and night% boxes here]'
+      objectReference: {fileID: 0}
     - target: {fileID: 8054862731433978109, guid: 980a3a9bd251f4945b427c88cc43583c, type: 3}
       propertyPath: m_Value
       value: 1
@@ -1212,7 +1219,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8926282705164461501, guid: 980a3a9bd251f4945b427c88cc43583c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000015258789
+      value: -0.000030517578
       objectReference: {fileID: 0}
     - target: {fileID: 9066495854440640668, guid: 980a3a9bd251f4945b427c88cc43583c, type: 3}
       propertyPath: m_Size
