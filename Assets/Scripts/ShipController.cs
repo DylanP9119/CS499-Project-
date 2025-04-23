@@ -83,7 +83,7 @@ public class ShipController : MonoBehaviour
                     {
                     lastReplayTick = currentTick;
                     SetTimeStepCounter(currentTick);
-           //         ShipInteractions.Instance.CheckForInteractions(allShips);
+                    ShipInteractions.Instance.CheckForInteractions(allShips);
 
                     foreach (GameObject ship in allShips)
                     {

@@ -65,7 +65,7 @@ public class ReplayManager : MonoBehaviour
 
     void Update()
     {
-    HandleReplayInput();
+  //  HandleReplayInput();
     if (ReplayModeActive && !replayPaused)
     {
         UpdateReplay();
@@ -214,6 +214,7 @@ void UpdateReplay()
         textController.ResetCounters();
     
     replayPaused = true;
+
     replayTime = 0;
     if (playPauseButton != null && playSprite != null)
     {
@@ -232,7 +233,7 @@ void UpdateReplay()
     void TogglePlayPause()
     {
         replayPaused = !replayPaused;
-        timeControl.TogglePlayPause();
+//        timeControl.TogglePlayPause();
         if (playPauseButton != null)
         {
             playPauseButton.image.sprite = replayPaused ? pauseSprite : playSprite;
@@ -279,12 +280,18 @@ void UpdateReplay()
             paDay = DataPersistence.Instance.patrolDayPercent,
             paNight = DataPersistence.Instance.patrolNightPercent,
             pNightCap = DataPersistence.Instance.nightCaptureEnabled,
+            mTick = maxRecordedTick,
             events = recordedEvents
         };
+            DataPersistence.Instance.maxTick = maxRecordedTick;
             string json = JsonUtility.ToJson(headerdata, true);
             string fileName = string.IsNullOrEmpty(DataPersistence.Instance.fileNameString) ?
                           "Default" : DataPersistence.Instance.fileNameString;
             fileName += ".json";
+//string path = Path.Combine(Application.dataPath, fileName);
+ //File.WriteAllText(path, json);
+     //   DataPersistence.Instance.replayEvents = recordedEvents;
+//Debug.Log("saved");
         #if UNITY_WEBGL && !UNITY_EDITOR
 
         UIControllerScript.Instance.DownloadFile(fileName, json);
@@ -302,6 +309,7 @@ void UpdateReplay()
 
  public void LoadReplayFromFile()
 {
+        maxRecordedTick = DataPersistence.Instance.maxTick;
         recordedEvents = DataPersistence.Instance.replayEvents;
         ProcessLoadedEvents();
         Debug.Log($"Loaded {recordedEvents.Count} events from file");

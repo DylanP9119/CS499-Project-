@@ -23,6 +23,9 @@ public class DataPersistence : MonoBehaviour
     public int dayCount;
     public int hourCount;
     public int minuteCount;
+
+    public int maxTick;
+
     public bool nightCaptureEnabled = false;
     public string fileNameString; 
     public string path;
