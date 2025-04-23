@@ -1462,7 +1462,7 @@ PrefabInstance:
       objectReference: {fileID: 806475742}
     - target: {fileID: 798305971355137650, guid: a9bc344a167d31945b5dc363223398b8, type: 3}
       propertyPath: m_Name
-      value: ReplayManager 1
+      value: ReplayManager
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
