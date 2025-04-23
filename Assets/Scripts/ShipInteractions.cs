@@ -84,7 +84,7 @@ public class ShipInteractions : MonoBehaviour
                 {
                     if (IsWithinRange(shipPos, otherShip.transform.position, 4) && !IsWithinRange(shipPos, otherShip.transform.position, 3))
                     {
-                        Debug.Log($"[EVADE TRIGGER] {ship.name} sees {otherShip.name} in 4x4, not in 3x3 at tick {ShipController.TimeStepCounter}");
+                        //Debug.Log($"[EVADE TRIGGER] {ship.name} sees {otherShip.name} in 4x4, not in 3x3 at tick {ShipController.TimeStepCounter}");
                         HandleEvasion(ship, otherShip);
                     }
                 }
@@ -240,7 +240,7 @@ public class ShipInteractions : MonoBehaviour
 
     private void HandleCapture(GameObject pirate, GameObject cargo)
     {
-        Debug.Log($"[CAPTURE CHECK] {pirate.name} checking {cargo.name} @ tick {ShipController.TimeStepCounter}");
+        //Debug.Log($"[CAPTURE CHECK] {pirate.name} checking {cargo.name} @ tick {ShipController.TimeStepCounter}");
 
         if (pirateToCapturedCargo.ContainsValue(cargo))  // avoid dups
             return;
@@ -251,8 +251,8 @@ public class ShipInteractions : MonoBehaviour
         if (cargoBehavior != null && cargoBehavior.isCaptured)
             return;
 
-        if (cargoBehavior != null && cargoBehavior.isEvadingThisStep)
-            return; // Let the evasion finish first
+        //if (cargoBehavior != null && cargoBehavior.isEvadingThisStep)
+        //    return; // Let the evasion finish first
 
         if (pendingEvasions.ContainsKey((cargo, pirate))) // handle failed evasion log
         {
@@ -343,7 +343,7 @@ public class ShipInteractions : MonoBehaviour
 
     private void HandleEvasion(GameObject cargo, GameObject pirate)
     {
-        Debug.Log($"[EVADE CHECK] {cargo.name} checking {pirate.name} @ tick {ShipController.TimeStepCounter}");
+        //Debug.Log($"[EVADE CHECK] {cargo.name} checking {pirate.name} @ tick {ShipController.TimeStepCounter}");
 
         if (pirateToCapturedCargo.ContainsKey(pirate)) // No evasions if pirate already has a cargo
             return;
