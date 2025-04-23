@@ -64,12 +64,6 @@ public class ReplayManager : MonoBehaviour
         playPauseButton?.onClick.AddListener(TogglePlayPause);
         btnIncreaseSpeed?.onClick.AddListener(IncreaseSpeed);
         btnDecreaseSpeed?.onClick.AddListener(DecreaseSpeed);
-        btnStepFrame?.onClick.AddListener(() => {
-        Debug.Log("[SingleStep] Button Clicked");
-        if (!ReplayModeActive) {
-            TimeControl.Instance.TriggerSingleStep();
-        }
-    });
         UIvisibility(true);
         ReplayModeActive = false;
     }
