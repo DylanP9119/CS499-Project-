@@ -102,7 +102,7 @@ public class ShipController : MonoBehaviour
             return; // exit early if replay is active
         }
             // Simulation mode:
-            if (!timeControl.IsPaused && !ReplayManager.Instance.ReplayModeActive)
+            if (!timeControl.IsPaused)
             {
                 spawnTimer += Time.deltaTime;
                 if (spawnTimer >= timeControl.GetSpeed())

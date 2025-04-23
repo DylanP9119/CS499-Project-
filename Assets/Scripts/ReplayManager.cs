@@ -42,23 +42,18 @@ public class ReplayManager : MonoBehaviour
     public readonly float[] speeds = { -1.0f, 1.0f, 2.0f, 10.0f, 20.0f };
     private int currentSpeedIndex = 1;
     public float replaySpeed { get; private set; } = 1f;
-    public bool wasLoaded = false; 
 
     void Awake()
     {
         Instance = this;
         currentShipId = 1;
     }
-    public void getLoadStatus(bool wasLoadedvalue)
-    {
-        wasLoaded = wasLoadedvalue;
-    }
+
     void Start()
     {
-        if (wasLoaded == true)
+        if (DataPersistence.Instance.wasEnteredfromLoadScene == true)
         {
             LoadReplayFromFile();
-            ProcessLoadedEvents();
         }
         playPauseButton?.onClick.AddListener(TogglePlayPause);
         btnIncreaseSpeed?.onClick.AddListener(IncreaseSpeed);
@@ -69,12 +64,12 @@ public class ReplayManager : MonoBehaviour
 
     void Update()
     {
-    
-    if (ReplayModeActive && !replayPaused && wasLoaded == true)
+    HandleReplayInput();
+    if (ReplayModeActive && !replayPaused)
     {
         UpdateReplay();
     }
-    if (!ReplayModeActive && timeControl.IsPaused && wasLoaded == false)
+    if (!ReplayModeActive && timeControl.IsPaused )
     {
         float simTime = ShipController.TimeStepCounter * timeControl.GetSpeed();
         int currentSimTick = Mathf.FloorToInt(simTime / timeControl.GetSpeed());
@@ -284,15 +279,18 @@ void UpdateReplay()
         };
             string json = JsonUtility.ToJson(headerdata, true);
             string fileName = string.IsNullOrEmpty(DataPersistence.Instance.fileNameString) ?
-                          "ReplayData" : DataPersistence.Instance.fileNameString;
+                          "Default" : DataPersistence.Instance.fileNameString;
             fileName += ".json";
         #if UNITY_WEBGL && !UNITY_EDITOR
 
         UIControllerScript.Instance.DownloadFile(fileName, json);
 #else
         // For standalone builds, write file locally.
-        string path = Path.Combine(Application.dataPath, fileName);
-        File.WriteAllText(path, json);
+      //  string path = Path.Combine(Application.dataPath, fileName);
+       // DataPersistence.Instance.path = path;
+      //  File.WriteAllText(path, json);
+     //   DataPersistence.Instance.replayEvents = recordedEvents;
+        Debug.Log("saved");
 #endif
     }
 
@@ -300,15 +298,7 @@ void UpdateReplay()
 
  public void LoadReplayFromFile()
 {
-    if (DataPersistence.Instance.replayEvents != null && DataPersistence.Instance.replayEvents.Count > 0)
-    {
-        // Load from DataPersistence if events are present (UI load)
-        recordedEvents = DataPersistence.Instance.replayEvents;
-        ProcessLoadedEvents();
-        Debug.Log($"Loaded {recordedEvents.Count} events from DataPersistence");
-        StartReplay();
-    }
-    else if (File.Exists(DataPersistence.Instance.path))
+    if (File.Exists(DataPersistence.Instance.path))
     {
         // Existing file loading logic
         string json = File.ReadAllText(DataPersistence.Instance.path);

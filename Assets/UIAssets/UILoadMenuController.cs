@@ -23,7 +23,6 @@ public class UILoadMenuController : MonoBehaviour
     public void PlayButton()
     {
         DataPersistence.Instance.wasEnteredfromLoadScene = true;
-        ReplayManager.Instance.getLoadStatus(true);
         SceneManager.LoadScene(simMenu);
         
     }
