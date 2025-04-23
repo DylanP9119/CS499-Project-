@@ -15,6 +15,7 @@ public class UILoadMenuController : MonoBehaviour
     public UIControllerScript UI;
     public GameObject LoadPanel;
     public GameObject scrollContent;
+    public bool wasLoaded = false;
     public void BackButton()
     {
         SceneManager.LoadScene(mainMenu);
@@ -22,8 +23,11 @@ public class UILoadMenuController : MonoBehaviour
 
     public void PlayButton()
     {
+        if(wasLoaded)
+        {
         DataPersistence.Instance.wasEnteredfromLoadScene = true;
         SceneManager.LoadScene(simMenu);
+        }
     }
 
 
@@ -53,6 +57,7 @@ public class UILoadMenuController : MonoBehaviour
     // Called from JavaScript with the uploaded JSON
     public void OnJsonFileLoaded(string json)
     {
+        wasLoaded = true; 
         MyData data = JsonUtility.FromJson<MyData>(json);
         // Save header data to DataPersistence
         DataPersistence.Instance.fileNameString = data.saveName;
@@ -86,6 +91,7 @@ public class UILoadMenuController : MonoBehaviour
                                         $"Patrol: {values[8]}% Day, {values[9]}% Night\n" +
                                         $"Pirate: {values[6]}% Day, {values[7]}% Night";
         gridPercentsText.text = gridText;
+        wasLoaded = false;
     }
 
     [System.Serializable]
