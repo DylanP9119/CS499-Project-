@@ -65,6 +65,7 @@ public class ReplayManager : MonoBehaviour
         btnIncreaseSpeed?.onClick.AddListener(IncreaseSpeed);
         btnDecreaseSpeed?.onClick.AddListener(DecreaseSpeed);
         btnStepFrame?.onClick.AddListener(AdvanceSimulationTick);
+        playPauseButton.image.sprite = pauseSprite;
         UIvisibility(true);
     }
 
@@ -225,7 +226,7 @@ void UpdateReplay()
     replayTime = 0;
     if (playPauseButton != null && playSprite != null)
     {
-        playPauseButton.image.sprite = playSprite;
+        playPauseButton.image.sprite = pauseSprite;
     }
     replayTick = -1;
     UIvisibility(true);
@@ -296,7 +297,7 @@ void UpdateReplay()
                 currentSpeedIndex++;
             }
             Debug.Log($"Replay speed set to {replaySpeed}x");
-            UpdateDisplay();
+            //UpdateDisplay();
             speedText.text = replaySpeed + "X SPEED";
         }
     }
