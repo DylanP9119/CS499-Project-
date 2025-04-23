@@ -51,6 +51,7 @@ public class ReplayManager : MonoBehaviour
 
     void Start()
     {
+        ReplayModeActive = false;
         if (DataPersistence.Instance.wasEnteredfromLoadScene)
         {
             LoadReplayFromFile();
@@ -62,7 +63,6 @@ public class ReplayManager : MonoBehaviour
         btnDecreaseSpeed?.onClick.AddListener(DecreaseSpeed);
         btnStepFrame?.onClick.AddListener(AdvanceSimulationTick);
         UIvisibility(true);
-        ReplayModeActive = false;
     }
 
     void Update()
@@ -303,6 +303,7 @@ void UpdateReplay()
     {
         if (File.Exists(DataPersistence.Instance.path))
         {
+            ReplayModeActive = true;
             string json = File.ReadAllText(DataPersistence.Instance.path);
             ReplayData data = JsonUtility.FromJson<ReplayData>(json);
             recordedEvents = data.events;
