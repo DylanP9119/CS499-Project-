@@ -33,7 +33,7 @@ public class ReplayManager : MonoBehaviour
     private int lastRecordedTick = -1;
     // Replay state
     public float replayTime;
-    private bool replayPaused;
+    private bool replayPaused = true;
     private int replayTick = -1;
     private Dictionary<int, GameObject> replayedShips = new Dictionary<int, GameObject>();
     private int currentShipId;
@@ -214,6 +214,7 @@ void UpdateReplay()
         textController.ResetCounters();
     
     replayPaused = true;
+    timeControl.setPause(true);
     replayTime = 0;
     if (playPauseButton != null && playSprite != null)
     {
