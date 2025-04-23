@@ -1,15 +1,15 @@
 mergeInto(LibraryManager.library, {
-  DownloadFileWebGL: function (filenamePtr, contentPtr) {
-    var filename = UTF8ToString(filenamePtr);
-    var content = UTF8ToString(contentPtr);
-
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
-    element.setAttribute('download', filename);
-    element.style.display = 'none';
-
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-  }
+  DownloadFileWebGL: function (fileNamePtr, dataPtr) {
+        var fileName = Pointer_stringify(fileNamePtr);
+        var data = Pointer_stringify(dataPtr);
+        var blob = new Blob([data], { type: 'text/plain' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
 });

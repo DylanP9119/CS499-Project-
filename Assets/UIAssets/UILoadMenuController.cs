@@ -25,10 +25,7 @@ public class UILoadMenuController : MonoBehaviour
         SceneManager.LoadScene(simMenu);
         DataPersistence.Instance.wasEnteredfromLoadScene = true;
     }
-    public void GetSaveUpload()
-    {
-        OpenFileUpload();
-    }
+
 
     [DllImport("__Internal")]
     public static extern void ShowFileUpload();
@@ -43,7 +40,16 @@ public class UILoadMenuController : MonoBehaviour
 
     }
 
-
+    public void DownloadFileWithName(string fileName, string data)
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        DownloadFile(fileName, data);
+#else
+        string path = Path.Combine(Application.dataPath, fileName);
+        File.WriteAllText(path, data);
+        Debug.Log($"File saved to: {path}");
+#endif
+    }
     // Called from JavaScript with the uploaded JSON
     public void OnJsonFileLoaded(string json)
     {
@@ -97,36 +103,4 @@ public class UILoadMenuController : MonoBehaviour
         public bool pNightCap;
         public List<ReplayEvent> events;
     }
-
-
-    /*
-    public void DebuggerFunction() {
-
-        TextAsset jsonFile = Resources.Load<TextAsset>("mydata");
-
-        string json = jsonFile.text;
-        MyData data = JsonUtility.FromJson<MyData>(json);
-
-        string inputText = "test,04/15/2025,10:27," + data.days + "," + data.hours + "," + data.pNightCap + "," + data.cDay + "," + data.cNight + ","
-                             + data.piDay + "," + data.piNight + ","  + data.paNight + ","  + data.paNight;
-        string gridText = "this is just test\ndata\n\ntesting";
-
-        string[] values = inputText.Split(',');
-        
-        TMP_Text titleText = LoadPanel.transform.Find("Save Name Text").GetComponent<TMP_Text>();
-        TMP_Text fileDateText = LoadPanel.transform.Find("Time Made").GetComponent<TMP_Text>();
-        TMP_Text runtimeText = LoadPanel.transform.Find("Runtime").GetComponent<TMP_Text>();
-        TMP_Text captureAndShipPercentsText = LoadPanel.transform.Find("Ship Percents").GetComponent<TMP_Text>();
-        TMP_Text gridPercentsText = scrollContent.GetComponentInChildren<TMP_Text>();
-
-        titleText.text = values[0];
-        fileDateText.text = "Created on:\n" + values[1] + ", " + values[2];
-        runtimeText.text = "Days: " + values[3] + "\nHours: " + values[4];
-        captureAndShipPercentsText.text = "2x2 Pirate Night Capture: " + values[5] + "\nCargo: " + values[6] + "% Day, " + values[7] + "% Night " + 
-                                                                                     "\nPatrol: " + values[8] + "% Day, " + values[9] + "% Night " + 
-                                                                                     "\nPirate: " + values[10] + "% Day, " + values[11] + "% Night ";
-        
-        gridPercentsText.text = gridText;
-    }
-    */
 }

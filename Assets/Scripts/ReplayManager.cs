@@ -269,7 +269,6 @@ void UpdateReplay()
 
     public void SaveReplayToFile()
     {
-        UiLoad.OpenFileUpload();
         var headerdata= new UILoadMenuController.MyData
         {
             saveName = DataPersistence.Instance.fileNameString,
@@ -284,15 +283,21 @@ void UpdateReplay()
             pNightCap = DataPersistence.Instance.nightCaptureEnabled,
             events = recordedEvents
         };
-        if(DataPersistence.Instance.path != "")
-        {
             string json = JsonUtility.ToJson(headerdata, true);
-            File.WriteAllText(DataPersistence.Instance.path, json);
-            UIControllerScript.Instance.DownloadFile(DataPersistence.Instance.path + ".json", json);
-        }
-      //  data.header.Add(headerdata);
+            string fileName = string.IsNullOrEmpty(DataPersistence.Instance.fileNameString) ?
+                          "ReplayData" : DataPersistence.Instance.fileNameString;
+            fileName += ".json";
+        #if UNITY_WEBGL && !UNITY_EDITOR
 
+        UIControllerScript.Instance.DownloadFile(fileName, json);
+#else
+        // For standalone builds, write file locally.
+        string path = Path.Combine(Application.dataPath, fileName);
+        File.WriteAllText(path, json);
+#endif
     }
+
+    
 
     public void LoadReplayFromFile()
     {
