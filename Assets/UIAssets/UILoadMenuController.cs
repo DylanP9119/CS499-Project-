@@ -15,7 +15,6 @@ public class UILoadMenuController : MonoBehaviour
     public UIControllerScript UI;
     public GameObject LoadPanel;
     public GameObject scrollContent;
-    public bool wasLoaded = false;
     public void BackButton()
     {
         SceneManager.LoadScene(mainMenu);
@@ -23,11 +22,8 @@ public class UILoadMenuController : MonoBehaviour
 
     public void PlayButton()
     {
-        if(wasLoaded)
-        {
-        DataPersistence.Instance.wasEnteredfromLoadScene = true;
         SceneManager.LoadScene(simMenu);
-        }
+        DataPersistence.Instance.wasEnteredfromLoadScene = true;
     }
 
 
@@ -57,7 +53,6 @@ public class UILoadMenuController : MonoBehaviour
     // Called from JavaScript with the uploaded JSON
     public void OnJsonFileLoaded(string json)
     {
-        wasLoaded = true;
         MyData data = JsonUtility.FromJson<MyData>(json);
         // Save header data to DataPersistence
         DataPersistence.Instance.fileNameString = data.saveName;
