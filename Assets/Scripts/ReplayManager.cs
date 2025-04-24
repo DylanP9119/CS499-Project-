@@ -335,9 +335,6 @@ void UpdateReplay()
         UILoadMenuController.LoadController.DownloadFile(fileName, json);
 #else
         // For standalone builds, write file locally.
-        string path = Path.Combine("E:/firefoxdownloads", fileName);
-        DataPersistence.Instance.path = path;
-        File.WriteAllText(path, json);
      // DataPersistence.Instance.replayEvents = recordedEvents;
         Debug.Log("saved");
 #endif
