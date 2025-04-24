@@ -33,8 +33,8 @@ public class ReplayManager : MonoBehaviour
     // Recording system
     private List<ReplayEvent> recordedEvents = new List<ReplayEvent>();
     private Dictionary<int, List<ReplayEvent>> tickData = new Dictionary<int, List<ReplayEvent>>();
-    private int currentTick;
-    private int maxRecordedTick;   
+    private int currentTick =0;
+    private int maxRecordedTick = 0;   
     private int lastRecordedTick = -1;
     // Replay state
     public float replayTime;
@@ -69,15 +69,16 @@ public class ReplayManager : MonoBehaviour
         UIvisibility(true);
     }
 
-    void Update()
-    {
-     HandleReplayInput();
-    
+void Update()
+{
+    HandleReplayInput();
+
     if (ReplayModeActive && !replayPaused)
     {
         UpdateReplay();
     }
-    if (!ReplayModeActive && timeControl.IsPaused )
+    // Corrected condition: Record ticks when simulation is NOT paused
+    if (!ReplayModeActive && !timeControl.IsPaused)
     {
         float simTime = ShipController.TimeStepCounter * timeControl.GetSpeed();
         int currentSimTick = Mathf.FloorToInt(simTime / timeControl.GetSpeed());
@@ -88,7 +89,7 @@ public class ReplayManager : MonoBehaviour
             lastRecordedTick = currentSimTick;
         }
     }
-    }
+}
 
     void HandleReplayInput()
     {
@@ -131,7 +132,7 @@ public class ReplayManager : MonoBehaviour
                 counters
             ));
         }    
-        if (currentTick > maxRecordedTick) maxRecordedTick = currentTick;
+       // if (currentTick > maxRecordedTick) maxRecordedTick = currentTick;
     }
 
     private int ExtractShipId(GameObject ship)
@@ -331,13 +332,13 @@ void UpdateReplay()
 //Debug.Log("saved");
         #if UNITY_WEBGL && !UNITY_EDITOR
 
-        UIControllerScript.Instance.DownloadFile(fileName, json);
+        UILoadMenuController.LoadController.DownloadFile(fileName, json);
 #else
         // For standalone builds, write file locally.
-      //  string path = Path.Combine(Application.dataPath, fileName);
-       // DataPersistence.Instance.path = path;
-      //  File.WriteAllText(path, json);
-     //   DataPersistence.Instance.replayEvents = recordedEvents;
+        string path = Path.Combine("E:/firefoxdownloads", fileName);
+        DataPersistence.Instance.path = path;
+        File.WriteAllText(path, json);
+     // DataPersistence.Instance.replayEvents = recordedEvents;
         Debug.Log("saved");
 #endif
     }
