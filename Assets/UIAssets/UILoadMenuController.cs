@@ -12,9 +12,9 @@ public class UILoadMenuController : MonoBehaviour
 {
     [SerializeField] private string mainMenu = "mainMenu";
     [SerializeField] private string simMenu = "MainScene";
-    public UIControllerScript UI;
     public GameObject LoadPanel;
     public GameObject scrollContent;
+    public static UILoadMenuController LoadController { get; private set; }
     public void BackButton()
     {
         SceneManager.LoadScene(mainMenu);

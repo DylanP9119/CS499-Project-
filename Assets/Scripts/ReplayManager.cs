@@ -333,7 +333,7 @@ void UpdateReplay()
 //Debug.Log("saved");
         #if UNITY_WEBGL && !UNITY_EDITOR
 
-        UiLoad.Instance.DownloadFile(fileName, json);
+        UILoadMenuController.LoadController.DownloadFile(fileName, json);
 #else
         // For standalone builds, write file locally.
       //  string path = Path.Combine(Application.dataPath, fileName);
