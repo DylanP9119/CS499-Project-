@@ -85,10 +85,6 @@ public class UISimSettings : MonoBehaviour
         //Play simluation
     }
 
-    public void SaveSimluation() {
-        //Save info goes here!
-    }
-
     public void InfoButton() {
         infoPanel.SetActive(true);
 

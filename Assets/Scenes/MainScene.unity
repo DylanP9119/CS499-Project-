@@ -1502,6 +1502,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &289557574 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 798305971355137649, guid: a9bc344a167d31945b5dc363223398b8, type: 3}
+  m_PrefabInstance: {fileID: 289557570}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 499137414832de74fb3b53f41b1725b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &298248729
 GameObject:
   m_ObjectHideFlags: 0
@@ -9469,9 +9480,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1206188199}
-        m_TargetAssemblyTypeName: UISimSettings, Assembly-CSharp
-        m_MethodName: SaveSimluation
+      - m_Target: {fileID: 289557574}
+        m_TargetAssemblyTypeName: ReplayManager, Assembly-CSharp
+        m_MethodName: SaveReplayToFile
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

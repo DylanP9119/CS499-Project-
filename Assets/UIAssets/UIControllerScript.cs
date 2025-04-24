@@ -87,6 +87,7 @@ public class UIControllerScript : MonoBehaviour
     public TMP_Dropdown removeOptionDay;
     public TMP_Dropdown removeOptionNight;
 
+
     public List<string> dayGridPercentList = new List<string>();
     public List<string> nightGridPercentList = new List<string>();
 
@@ -230,7 +231,7 @@ public class UIControllerScript : MonoBehaviour
         if (canStart)
         {
             Debug.Log("SUCCESS!");
-            Save();
+            // Save();
             DataPersistence.Instance.wasEnteredfromLoadScene = false;
             ShipController.SetTimeStepCounter(0);
             SceneManager.LoadScene(startSim);
@@ -238,14 +239,14 @@ public class UIControllerScript : MonoBehaviour
 
     }
 
-    public class MyData
+   /* public class MyData
     {
         public string saveName;
         public int days, hours, cDay, cNight, piDay, piNight, paDay, paNight;
         public bool pNightCap;
-    }
+    }*/
 
-    public void Save()
+   /* public void Save()
     {
         MyData data = new MyData
         {
@@ -264,7 +265,7 @@ public class UIControllerScript : MonoBehaviour
       //  string json = JsonUtility.ToJson(data, true);
      //   DownloadFile(path + ".json", json);
 
-    }
+    }*/
 
     public void DownloadFile(string filename, string content)
     {
