@@ -66,7 +66,6 @@ public class UILoadMenuController : MonoBehaviour
         DataPersistence.Instance.patrolDayPercent = data.paDay;
         DataPersistence.Instance.patrolNightPercent = data.paNight;
         DataPersistence.Instance.nightCaptureEnabled = data.pNightCap;
-        DataPersistence.Instance.maxTick = data.mTick;
         // Save replay events
         DataPersistence.Instance.replayEvents = data.events;
         // Update UI
@@ -103,7 +102,6 @@ public class UILoadMenuController : MonoBehaviour
         public int paDay;
         public int paNight;
         public bool pNightCap;
-        public int mTick;
         public List<ReplayEvent> events;
     }
 }

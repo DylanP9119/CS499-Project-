@@ -319,10 +319,8 @@ void UpdateReplay()
             paDay = DataPersistence.Instance.patrolDayPercent,
             paNight = DataPersistence.Instance.patrolNightPercent,
             pNightCap = DataPersistence.Instance.nightCaptureEnabled,
-            mTick = maxRecordedTick,
             events = recordedEvents
         };
-            DataPersistence.Instance.maxTick = maxRecordedTick;
             string json = JsonUtility.ToJson(headerdata, true);
             string fileName = string.IsNullOrEmpty(DataPersistence.Instance.fileNameString) ?
                           "Default" : DataPersistence.Instance.fileNameString;
@@ -348,7 +346,6 @@ void UpdateReplay()
 
  public void LoadReplayFromFile()
 {
-        maxRecordedTick = DataPersistence.Instance.maxTick;
         recordedEvents = DataPersistence.Instance.replayEvents;
         ProcessLoadedEvents();
         Debug.Log($"Loaded {recordedEvents.Count} events from file");
