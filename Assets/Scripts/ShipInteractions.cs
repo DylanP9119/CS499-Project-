@@ -254,23 +254,15 @@ public class ShipInteractions : MonoBehaviour
         //if (cargoBehavior != null && cargoBehavior.isEvadingThisStep)
         //    return; // Let the evasion finish first
 
-        if (pendingEvasions.ContainsKey((cargo, pirate))) // handle failed evasion log
+        if (cargoEvadedPirates.ContainsKey(cargo) && cargoEvadedPirates[cargo].Contains(pirate))
         {
-            //Debug.Log($"[CAPTURE] {cargo.name} was previously evaded from {pirate.name}");
-            if (!evasionOutcomeLogged.ContainsKey((cargo, pirate)) || evasionOutcomeLogged[(cargo, pirate)] == true)
-            {
-                //Debug.Log($"[FAILURE LOGGED] {cargo.name} failed to evade {pirate.name}");
-                textController.UpdateEvasion(false, false);
-                evasionOutcomeLogged[(cargo, pirate)] = false; // mark that we’ve handled this pair
-            }
-            pendingEvasions.Remove((cargo, pirate));
+            textController.UpdateEvasion(false, false);
+            evasionOutcomeLogged[(cargo, pirate)] = false;
+
             evadeTimestamps.Remove((cargo, pirate));
-            //if (evadeTimestamps.ContainsKey((cargo, pirate)))
-            //{
-            //    textController.UpdateEvasion(false, false);
-            //    evadeTimestamps.Remove((cargo, pirate));
-            //}
+            pendingEvasions.Remove((cargo, pirate));
         }
+        
         if (cargoBehavior != null)  // marks cargo as captured
             cargoBehavior.isCaptured = true;
         pirateToCapturedCargo[pirate] = cargo; //record as a pair
