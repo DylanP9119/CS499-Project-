@@ -334,7 +334,7 @@ void UpdateReplay()
 //Debug.Log("saved");
         #if UNITY_WEBGL && !UNITY_EDITOR
 
-        UILoadMenuController.LoadController.DownloadFile(fileName, json);
+        UIControllerScript.Instance.DownloadFile(fileName, json);
 #else
         // For standalone builds, write file locally.
      // DataPersistence.Instance.replayEvents = recordedEvents;
