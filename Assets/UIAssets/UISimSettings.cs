@@ -15,6 +15,8 @@ public class UISimSettings : MonoBehaviour
     public GameObject cubePrefab;
     public Material startingMaterial;
 
+    public GameObject saveButton;
+
     public TMP_Text instantiatedStatsInfo;
 
     public Vector3 startPosition = new Vector3(25f, 0f, 25f);
@@ -35,6 +37,10 @@ public class UISimSettings : MonoBehaviour
         //instantiate grid
         popupPanel.SetActive(false);
         infoPanel.SetActive(false);
+
+        if (ReplayManager.Instance.ReplayModeActive) saveButton.SetActive(false);
+        else saveButton.SetActive(true);
+        
         UpdateGrid(startingMaterial);
     }
 
@@ -63,7 +69,8 @@ public class UISimSettings : MonoBehaviour
 
     public void BackButton()
     {
-        popupPanel.SetActive(true);
+        if (!(ReplayManager.Instance.ReplayModeActive)) popupPanel.SetActive(true);
+        else SceneManager.LoadScene(mainMenu);
         //Pause simulation?
     }
 

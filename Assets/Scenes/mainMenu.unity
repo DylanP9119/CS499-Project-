@@ -911,7 +911,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1373078984}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9609ab23581330943975a9b45a3d8539, type: 3}
+  m_Script: {fileID: 11500000, guid: 4a3f5deca801db24b8fc3979cf338afb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cargoDayPercent: 0

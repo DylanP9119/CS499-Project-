@@ -182,8 +182,8 @@ MonoBehaviour:
   simulationLengthHours: 48
   allShips: []
   stepCounterText: {fileID: 1772882706}
-  dayMapMaterial: {fileID: 2100000, guid: 5bd7544175f20604db1bfc4d7ec5b091, type: 2}
-  nightMapMaterial: {fileID: 2100000, guid: 869f2472e16793c46b743e44a7a735cb, type: 2}
+  dayMapMaterial: {fileID: 2100000, guid: e6e23c1bb80044440975d0717b79732c, type: 2}
+  nightMapMaterial: {fileID: 2100000, guid: 65443dff6732bf747ac2bc007740b3e0, type: 2}
   mapBackground: {fileID: 2028625575}
 --- !u!114 &18849723
 MonoBehaviour:
@@ -874,7 +874,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 412598934}
   m_HandleRect: {fileID: 412598933}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1222,7 +1222,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 298248731}
   m_HandleRect: {fileID: 298248730}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1406,7 +1406,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 798305971355137648, guid: a9bc344a167d31945b5dc363223398b8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.000030517578
       objectReference: {fileID: 0}
     - target: {fileID: 798305971355137648, guid: a9bc344a167d31945b5dc363223398b8, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1418,15 +1418,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 798305971355137648, guid: a9bc344a167d31945b5dc363223398b8, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 798305971355137648, guid: a9bc344a167d31945b5dc363223398b8, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 798305971355137648, guid: a9bc344a167d31945b5dc363223398b8, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 798305971355137648, guid: a9bc344a167d31945b5dc363223398b8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1452,6 +1452,10 @@ PrefabInstance:
       propertyPath: timeDisplay
       value: 
       objectReference: {fileID: 1848105937}
+    - target: {fileID: 798305971355137649, guid: a9bc344a167d31945b5dc363223398b8, type: 3}
+      propertyPath: btnStepFrameGO
+      value: 
+      objectReference: {fileID: 289557575}
     - target: {fileID: 798305971355137649, guid: a9bc344a167d31945b5dc363223398b8, type: 3}
       propertyPath: shipController
       value: 
@@ -1513,6 +1517,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 499137414832de74fb3b53f41b1725b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &289557575 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7216931495575748948, guid: a9bc344a167d31945b5dc363223398b8, type: 3}
+  m_PrefabInstance: {fileID: 289557570}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &298248729
 GameObject:
   m_ObjectHideFlags: 0
@@ -2693,12 +2702,12 @@ MonoBehaviour:
   cinemachineVirtualCamera: {fileID: 510840361}
   fovMax: 115
   fovMin: 3
-  bigMaterialDay: {fileID: 2100000, guid: 3696d276756e40a45b2c26009e8b68a9, type: 2}
-  medMaterialDay: {fileID: 2100000, guid: f7d19240366c9d4488776e0581ccc8b8, type: 2}
-  smallMaterialDay: {fileID: 2100000, guid: 67fa73042fa4777428c8d9da1ccdd85e, type: 2}
-  bigMaterialNight: {fileID: 2100000, guid: 93be726e4a520c74ea4128ecf14fac4b, type: 2}
-  medMaterialNight: {fileID: 2100000, guid: 0f88cb183efc26046bb5dd02eea05482, type: 2}
-  smallMaterialNight: {fileID: 2100000, guid: 4cf39bbb87993aa43bf1e17fe47244e2, type: 2}
+  bigMaterialDay: {fileID: 2100000, guid: 3d58634d9103d8a48b4a9dca5f5b334e, type: 2}
+  medMaterialDay: {fileID: 2100000, guid: f3a21049c7164cf478398a8e664d18dd, type: 2}
+  smallMaterialDay: {fileID: 2100000, guid: 328b62427a01ed44390f04ab089c7af5, type: 2}
+  bigMaterialNight: {fileID: 2100000, guid: ba53f2876e7a4a0488f9cfdc92aaae6a, type: 2}
+  medMaterialNight: {fileID: 2100000, guid: f9667dc65e8d49a4d8b1949f5ae304f1, type: 2}
+  smallMaterialNight: {fileID: 2100000, guid: ab68e6cb8d2af1548a7837eb3c8e04de, type: 2}
   uiSimSettings: {fileID: 1206188199}
   shipController: {fileID: 18849722}
   cameraSpeed: 0
@@ -3054,7 +3063,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1518381720}
   m_HandleRect: {fileID: 1518381719}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -6097,8 +6106,9 @@ MonoBehaviour:
   mainMenu: mainMenu
   popupPanel: {fileID: 1466133244}
   infoPanel: {fileID: 1752329259}
-  cubePrefab: {fileID: 6707743475538790086, guid: dd0b5a32e83597b429baae5616f4e068, type: 3}
-  startingMaterial: {fileID: 2100000, guid: f7d19240366c9d4488776e0581ccc8b8, type: 2}
+  cubePrefab: {fileID: 6707743475538790086, guid: a926bba80b7562e49b5c2ffd32ddb7ea, type: 3}
+  startingMaterial: {fileID: 2100000, guid: f3a21049c7164cf478398a8e664d18dd, type: 2}
+  saveButton: {fileID: 1982500180}
   instantiatedStatsInfo: {fileID: 119645500}
   startPosition: {x: 25, y: 0, z: 25}
   cargoDayPercentList: {fileID: 1770450337}
@@ -7793,7 +7803,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 2be57bd1ea4c9db43b9cd20a814b2e75, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 44a6a357762890c4a93a77d5114c2f3a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -9956,7 +9966,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5bd7544175f20604db1bfc4d7ec5b091, type: 2}
+  - {fileID: 2100000, guid: e6e23c1bb80044440975d0717b79732c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

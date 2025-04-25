@@ -14,6 +14,7 @@ public class ReplayManager : MonoBehaviour
     public Button btnIncreaseSpeed;
     public Button btnDecreaseSpeed;
     public Button btnStepFrame;
+    public GameObject btnStepFrameGO;
     public Button btnStepBackFrame;
 
     //public Text timeDisplay;
@@ -65,13 +66,13 @@ public class ReplayManager : MonoBehaviour
         btnIncreaseSpeed?.onClick.AddListener(IncreaseSpeed);
         btnDecreaseSpeed?.onClick.AddListener(DecreaseSpeed);
         btnStepFrame?.onClick.AddListener(AdvanceSimulationTick);
-        playPauseButton.image.sprite = pauseSprite;
+        playPauseButton.image.sprite = playSprite;
         UIvisibility(true);
     }
 
 void Update()
 {
-  //  HandleReplayInput();
+    //HandleReplayInput();
 
     if (ReplayModeActive && !replayPaused)
     {
@@ -218,6 +219,7 @@ void UpdateReplay()
     //replaySpeed = speeds[1]; // breaks
     UpdateDisplay();
     ReplayModeActive = true;
+    btnStepFrameGO.SetActive(false);
     if (ShipController.Instance != null)
         ShipController.Instance.ClearAllShips();
     if (textController != null) 
@@ -227,7 +229,7 @@ void UpdateReplay()
     replayTime = 0;
     if (playPauseButton != null && playSprite != null)
     {
-        playPauseButton.image.sprite = pauseSprite;
+        playPauseButton.image.sprite = playSprite;
     }
     replayTick = -1;
     UIvisibility(true);
@@ -271,7 +273,7 @@ void UpdateReplay()
 //        timeControl.TogglePlayPause();
         if (playPauseButton != null)
         {
-            playPauseButton.image.sprite = replayPaused ? pauseSprite : playSprite;
+            playPauseButton.image.sprite = replayPaused ? playSprite : pauseSprite;
         }
     }
     void IncreaseSpeed()
