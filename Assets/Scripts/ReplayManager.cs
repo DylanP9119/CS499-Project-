@@ -71,7 +71,7 @@ public class ReplayManager : MonoBehaviour
 
 void Update()
 {
-    HandleReplayInput();
+  //  HandleReplayInput();
 
     if (ReplayModeActive && !replayPaused)
     {
