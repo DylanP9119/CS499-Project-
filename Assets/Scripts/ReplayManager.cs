@@ -324,7 +324,7 @@ void UpdateReplay()
             pNightCap = DataPersistence.Instance.nightCaptureEnabled,
             events = recordedEvents
         };
-            string json = JsonUtility.ToJson(headerdata, true);
+            string json = JsonUtility.ToJson(headerdata, false);
             string fileName = string.IsNullOrEmpty(DataPersistence.Instance.fileNameString) ?
                           "Default" : DataPersistence.Instance.fileNameString;
             fileName += ".json";

@@ -11,13 +11,13 @@ public class UISimSettings : MonoBehaviour
     [SerializeField] private string mainMenu = "mainMenu";
 
     public GameObject popupPanel;
-    public GameObject infoPanel;
     public GameObject cubePrefab;
     public Material startingMaterial;
 
     public GameObject saveButton;
 
     public TMP_Text instantiatedStatsInfo;
+    public TMP_Text instantiatedStatsInfoGridless;
 
     public Vector3 startPosition = new Vector3(25f, 0f, 25f);
     private List<GameObject> spawnedCubes = new List<GameObject>();
@@ -31,15 +31,20 @@ public class UISimSettings : MonoBehaviour
     public TMP_Text cargoNightPercentList;
     public TMP_Text pirateNightPercentList;
     public TMP_Text patrolNightPercentList;
+
+    public GameObject gridPercentGO;
+    public GameObject gridPercentlessGO;
     
 
     void Awake() {
         //instantiate grid
         popupPanel.SetActive(false);
-        infoPanel.SetActive(false);
+        saveButton.SetActive(false);
 
-        if (ReplayManager.Instance.ReplayModeActive) saveButton.SetActive(false);
-        else saveButton.SetActive(true);
+        gridPercentGO.SetActive(false);
+        gridPercentlessGO.SetActive(false);
+
+        if (!(ReplayManager.Instance.ReplayModeActive)) saveButton.SetActive(true);
         
         UpdateGrid(startingMaterial);
     }
@@ -93,38 +98,50 @@ public class UISimSettings : MonoBehaviour
     }
 
     public void InfoButton() {
-        infoPanel.SetActive(true);
-
-        instantiatedStatsInfo.text = "File Name:\n" + DataPersistence.Instance.fileNameString + "\n\nTotal Sim Time:\n" + DataPersistence.Instance.dayCount + " Days, " + DataPersistence.Instance.hourCount + " Hours\n\nNight Values: "
-                                    + DataPersistence.Instance.nightCaptureEnabled + "\n\nCargo Percents:\n" + DataPersistence.Instance.cargoDayPercent + "% Day, " + DataPersistence.Instance.cargoNightPercent + "% Night\nPirate Percents:\n"
-                                    + DataPersistence.Instance.pirateDayPercent + "% Day, " + DataPersistence.Instance.pirateNightPercent + "% Night\nPatrol Percents:\n" + DataPersistence.Instance.patrolDayPercent + "% Day, " 
-                                    + DataPersistence.Instance.patrolNightPercent + "% Night";
         
-        cargoDayPercentList.text = "Cargo Day %s:\n";
-        pirateDayPercentList.text = "Pirate Day %s:\n";
-        patrolDayPercentList.text = "Patrol Day %s:\n";
 
-        cargoNightPercentList.text = "Cargo Night %s:\n";
-        pirateNightPercentList.text = "Pirate Night %s:\n";
-        patrolNightPercentList.text = "Patrol Night %s:\n";
+        if (ReplayManager.Instance.ReplayModeActive) {
+            gridPercentlessGO.SetActive(true);
 
-        List<string> values1 = ReturnGridPercents(DataPersistence.Instance.cargoGridPercentsD);
-        List<string> values2 = ReturnGridPercents(DataPersistence.Instance.pirateGridPercentsD);
-        List<string> values3 = ReturnGridPercents(DataPersistence.Instance.patrolGridPercentsD);
-        List<string> values4 = ReturnGridPercents(DataPersistence.Instance.cargoGridPercentsN);
-        List<string> values5 = ReturnGridPercents(DataPersistence.Instance.pirateGridPercentsN);
-        List<string> values6 = ReturnGridPercents(DataPersistence.Instance.patrolGridPercentsN);
+            instantiatedStatsInfoGridless.text = "File Name:\n" + DataPersistence.Instance.fileNameString + "\n\nTotal Sim Time:\n" + DataPersistence.Instance.dayCount + " Days, " + DataPersistence.Instance.hourCount + " Hours\n\nNight Values: "
+                                        + DataPersistence.Instance.nightCaptureEnabled + "\n\nCargo Percents:\n" + DataPersistence.Instance.cargoDayPercent + "% Day, " + DataPersistence.Instance.cargoNightPercent + "% Night\nPirate Percents:\n"
+                                        + DataPersistence.Instance.pirateDayPercent + "% Day, " + DataPersistence.Instance.pirateNightPercent + "% Night\nPatrol Percents:\n" + DataPersistence.Instance.patrolDayPercent + "% Day, " 
+                                        + DataPersistence.Instance.patrolNightPercent + "% Night";
+        }
+        else {
+            gridPercentGO.SetActive(true);
 
-        for (int i = 0; i < values2.Count; i++) {
-            if (i < values1.Count) {
-                cargoDayPercentList.text = cargoDayPercentList.text + values1[i];
-                patrolDayPercentList.text = patrolDayPercentList.text + values3[i];
+            instantiatedStatsInfo.text = "File Name:\n" + DataPersistence.Instance.fileNameString + "\n\nTotal Sim Time:\n" + DataPersistence.Instance.dayCount + " Days, " + DataPersistence.Instance.hourCount + " Hours\n\nNight Values: "
+                                        + DataPersistence.Instance.nightCaptureEnabled + "\n\nCargo Percents:\n" + DataPersistence.Instance.cargoDayPercent + "% Day, " + DataPersistence.Instance.cargoNightPercent + "% Night\nPirate Percents:\n"
+                                        + DataPersistence.Instance.pirateDayPercent + "% Day, " + DataPersistence.Instance.pirateNightPercent + "% Night\nPatrol Percents:\n" + DataPersistence.Instance.patrolDayPercent + "% Day, " 
+                                        + DataPersistence.Instance.patrolNightPercent + "% Night";
+            
+            cargoDayPercentList.text = "Cargo Day %s:\n";
+            pirateDayPercentList.text = "Pirate Day %s:\n";
+            patrolDayPercentList.text = "Patrol Day %s:\n";
 
-                cargoNightPercentList.text = cargoNightPercentList.text + values4[i];
-                patrolNightPercentList.text = patrolNightPercentList.text + values6[i];
+            cargoNightPercentList.text = "Cargo Night %s:\n";
+            pirateNightPercentList.text = "Pirate Night %s:\n";
+            patrolNightPercentList.text = "Patrol Night %s:\n";
+
+            List<string> values1 = ReturnGridPercents(DataPersistence.Instance.cargoGridPercentsD);
+            List<string> values2 = ReturnGridPercents(DataPersistence.Instance.pirateGridPercentsD);
+            List<string> values3 = ReturnGridPercents(DataPersistence.Instance.patrolGridPercentsD);
+            List<string> values4 = ReturnGridPercents(DataPersistence.Instance.cargoGridPercentsN);
+            List<string> values5 = ReturnGridPercents(DataPersistence.Instance.pirateGridPercentsN);
+            List<string> values6 = ReturnGridPercents(DataPersistence.Instance.patrolGridPercentsN);
+
+            for (int i = 0; i < values2.Count; i++) {
+                if (i < values1.Count) {
+                    cargoDayPercentList.text = cargoDayPercentList.text + values1[i];
+                    patrolDayPercentList.text = patrolDayPercentList.text + values3[i];
+
+                    cargoNightPercentList.text = cargoNightPercentList.text + values4[i];
+                    patrolNightPercentList.text = patrolNightPercentList.text + values6[i];
+                }
+                pirateDayPercentList.text = pirateDayPercentList.text + values2[i];
+                pirateNightPercentList.text = pirateNightPercentList.text + values5[i];
             }
-            pirateDayPercentList.text = pirateDayPercentList.text + values2[i];
-            pirateNightPercentList.text = pirateNightPercentList.text + values5[i];
         }
 
 
@@ -149,6 +166,7 @@ public class UISimSettings : MonoBehaviour
     }
 
     public void ExitInfoButton() {
-        infoPanel.SetActive(false);
+        if (ReplayManager.Instance.ReplayModeActive) gridPercentlessGO.SetActive(false);
+        else gridPercentGO.SetActive(false);
     }
 }

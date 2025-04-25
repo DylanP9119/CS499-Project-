@@ -14,7 +14,6 @@ public class UILoadMenuController : MonoBehaviour
     [SerializeField] private string simMenu = "MainScene";
     public UIControllerScript UI;
     public GameObject LoadPanel;
-    public GameObject scrollContent;
 
     public void BackButton()
     {
@@ -72,14 +71,12 @@ public class UILoadMenuController : MonoBehaviour
         // Update UI
         string inputText = $"{data.saveName},{data.days},{data.hours},{data.pNightCap}," +
                            $"{data.cDay},{data.cNight},{data.piDay},{data.piNight},{data.paDay},{data.paNight}";
-        string gridText = "this is just test\ndata\n\ntesting";
 
         string[] values = inputText.Split(',');
 
         TMP_Text titleText = LoadPanel.transform.Find("Save Name Text").GetComponent<TMP_Text>();
         TMP_Text runtimeText = LoadPanel.transform.Find("Runtime").GetComponent<TMP_Text>();
         TMP_Text captureAndShipPercentsText = LoadPanel.transform.Find("Ship Percents").GetComponent<TMP_Text>();
-        TMP_Text gridPercentsText = scrollContent.GetComponentInChildren<TMP_Text>();
 
         titleText.text = values[0];
         runtimeText.text = "Days: " + values[1] + "\nHours: " + values[2];
@@ -87,7 +84,6 @@ public class UILoadMenuController : MonoBehaviour
                                         $"Cargo: {values[4]}% Day, {values[5]}% Night\n" +
                                         $"Patrol: {values[8]}% Day, {values[9]}% Night\n" +
                                         $"Pirate: {values[6]}% Day, {values[7]}% Night";
-        gridPercentsText.text = gridText;
     }
 
     [System.Serializable]

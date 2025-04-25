@@ -330,6 +330,22 @@ public class ShipInteractions : MonoBehaviour
                 float simTime = ShipController.TimeStepCounter * 1f;
             }
         }
+
+        foreach (var cargo in ShipController.Instance.allShips.Where(s => s.CompareTag("Cargo")))
+        {
+            var cargoBehavior = cargo.GetComponent<CargoBehavior>();
+            if (cargoBehavior != null && cargoBehavior.isCaptured)
+            {
+                bool isPaired = ShipInteractions.Instance.pirateToCapturedCargo.Values.Contains(cargo);
+                if (!isPaired)
+                {
+                    cargoBehavior.isCaptured = false;
+                    cargo.transform.rotation = Quaternion.Euler(0, 90, 0); // reorient east
+                    Debug.Log($"[RESCUE PATCH] Reset stuck cargo: {cargo.name}");
+                }
+            }
+        }
+        
         textController.UpdateCaptures(false);
     }
 

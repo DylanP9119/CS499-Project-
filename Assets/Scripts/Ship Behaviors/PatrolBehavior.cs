@@ -19,7 +19,7 @@ public class PatrolBehavior : MonoBehaviour
     else
     {
         currentGridPosition = WorldToGrid(transform.position);
-        destinationGridPosition = new Vector2Int(currentGridPosition.x, gridSize.y);
+        destinationGridPosition = new Vector2Int(0, currentGridPosition.y);
     }
     }
 
