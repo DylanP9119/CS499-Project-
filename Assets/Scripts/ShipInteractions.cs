@@ -330,7 +330,6 @@ public class ShipInteractions : MonoBehaviour
                 float simTime = ShipController.TimeStepCounter * 1f;
             }
         }
-
         foreach (var cargo in ShipController.Instance.allShips.Where(s => s.CompareTag("Cargo")))
         {
             var cargoBehavior = cargo.GetComponent<CargoBehavior>();
