@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using TMPro;
+using System;
 using System.Linq;
 
 public class UISimSettings : MonoBehaviour
@@ -104,12 +105,12 @@ public class UISimSettings : MonoBehaviour
         pirateNightPercentList.text = "Pirate Night %s:\n";
         patrolNightPercentList.text = "Patrol Night %s:\n";
 
-        List<string> values1 = uiControllerScript.ReturnGridPercents(DataPersistence.Instance.cargoGridPercentsD);
-        List<string> values2 = uiControllerScript.ReturnGridPercents(DataPersistence.Instance.pirateGridPercentsD);
-        List<string> values3 = uiControllerScript.ReturnGridPercents(DataPersistence.Instance.patrolGridPercentsD);
-        List<string> values4 = uiControllerScript.ReturnGridPercents(DataPersistence.Instance.cargoGridPercentsN);
-        List<string> values5 = uiControllerScript.ReturnGridPercents(DataPersistence.Instance.pirateGridPercentsN);
-        List<string> values6 = uiControllerScript.ReturnGridPercents(DataPersistence.Instance.patrolGridPercentsN);
+        List<string> values1 = ReturnGridPercents(DataPersistence.Instance.cargoGridPercentsD);
+        List<string> values2 = ReturnGridPercents(DataPersistence.Instance.pirateGridPercentsD);
+        List<string> values3 = ReturnGridPercents(DataPersistence.Instance.patrolGridPercentsD);
+        List<string> values4 = ReturnGridPercents(DataPersistence.Instance.cargoGridPercentsN);
+        List<string> values5 = ReturnGridPercents(DataPersistence.Instance.pirateGridPercentsN);
+        List<string> values6 = ReturnGridPercents(DataPersistence.Instance.patrolGridPercentsN);
 
         for (int i = 0; i < values2.Count; i++) {
             if (i < values1.Count) {
@@ -124,6 +125,24 @@ public class UISimSettings : MonoBehaviour
         }
 
 
+    }
+    public List<string> ReturnGridPercents(double[] values)
+    {
+        double sumOfValues = 0.0;
+        List<string> stringList = new List<string>();
+
+        for (int i = 0; i < values.Length; i++)
+        {
+            sumOfValues = sumOfValues + values[i];
+        }
+
+        for (int i = 0; i < values.Length; i++)
+        {
+            double roundedPercent = Math.Round(((values[i] / sumOfValues) * 100), 3);
+            stringList.Add("Space " + i + ": " + roundedPercent + "%\n");
+        }
+
+        return stringList;
     }
 
     public void ExitInfoButton() {

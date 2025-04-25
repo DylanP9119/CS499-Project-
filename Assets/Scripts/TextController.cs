@@ -15,12 +15,12 @@ public class TextController : MonoBehaviour
     public TMP_Text successfulEvasionText;
     public TMP_Text failedEvasionText;
 
-    private int cargoEntered = 0, cargoExited = 0;
-    private int patrolEntered = 0, patrolExited = 0;
-    private int pirateEntered = 0, pirateExited = 0;
-    private int captureCount = 0, rescueCount = 0;
-    private int piratesDestroyed = 0;
-    private int successfulEvasions = 0, failedEvasions = 0;
+    public int cargoEntered = 0, cargoExited = 0;
+    public int patrolEntered = 0, patrolExited = 0;
+    public int pirateEntered = 0, pirateExited = 0;
+    public int captureCount = 0, rescueCount = 0;
+    public int piratesDestroyed = 0;
+    public int successfulEvasions = 0, failedEvasions = 0;
 
     void Start()
     {
@@ -102,7 +102,26 @@ public class TextController : MonoBehaviour
             failedEvasionText.text = $"Failed Evasions: {failedEvasions}";
         }
     }
-
+public void ApplyCountersFromString(string counterString)
+{
+    string[] values = counterString.Split(',');
+    if(values.Length == 11)
+    {
+        cargoEntered = int.Parse(values[0]);
+        cargoExited = int.Parse(values[1]);
+        patrolEntered = int.Parse(values[2]);
+        patrolExited = int.Parse(values[3]);
+        pirateEntered = int.Parse(values[4]);
+        pirateExited = int.Parse(values[5]);
+        captureCount = int.Parse(values[6]);
+        rescueCount = int.Parse(values[7]);
+        piratesDestroyed = int.Parse(values[8]);
+        successfulEvasions = int.Parse(values[9]);
+        failedEvasions = int.Parse(values[10]);
+        
+        UpdateAllText();
+    }
+}
     // New helper methods for undoing interactions during reverse replay.
     public void UndoCapture()
     {

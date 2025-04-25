@@ -170,7 +170,7 @@ MonoBehaviour:
   piratePrefab: {fileID: 2945873473625126443, guid: ca70039599911434cb90b21854d3c217, type: 3}
   textController: {fileID: 806475742}
   timeDisplayRun: {fileID: 1848105937}
-  timeDisplayRunReplay: {fileID: 0}
+  timeDisplayRunReplay: {fileID: 301303803}
   timeDisplayRemaining: {fileID: 301303803}
   isNight: 0
   cargoSpawnChance: 1
@@ -183,7 +183,7 @@ MonoBehaviour:
   allShips: []
   stepCounterText: {fileID: 1772882706}
   dayMapMaterial: {fileID: 2100000, guid: e6e23c1bb80044440975d0717b79732c, type: 2}
-  nightMapMaterial: {fileID: 2100000, guid: 69f95e772eeffb64b8987b8100d4c0ce, type: 2}
+  nightMapMaterial: {fileID: 2100000, guid: 65443dff6732bf747ac2bc007740b3e0, type: 2}
   mapBackground: {fileID: 2028625575}
 --- !u!114 &18849723
 MonoBehaviour:
@@ -874,7 +874,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 412598934}
   m_HandleRect: {fileID: 412598933}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1222,7 +1222,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 298248731}
   m_HandleRect: {fileID: 298248730}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -2944,7 +2944,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1518381720}
   m_HandleRect: {fileID: 1518381719}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4400,6 +4400,17 @@ MonoBehaviour:
   pirateDestroyedText: {fileID: 673881891}
   successfulEvasionText: {fileID: 1998928949}
   failedEvasionText: {fileID: 1009817246}
+  cargoEntered: 0
+  cargoExited: 0
+  patrolEntered: 0
+  patrolExited: 0
+  pirateEntered: 0
+  pirateExited: 0
+  captureCount: 0
+  rescueCount: 0
+  piratesDestroyed: 0
+  successfulEvasions: 0
+  failedEvasions: 0
 --- !u!4 &806475743
 Transform:
   m_ObjectHideFlags: 0
@@ -4684,106 +4695,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 883921198}
   m_CullTransparentMesh: 1
---- !u!1 &908744082
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 908744084}
-  - component: {fileID: 908744083}
-  m_Layer: 0
-  m_Name: uicontrollerscript
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &908744083
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 908744082}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d48e4a888c1395e40a1198bf695c59c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainMenu: mainMenu
-  startSim: MainScene
-  nightCaptureButton: {fileID: 5849048168602493889, guid: 9739a0ac66c6318419b543987e8ea005, type: 3}
-  buttonText: {fileID: 0}
-  nightCaptureEnabled: 0
-  beginButton: {fileID: 0}
-  canStart: 0
-  rawTextEditor: 0
-  fileNameString: 
-  cargoGridPercentsD: []
-  patrolGridPercentsD: []
-  pirateGridPercentsD: []
-  cargoGridPercentsN: []
-  patrolGridPercentsN: []
-  pirateGridPercentsN: []
-  cargoDayPercent: 0
-  cargoNightPercent: 0
-  pirateDayPercent: 0
-  pirateNightPercent: 0
-  patrolDayPercent: 0
-  patrolNightPercent: 0
-  dayCount: 0
-  hourCount: 0
-  minuteCount: 0
-  errorPanel: {fileID: 0}
-  errorPanelText: {fileID: 0}
-  cargoDaySlider: {fileID: 0}
-  pirateDaySlider: {fileID: 0}
-  patrolDaySlider: {fileID: 0}
-  cargoNightSlider: {fileID: 0}
-  pirateNightSlider: {fileID: 0}
-  patrolNightSlider: {fileID: 0}
-  cargoDayText: {fileID: 0}
-  pirateDayText: {fileID: 0}
-  patrolDayText: {fileID: 0}
-  cargoNightText: {fileID: 0}
-  pirateNightText: {fileID: 0}
-  patrolNightText: {fileID: 0}
-  dayTimeMinimumRange: 0
-  dayTimeMaximumRange: 0
-  dayTimeMultiplier: 0
-  nightTimeMinimumRange: 0
-  nightTimeMaximumRange: 0
-  nightTimeMultiplier: 0
-  dayGridPercentagesPanel: {fileID: 0}
-  nightGridPercentagesPanel: {fileID: 0}
-  dayShipSelection: {fileID: 0}
-  nightShipSelection: {fileID: 0}
-  removeOptionDay: {fileID: 0}
-  removeOptionNight: {fileID: 0}
-  dayGridPercentList: []
-  nightGridPercentList: []
-  percentPanel: {fileID: 0}
-  presentedCargoPercentsForPanel: {fileID: 0}
-  presentedPiratePercentsForPanel: {fileID: 0}
-  presentedPatrolPercentsForPanel: {fileID: 0}
---- !u!4 &908744084
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 908744082}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 552.3361, y: 2.7026095, z: 7608.7563}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &908981038
 GameObject:
   m_ObjectHideFlags: 0
@@ -6098,11 +6009,11 @@ MonoBehaviour:
   mainMenu: mainMenu
   popupPanel: {fileID: 1466133244}
   infoPanel: {fileID: 1752329259}
-  cubePrefab: {fileID: 5027235169069252502, guid: c17fff03e50ef524898b0dda6297e2b3, type: 3}
+  cubePrefab: {fileID: 6707743475538790086, guid: a926bba80b7562e49b5c2ffd32ddb7ea, type: 3}
   startingMaterial: {fileID: 2100000, guid: f3a21049c7164cf478398a8e664d18dd, type: 2}
   instantiatedStatsInfo: {fileID: 119645500}
   startPosition: {x: 25, y: 0, z: 25}
-  uiControllerScript: {fileID: 908744083}
+  uiControllerScript: {fileID: 0}
   cargoDayPercentList: {fileID: 1770450337}
   pirateDayPercentList: {fileID: 883921200}
   patrolDayPercentList: {fileID: 2076817743}
@@ -10515,6 +10426,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 706887575}
     - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+      propertyPath: playSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 34cd3510470d4c2468e78c90845a2f0b, type: 3}
+    - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+      propertyPath: pauseSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 3a021e7cd7fd40446ab3e543f33fc0f1, type: 3}
+    - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
       propertyPath: timeControl
       value: 
       objectReference: {fileID: 18849723}
@@ -10522,6 +10441,10 @@ PrefabInstance:
       propertyPath: timeDisplay
       value: 
       objectReference: {fileID: 1848105937}
+    - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
+      propertyPath: btnStepFrame
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2809413419116962254, guid: 2e298f85a08feb54799879133844dcf5, type: 3}
       propertyPath: uiController
       value: 
@@ -10625,4 +10548,3 @@ SceneRoots:
   - {fileID: 806475743}
   - {fileID: 2028625579}
   - {fileID: 1206188200}
-  - {fileID: 908744084}

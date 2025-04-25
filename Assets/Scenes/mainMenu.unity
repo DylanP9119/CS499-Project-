@@ -791,7 +791,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   newSim: simMenu
   loadSim: loadSimMenu
-  creditsMenu: creditsMenu
 --- !u!4 &1119956249
 Transform:
   m_ObjectHideFlags: 0

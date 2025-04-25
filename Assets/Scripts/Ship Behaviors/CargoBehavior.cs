@@ -28,6 +28,7 @@ public class CargoBehavior : MonoBehaviour
     // When forceMove is true, bypass internal timer.
     public void Step(bool forceMove)
     {
+         isEvadingThisStep = false;
         if (forceMove)
         {
             if (isCaptured)
@@ -41,7 +42,6 @@ public class CargoBehavior : MonoBehaviour
         movementTimer = 0f;
         if (isCaptured)
             return;
-        isEvadingThisStep = false;
         MoveShipTowardsDestination();
     }
 
