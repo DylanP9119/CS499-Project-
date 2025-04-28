@@ -418,7 +418,13 @@ public class ShipController : MonoBehaviour
         {
             int spawnZ = 0;
 
-            if (!isNight) {
+            if (!isNight)
+            {
+                spawnZ = SelectIndexByWeight(DataPersistence.Instance.cargoGridPercentsD);
+                //Debug.Log("Cargo SpawnZ = " + spawnZ);
+            }
+            else if (isNight && !DataPersistence.Instance.nightCaptureEnabled)
+            {
                 spawnZ = SelectIndexByWeight(DataPersistence.Instance.cargoGridPercentsD);
                 //Debug.Log("Cargo SpawnZ = " + spawnZ);
             }
@@ -428,13 +434,18 @@ public class ShipController : MonoBehaviour
                 //Debug.Log("Cargo SpawnZ = " + spawnZ);
             }
 
-                return new Vector3(0, 0, spawnZ);
-            }
+            return new Vector3(0, 0, spawnZ);
+        }
         else if (shipType == "Pirate")
         {
             int spawnX = 0;
 
             if (!isNight)
+            {
+                spawnX = SelectIndexByWeight(DataPersistence.Instance.pirateGridPercentsD);
+                //Debug.Log("Pirate SpawnX = " + spawnX);
+            }
+            else if (isNight && !DataPersistence.Instance.nightCaptureEnabled)
             {
                 spawnX = SelectIndexByWeight(DataPersistence.Instance.pirateGridPercentsD);
                 //Debug.Log("Pirate SpawnX = " + spawnX);
@@ -445,7 +456,7 @@ public class ShipController : MonoBehaviour
                 //Debug.Log("Pirate SpawnX = " + spawnX);
             }
 
-                return new Vector3(spawnX, 0, 0);
+            return new Vector3(spawnX, 0, 0);
         }
         else if (shipType == "Patrol")
         {
@@ -456,12 +467,17 @@ public class ShipController : MonoBehaviour
                 spawnZ = SelectIndexByWeight(DataPersistence.Instance.patrolGridPercentsD);
                 //Debug.Log("Patrol SpawnZ = " + spawnZ);
             }
+            else if (isNight && !DataPersistence.Instance.nightCaptureEnabled)
+            {
+                spawnZ = SelectIndexByWeight(DataPersistence.Instance.patrolGridPercentsD);
+                //Debug.Log("Patrol SpawnZ = " + spawnZ);
+            }
             else
             {
                 spawnZ = SelectIndexByWeight(DataPersistence.Instance.patrolGridPercentsN);
                 //Debug.Log("Patrol SpawnZ = " + spawnZ);
             }
-                return new Vector3(gridSize.x - 1, 0, spawnZ);
+            return new Vector3(gridSize.x - 1, 0, spawnZ);
         }
         return Vector3.zero;
     }
